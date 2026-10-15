@@ -1,0 +1,487 @@
+<title>แดชบอร์ดสุขภาพดงสวนพัฒนา</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap">
+<style>
+/* Layout: แถบหัวรายงานแบบเอกสารราชการ → แถว KPI → ส่วนข้อมูลเรียงตามงานของ รพ.สต. (ประชากร, บริการ, โรค, NCD, ผู้สูงอายุ, งานส่งเสริม, การตาย) ในกริด 12 คอลัมน์ */
+:root{
+  --bg:#f1f6f4; --surface:#ffffff; --ink:#123430; --ink-2:#4a6661; --ink-3:#7d9792;
+  --line:#dbe7e3; --grid:#eaf1ef; --accent:#0f7a6f; --accent-soft:#dff1ec;
+  --band-1:#0b4a46; --band-2:#13806f; --band-ink:#f3fbf8; --band-ink-2:#bfe6dc;
+  --s-male:#2f6db5; --s-female:#e0607e; --s-cur:#13867a; --s-prev:#bccdc8;
+  --a-young:#9fdccb; --a-adult:#2a9d8f; --a-old:#1f5a66; --s-warm:#e39b3a;
+  --t-1:#e3f4ee; --t-2:#fdf1dc; --t-3:#e4eefb; --t-4:#fce7ec; --t-5:#ece9f7;
+  --good:#1f8a57; --good-soft:#e1f3e8; --warn:#a86a00; --warn-soft:#fbf0d9; --bad:#c23b3a;
+  --f-display:"Bai Jamjuree","IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1716; --surface:#152220; --ink:#e6f2ef; --ink-2:#a9c2bc; --ink-3:#7f9893;
+  --line:#253935; --grid:#1c2c29; --accent:#4cc3ad; --accent-soft:#143530;
+  --band-1:#0a3532; --band-2:#0f5e54; --band-ink:#eefaf6; --band-ink-2:#9fd6c8;
+  --s-male:#5b97e0; --s-female:#d9587a; --s-cur:#3fb3a2; --s-prev:#3f544f;
+  --a-young:#7fc9b6; --a-adult:#2a9d8f; --a-old:#3a7f8c; --s-warm:#d9922f;
+  --t-1:#143029; --t-2:#30260f; --t-3:#16253a; --t-4:#35182a; --t-5:#221f38;
+  --good:#5cc78c; --good-soft:#163323; --warn:#e0a83a; --warn-soft:#33280f; --bad:#e66767; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1716; --surface:#152220; --ink:#e6f2ef; --ink-2:#a9c2bc; --ink-3:#7f9893;
+  --line:#253935; --grid:#1c2c29; --accent:#4cc3ad; --accent-soft:#143530;
+  --band-1:#0a3532; --band-2:#0f5e54; --band-ink:#eefaf6; --band-ink-2:#9fd6c8;
+  --s-male:#5b97e0; --s-female:#d9587a; --s-cur:#3fb3a2; --s-prev:#3f544f;
+  --a-young:#7fc9b6; --a-adult:#2a9d8f; --a-old:#3a7f8c; --s-warm:#d9922f;
+  --t-1:#143029; --t-2:#30260f; --t-3:#16253a; --t-4:#35182a; --t-5:#221f38;
+  --good:#5cc78c; --good-soft:#163323; --warn:#e0a83a; --warn-soft:#33280f; --bad:#e66767; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.25}
+h1{font-size:clamp(24px,4vw,34px);font-weight:700}
+h2{font-size:21px;font-weight:600;color:var(--ink)}
+section .sh h2::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--accent);margin-right:10px;vertical-align:2px}
+h3{font-size:15px;font-weight:600;color:var(--ink-2)}
+.num{font-variant-numeric:tabular-nums}
+header.top{margin-top:20px;padding:26px 28px;border-radius:16px;background:linear-gradient(120deg,var(--band-1),var(--band-2));color:var(--band-ink);display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+@media (max-width:600px){header.top{padding:20px 18px}}
+.eyebrow{font-size:12px;letter-spacing:.06em;color:var(--band-ink-2);font-weight:600}
+.sub{color:var(--band-ink-2);font-size:14px}
+.stamp{font-size:13px;color:var(--band-ink-2);text-align:right;background:rgba(255,255,255,.1);padding:8px 12px;border-radius:10px}
+.stamp b{color:var(--band-ink);font-weight:600}
+.stamp select{margin-bottom:4px;font-weight:600}
+nav.sec{display:flex;flex-wrap:wrap;gap:6px}
+nav.sec a{font-size:13px;color:var(--ink-2);text-decoration:none;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+nav.sec a:hover,nav.sec a:focus-visible{color:var(--accent);border-color:var(--accent);outline:none}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid transparent;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.kpi .l{font-size:13px;color:var(--ink-2);font-weight:500}
+.kpi:nth-child(1){background:var(--t-1)}.kpi:nth-child(2){background:var(--t-2)}.kpi:nth-child(3){background:var(--t-3)}.kpi:nth-child(4){background:var(--t-4)}.kpi:nth-child(5){background:var(--t-5)}
+.kpi .v{font-family:var(--f-display);font-size:30px;font-weight:600;line-height:1.15}
+.kpi .d{font-size:12.5px;color:var(--ink-3)}
+section{display:flex;flex-direction:column;gap:14px;scroll-margin-top:12px}
+.sh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px}
+.sh p{margin:0;color:var(--ink-2);font-size:14px;max-width:70ch}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(15,60,55,.05);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c12{grid-column:span 12}
+@media (max-width:900px){.c4,.c5,.c6,.c7,.c8{grid-column:span 12}}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg)}
+.seg button{font:inherit;font-size:13px;border:0;background:transparent;color:var(--ink-2);padding:5px 11px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface);font-weight:600}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+select{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--ink-2)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.legend i.ln{height:3px;border-radius:2px;vertical-align:3px;width:16px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{fill:var(--ink-2);font-family:var(--f-body);font-size:12px}
+svg .ax{stroke:var(--line)} svg .gr{stroke:var(--grid)}
+.note{font-size:12.5px;color:var(--ink-3);margin:0}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;color:var(--ink-2);font-size:12.5px}
+td.bar{width:38%;min-width:120px}
+.hb{height:10px;border-radius:0 4px 4px 0;background:var(--s-cur)}
+.meter{display:flex;flex-direction:column;gap:6px}
+.meter .track{height:12px;background:var(--grid);border-radius:6px;overflow:hidden;display:flex}
+.meter .fill{background:linear-gradient(90deg,var(--a-adult),var(--good));border-radius:6px}
+.big{font-family:var(--f-display);font-size:34px;font-weight:600;line-height:1.1}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px}
+.pill.good{background:var(--good-soft);color:var(--good)} .pill.warn{background:var(--warn-soft);color:var(--warn)}
+.stack{display:flex;height:22px;border-radius:5px;overflow:hidden;gap:2px;background:var(--surface)}
+.stack span{display:block}
+.dx-list{display:flex;flex-direction:column;gap:7px}
+.dx{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;font-size:13.5px}
+.dx .nm{min-width:0}
+.dx .nm small{color:var(--ink-3);margin-right:6px}
+.dx .bt{grid-column:1/2;height:8px;background:var(--grid);border-radius:4px;overflow:hidden}
+.dx .bt span{display:block;height:100%;background:linear-gradient(90deg,var(--a-adult),var(--s-cur));border-radius:0 4px 4px 0}
+.dx .n{grid-row:1/3;grid-column:2;text-align:right;font-weight:600;white-space:nowrap;min-width:48px}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12.5px;line-height:1.45;padding:7px 10px;border-radius:7px;z-index:10;max-width:260px;opacity:0;transition:opacity .1s}
+#tip b{font-weight:600}
+.hit{fill:transparent;cursor:crosshair}
+.kpi-tbl td{vertical-align:top}
+.kpi-tbl td:first-child{white-space:normal;min-width:260px;max-width:520px}
+.kpi-tbl .grp td{background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:13px}
+.kpi-tbl .how{display:block;color:var(--ink-3);font-size:12px;line-height:1.45;margin-top:2px}
+.kpi-tbl .no{color:var(--ink-3);margin-right:6px;font-variant-numeric:tabular-nums}
+.pbar{position:relative;height:8px;background:var(--grid);border-radius:4px;margin-top:5px;min-width:90px}
+.pbar span{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--s-cur)}
+.pbar i{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink-2);border-radius:1px}
+.pill.bad{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+.pill.muted{background:var(--grid);color:var(--ink-2)}
+.pill.info{background:var(--t-3);color:var(--s-male)}
+footer{font-size:12.5px;color:var(--ink-3);border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">รหัสหน่วยบริการ 05395 · JHCIS</div>
+      <h1>แดชบอร์ดระบบสุขภาพ รพ.สต.บ้านดงสวนพัฒนา</h1>
+      <div class="sub">ต.นาทัน อ.คำม่วง จ.กาฬสินธุ์ · ม.7 ดงสวนพัฒนา · ม.10 สร้างแข้ · ม.15 ดงสวนพัฒนาใต้</div>
+    </div>
+    <div class="stamp"><label for="fySel">ปีงบประมาณ</label> <select id="fySel"></select><br>ข้อมูล ณ <b id="asof"></b></div>
+  </header>
+
+  <nav class="sec" aria-label="ส่วนของแดชบอร์ด">
+    <a href="#kpi">ตัวชี้วัด HDC</a><a href="#pop">ประชากร</a><a href="#svc">การรับบริการ</a><a href="#dx">โรคที่พบบ่อย</a>
+    <a href="#ncd">โรคเรื้อรัง</a><a href="#scr">การคัดกรอง</a><a href="#old">ผู้สูงอายุ</a><a href="#pp">งานส่งเสริมป้องกัน</a><a href="#death">การตาย</a>
+  </nav>
+
+  <div class="kpis" id="kpis"></div>
+
+  <section id="kpi">
+    <div class="sh"><h2>ตัวชี้วัด HDC</h2><p>คำนวณจากข้อมูล JHCIS ของ รพ.สต. ตามนิยาม HDC เท่าที่ข้อมูลมี ตัวเลขอาจต่างจาก HDC จริง เพราะบริการที่หน่วยอื่นบันทึกจะไม่ถูกนับ</p></div>
+    <div class="card">
+      <div class="row"><h3 id="kpiTitle"></h3><div class="legend" id="kpiSum"></div></div>
+      <div class="tbl-wrap"><table id="kpiTbl" class="kpi-tbl"></table></div>
+      <p class="note">เป้าหมาย = จำนวนกลุ่มเป้าหมาย (ตัวหาร) · ผลงาน = จำนวนที่ได้รับบริการ · เส้นขีดบนแถบคือเกณฑ์ผ่าน (ค่าตั้งต้น ปรับให้ตรงกับเกณฑ์ของจังหวัดได้)</p>
+    </div>
+  </section>
+
+  <section id="pop">
+    <div class="sh"><h2>ประชากรในเขตรับผิดชอบ</h2><p>นับเฉพาะผู้อยู่จริงในเขต (typelive 1, 3) ที่ยังไม่จำหน่าย</p></div>
+    <div class="grid">
+      <div class="card c7">
+        <div class="row"><h3>ปิรามิดประชากร</h3>
+          <select id="pyrSel" aria-label="เลือกหมู่บ้าน"></select></div>
+        <div class="legend"><span><i style="background:var(--s-male)"></i>ชาย</span><span><i style="background:var(--s-female)"></i>หญิง</span></div>
+        <div id="pyr"></div>
+      </div>
+      <div class="card c5">
+        <h3>รายหมู่บ้าน</h3>
+        <div class="tbl-wrap"><table id="villTbl"></table></div>
+        <div class="legend" id="ageLegend"></div>
+        <div id="villStacks" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="svc">
+    <div class="sh"><h2>การรับบริการรายเดือน</h2><p>เทียบปีงบที่เลือกกับปีก่อนหน้า เรียงเดือนตามปีงบประมาณ รวมบริการในและนอกสถานบริการ</p></div>
+    <div class="grid">
+      <div class="card c8">
+        <div class="row">
+          <div class="seg" id="svcMetric" role="group" aria-label="หน่วยนับ"><button data-k="visits" aria-pressed="true">จำนวนครั้ง</button><button data-k="persons" aria-pressed="false">จำนวนคน</button></div>
+          <div class="seg" id="svcCmp" role="group" aria-label="ปีเปรียบเทียบ"></div>
+        </div>
+        <div class="legend" id="svcLegend"></div>
+        <div id="svcChart"></div>
+      </div>
+      <div class="card c4">
+        <h3>สรุปรายปีงบประมาณ</h3>
+        <div class="tbl-wrap"><table id="fyTbl"></table></div>
+        <p class="note">นอกสถานบริการ = เยี่ยมบ้าน ออกหน่วย คัดกรองในชุมชน (servicetype 2)</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="dx">
+    <div class="sh"><h2>โรคที่พบบ่อย 15 อันดับ</h2><p>นับจากการวินิจฉัยหลัก ไม่รวมรหัสกลุ่ม Z (ฉีดวัคซีน ตรวจสุขภาพ รับยาต่อเนื่อง)</p></div>
+    <div class="card">
+      <div class="row"><h3 id="dxTitle"></h3></div>
+      <div class="dx-list" id="dxList"></div>
+    </div>
+  </section>
+
+  <section id="ncd">
+    <div class="sh"><h2>ทะเบียนผู้ป่วยโรคเรื้อรัง</h2><p>ผู้ป่วยที่ยังรักษาอยู่ในทะเบียน (สถานะ 03) และยังไม่จำหน่าย</p></div>
+    <div class="grid">
+      <div class="card c7">
+        <h3>จำนวนผู้ป่วยรายหมู่บ้าน และอัตราต่อประชากรอายุ 15 ปีขึ้นไป</h3>
+        <div class="tbl-wrap"><table id="ncdTbl"></table></div>
+        <p class="note" id="ncdNote"></p>
+      </div>
+      <div class="card c5">
+        <h3 id="ctlTitle">ผลการควบคุมโรค</h3>
+        <div id="ctl" style="display:flex;flex-direction:column;gap:18px"></div>
+        <p class="note">ใช้ค่าล่าสุดของแต่ละคนในปีงบที่เลือก ที่บันทึกใน รพ.สต. ตัวหารคือผู้ป่วยในทะเบียนปัจจุบัน ความดัน: BP &lt; 140/90 mmHg · เบาหวาน: FBS 70–130 mg/dL (ตัวชี้วัดกระทรวงใช้ HbA1c ซึ่งตรวจที่โรงพยาบาลแม่ข่าย)</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="scr">
+  <div class="sh"><h2>การคัดกรอง DM/HT และซึมเศร้า 2Q</h2><p>ผลคัดกรองที่บันทึกใน JHCIS เทียบกับประชากรเป้าหมาย</p></div>
+  <div class="grid">
+    <div class="card c5">
+      <h3 id="scrTitle">ความครอบคลุมการคัดกรอง</h3>
+      <div id="scrMeters" style="display:flex;flex-direction:column;gap:18px"></div>
+      <p class="note">DM/HT: อายุ 35 ปีขึ้นไป (ณ 1 ต.ค. ของปีงบ) ที่ไม่ได้อยู่ในทะเบียนผู้ป่วยทั้ง DM และ HT · 2Q: อายุ 15 ปีขึ้นไป (รหัส 1B0280/1B0281) · เกณฑ์ตัวชี้วัด DM/HT 90%</p>
+    </div>
+    <div class="card c7">
+      <h3>ผลคัดกรอง DM/HT ครั้งล่าสุด รายหมู่บ้าน</h3>
+      <div class="tbl-wrap"><table id="scrTbl"></table></div>
+      <p class="note">ปกติ / เสี่ยง / สงสัยป่วย ใช้เกณฑ์เดียวกับระบบบันทึกของ อสม.: ความดัน ≥120/80 เสี่ยง, ≥140/90 สงสัยป่วย · น้ำตาลหลังอดอาหาร ≥100 เสี่ยง, ≥126 สงสัยป่วย (ไม่อดอาหาร ≥140 / ≥200) · ใช้ค่าที่แย่กว่าระหว่างความดันกับน้ำตาล · ผลคัดกรองไม่ใช่การวินิจฉัย</p>
+    </div>
+  </div>
+</section>
+
+  <section id="old">
+    <div class="sh"><h2>ผู้สูงอายุ (60 ปีขึ้นไป)</h2><p>กลุ่มตามความสามารถในการทำกิจวัตรประจำวัน (ADL) ใช้ผลคัดกรองล่าสุดในปีงบที่เลือก</p></div>
+    <div class="grid">
+      <div class="card c4" id="oldSum"></div>
+      <div class="card c4"><h3>ช่วงอายุ</h3><div id="oldAge" style="display:flex;flex-direction:column;gap:10px"></div></div>
+      <div class="card c4"><h3>กลุ่ม ADL รายหมู่บ้าน</h3><div class="tbl-wrap"><table id="adlTbl"></table></div></div>
+    </div>
+  </section>
+
+  <section id="pp">
+    <div class="sh"><h2>งานส่งเสริมสุขภาพและป้องกันโรค</h2><p>จำนวนคน (ไม่นับซ้ำ) ต่อปีงบประมาณ ยกเว้นที่ระบุว่าเป็นครั้งหรือเข็ม</p></div>
+    <div class="card"><div class="tbl-wrap"><table id="ppTbl"></table></div></div>
+  </section>
+
+  <section id="death">
+    <div class="sh"><h2>การตายและสาเหตุ</h2><p>จัดกลุ่มจากรหัสสาเหตุการตายหลัก (ICD-10) ตามวันที่ตาย</p></div>
+    <div class="grid">
+      <div class="card c6"><h3>จำนวนผู้เสียชีวิตรายปีงบ</h3><div id="dChart"></div></div>
+      <div class="card c6"><h3 id="dCauseTitle">สาเหตุ</h3><div class="dx-list" id="dCause"></div></div>
+    </div>
+  </section>
+
+  <footer>ที่มา: ฐานข้อมูล JHCIS ของ รพ.สต.บ้านดงสวนพัฒนา ข้อมูลถึง <span id="asof2"></span> · แสดงเฉพาะตัวเลขรวม ไม่มีข้อมูลระบุตัวบุคคล · ปีงบที่ยังไม่ครบปี (*) เป็นยอดสะสมถึงวันที่ข้อมูล</footer>
+</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+const D = {"meta":{"hoscode":"05395","name":"รพ.สต.บ้านดงสวนพัฒนา","place":"ต.นาทัน อ.คำม่วง จ.กาฬสินธุ์","data_date":"2026-10-12","cur_fy":2570,"default_fy":2570,"fys":[2566,2567,2568,2569,2570],"note":"นับประชากรเป้าหมาย typelive 1,3 ที่ยังไม่จำหน่าย; ปีงบประมาณ ต.ค.–ก.ย."},"population":{"total":2458,"pyramid":[{"band":"0-4","male":61,"female":55},{"band":"5-9","male":85,"female":72},{"band":"10-14","male":118,"female":102},{"band":"15-19","male":121,"female":98},{"band":"20-24","male":82,"female":71},{"band":"25-29","male":65,"female":54},{"band":"30-34","male":72,"female":71},{"band":"35-39","male":74,"female":71},{"band":"40-44","male":71,"female":86},{"band":"45-49","male":92,"female":80},{"band":"50-54","male":91,"female":111},{"band":"55-59","male":94,"female":100},{"band":"60-64","male":79,"female":82},{"band":"65-69","male":48,"female":57},{"band":"70-74","male":29,"female":44},{"band":"75-79","male":23,"female":31},{"band":"80+","male":21,"female":47}],"pyramid_by_village":{"ม.7 ดงสวนพัฒนา":[{"band":"0-4","male":25,"female":21},{"band":"5-9","male":30,"female":26},{"band":"10-14","male":57,"female":37},{"band":"15-19","male":50,"female":40},{"band":"20-24","male":37,"female":26},{"band":"25-29","male":28,"female":15},{"band":"30-34","male":22,"female":26},{"band":"35-39","male":22,"female":20},{"band":"40-44","male":31,"female":29},{"band":"45-49","male":37,"female":28},{"band":"50-54","male":34,"female":41},{"band":"55-59","male":31,"female":33},{"band":"60-64","male":34,"female":36},{"band":"65-69","male":22,"female":20},{"band":"70-74","male":10,"female":16},{"band":"75-79","male":8,"female":17},{"band":"80+","male":12,"female":20}],"ม.10 สร้างแข้":[{"band":"0-4","male":8,"female":5},{"band":"5-9","male":9,"female":9},{"band":"10-14","male":13,"female":15},{"band":"15-19","male":24,"female":9},{"band":"20-24","male":9,"female":10},{"band":"25-29","male":5,"female":9},{"band":"30-34","male":7,"female":16},{"band":"35-39","male":8,"female":13},{"band":"40-44","male":10,"female":11},{"band":"45-49","male":16,"female":7},{"band":"50-54","male":10,"female":15},{"band":"55-59","male":16,"female":17},{"band":"60-64","male":17,"female":12},{"band":"65-69","male":7,"female":10},{"band":"70-74","male":5,"female":7},{"band":"75-79","male":4,"female":7},{"band":"80+","male":3,"female":6}],"ม.15 ดงสวนพัฒนาใต้":[{"band":"0-4","male":28,"female":29},{"band":"5-9","male":46,"female":37},{"band":"10-14","male":48,"female":50},{"band":"15-19","male":47,"female":49},{"band":"20-24","male":36,"female":35},{"band":"25-29","male":32,"female":30},{"band":"30-34","male":43,"female":29},{"band":"35-39","male":44,"female":38},{"band":"40-44","male":30,"female":46},{"band":"45-49","male":39,"female":45},{"band":"50-54","male":47,"female":55},{"band":"55-59","male":47,"female":50},{"band":"60-64","male":28,"female":34},{"band":"65-69","male":19,"female":27},{"band":"70-74","male":14,"female":21},{"band":"75-79","male":11,"female":7},{"band":"80+","male":6,"female":21}]},"by_village":[{"village":"ม.7 ดงสวนพัฒนา","pop":941,"male":490,"female":451,"g0_14":196,"g15_59":550,"g60":195,"houses":356},{"village":"ม.10 สร้างแข้","pop":349,"male":171,"female":178,"g0_14":59,"g15_59":212,"g60":78,"houses":130},{"village":"ม.15 ดงสวนพัฒนาใต้","pop":1168,"male":565,"female":603,"g0_14":238,"g15_59":742,"g60":188,"houses":421}],"groups":{"15-59":1504,"60+":461,"0-14":493}},"visits_monthly":[{"month":"2022-10","fy":2566,"visits":931,"persons":711},{"month":"2022-11","fy":2566,"visits":900,"persons":641},{"month":"2022-12","fy":2566,"visits":686,"persons":518},{"month":"2023-01","fy":2566,"visits":1234,"persons":898},{"month":"2023-02","fy":2566,"visits":510,"persons":369},{"month":"2023-03","fy":2566,"visits":548,"persons":355},{"month":"2023-04","fy":2566,"visits":668,"persons":432},{"month":"2023-05","fy":2566,"visits":515,"persons":371},{"month":"2023-06","fy":2566,"visits":1074,"persons":755},{"month":"2023-07","fy":2566,"visits":1046,"persons":731},{"month":"2023-08","fy":2566,"visits":613,"persons":409},{"month":"2023-09","fy":2566,"visits":628,"persons":436},{"month":"2023-10","fy":2567,"visits":579,"persons":407},{"month":"2023-11","fy":2567,"visits":907,"persons":721},{"month":"2023-12","fy":2567,"visits":968,"persons":758},{"month":"2024-01","fy":2567,"visits":851,"persons":604},{"month":"2024-02","fy":2567,"visits":555,"persons":394},{"month":"2024-03","fy":2567,"visits":501,"persons":344},{"month":"2024-04","fy":2567,"visits":869,"persons":606},{"month":"2024-05","fy":2567,"visits":588,"persons":406},{"month":"2024-06","fy":2567,"visits":1172,"persons":815},{"month":"2024-07","fy":2567,"visits":885,"persons":579},{"month":"2024-08","fy":2567,"visits":586,"persons":401},{"month":"2024-09","fy":2567,"visits":622,"persons":416},{"month":"2024-10","fy":2568,"visits":618,"persons":438},{"month":"2024-11","fy":2568,"visits":478,"persons":337},{"month":"2024-12","fy":2568,"visits":1016,"persons":778},{"month":"2025-01","fy":2568,"visits":711,"persons":479},{"month":"2025-02","fy":2568,"visits":704,"persons":511},{"month":"2025-03","fy":2568,"visits":1569,"persons":1298},{"month":"2025-04","fy":2568,"visits":938,"persons":700},{"month":"2025-05","fy":2568,"visits":787,"persons":534},{"month":"2025-06","fy":2568,"visits":1003,"persons":726},{"month":"2025-07","fy":2568,"visits":983,"persons":778},{"month":"2025-08","fy":2568,"visits":546,"persons":377},{"month":"2025-09","fy":2568,"visits":595,"persons":434},{"month":"2025-10","fy":2569,"visits":641,"persons":427},{"month":"2025-11","fy":2569,"visits":1155,"persons":939},{"month":"2025-12","fy":2569,"visits":1282,"persons":994},{"month":"2026-01","fy":2569,"visits":1167,"persons":795},{"month":"2026-02","fy":2569,"visits":781,"persons":533},{"month":"2026-03","fy":2569,"visits":1032,"persons":805},{"month":"2026-04","fy":2569,"visits":587,"persons":402},{"month":"2026-05","fy":2569,"visits":564,"persons":348},{"month":"2026-06","fy":2569,"visits":1102,"persons":716},{"month":"2026-07","fy":2569,"visits":1383,"persons":764},{"month":"2026-08","fy":2569,"visits":915,"persons":632},{"month":"2026-09","fy":2569,"visits":913,"persons":613},{"month":"2026-10","fy":2570,"visits":163,"persons":134}],"visits_fy":[{"fy":2566,"visits":9353,"persons":2182,"outreach":2696},{"fy":2567,"visits":9083,"persons":2091,"outreach":2719},{"fy":2568,"visits":9948,"persons":2516,"outreach":3341},{"fy":2569,"visits":11522,"persons":2525,"outreach":3520},{"fy":2570,"visits":163,"persons":134,"outreach":0}],"top_dx":{"2566":[{"code":"J00","name":"คอหอยส่วนจมูกอักเสบเฉียบพลัน (ไข้หวัด)","n":975},{"code":"M79.1","name":"ปวดกล้ามเนื้อ","n":678},{"code":"K30","name":"อาหารไม่ย่อย","n":269},{"code":"M79.11","name":"ปวดกล้ามเนื้อ บริเวณไหล่","n":212},{"code":"M54.5","name":"ปวดหลังส่วนล่าง","n":172},{"code":"M79.15","name":"ปวดกล้ามเนื้อ บริเวณเชิงกรานและต้นขา","n":167},{"code":"L30.9","name":"ผิวหนังอักเสบ ไม่ระบุรายละเอียด","n":114},{"code":"E11.9","name":"เบาหวานชนิดที่ไม่ต้องพึ่งอินซูลิน ไม่มีภาวะแทรกซ้อน","n":107},{"code":"K52.9","name":"กระเพาะอาหารกับลำไส้เล็กอักเสบและลำไส้ใหญ่อักเสบที่ไม่ติดเชื้อ ไม่ระบุรายละเอียด","n":105},{"code":"I10","name":"ความดันโลหิตสูงไม่ทราบสาเหตุ (ปฐมภูมิ)","n":103},{"code":"L50.9","name":"ลมพิษ ไม่ระบุรายละเอียด","n":102},{"code":"H10.3","name":"เยื่อตาอักเสบเฉียบพลัน ไม่ระบุรายละเอียด","n":100},{"code":"M79.16","name":"ปวดกล้ามเนื้อ ขาท่อนปลาย","n":93},{"code":"F20.9","name":"โรคจิตเภท ไม่ระบุรายละเอียด","n":83},{"code":"R42","name":"เวียนศีรษะ","n":66}],"2567":[{"code":"J00","name":"คอหอยส่วนจมูกอักเสบเฉียบพลัน (ไข้หวัด)","n":980},{"code":"M79.1","name":"ปวดกล้ามเนื้อ","n":554},{"code":"K30","name":"อาหารไม่ย่อย","n":318},{"code":"I10","name":"ความดันโลหิตสูงไม่ทราบสาเหตุ (ปฐมภูมิ)","n":173},{"code":"L50.9","name":"ลมพิษ ไม่ระบุรายละเอียด","n":149},{"code":"H10.3","name":"เยื่อตาอักเสบเฉียบพลัน ไม่ระบุรายละเอียด","n":131},{"code":"E11.9","name":"เบาหวานชนิดที่ไม่ต้องพึ่งอินซูลิน ไม่มีภาวะแทรกซ้อน","n":127},{"code":"F20.9","name":"โรคจิตเภท ไม่ระบุรายละเอียด","n":122},{"code":"K52.9","name":"กระเพาะอาหารกับลำไส้เล็กอักเสบและลำไส้ใหญ่อักเสบที่ไม่ติดเชื้อ ไม่ระบุรายละเอียด","n":83},{"code":"L30.9","name":"ผิวหนังอักเสบ ไม่ระบุรายละเอียด","n":73},{"code":"R42","name":"เวียนศีรษะ","n":65},{"code":"M79.11","name":"ปวดกล้ามเนื้อ บริเวณไหล่","n":59},{"code":"R05","name":"ไอ","n":57},{"code":"M62.69","name":"กล้ามเนื้อเคล็ด  ไม่ระบุตำแหน่ง","n":55},{"code":"R50.9","name":"ไข้ ไม่ระบุรายละเอียด","n":49}],"2568":[{"code":"J00","name":"คอหอยส่วนจมูกอักเสบเฉียบพลัน (ไข้หวัด)","n":1169},{"code":"M79.1","name":"ปวดกล้ามเนื้อ","n":568},{"code":"K30","name":"อาหารไม่ย่อย","n":335},{"code":"F20.9","name":"โรคจิตเภท ไม่ระบุรายละเอียด","n":142},{"code":"A09.9","name":"กระเพาะอาหารกับลำไส้อักเสบ และลำไส้อักเสบจากสาเหตุที่ไม่ระบุรายละเอียด","n":140},{"code":"I10","name":"ความดันโลหิตสูงไม่ทราบสาเหตุ (ปฐมภูมิ)","n":126},{"code":"H10.3","name":"เยื่อตาอักเสบเฉียบพลัน ไม่ระบุรายละเอียด","n":126},{"code":"E11.9","name":"เบาหวานชนิดที่ไม่ต้องพึ่งอินซูลิน ไม่มีภาวะแทรกซ้อน","n":119},{"code":"L50.9","name":"ลมพิษ ไม่ระบุรายละเอียด","n":106},{"code":"L30.9","name":"ผิวหนังอักเสบ ไม่ระบุรายละเอียด","n":96},{"code":"R05","name":"ไอ","n":75},{"code":"M79.16","name":"ปวดกล้ามเนื้อ ขาท่อนปลาย","n":70},{"code":"B36.9","name":"โรคติดเชื้อราที่ผิว ไม่ระบุรายละเอียด","n":66},{"code":"R42","name":"เวียนศีรษะ","n":63},{"code":"M79.11","name":"ปวดกล้ามเนื้อ บริเวณไหล่","n":62}],"2569":[{"code":"J00","name":"คอหอยส่วนจมูกอักเสบเฉียบพลัน (ไข้หวัด)","n":974},{"code":"M79.1","name":"ปวดกล้ามเนื้อ","n":377},{"code":"K30","name":"อาหารไม่ย่อย","n":348},{"code":"M17.9","name":"ข้อเข่าเสื่อม ไม่ระบุรายละเอียด","n":312},{"code":"M79.11","name":"ปวดกล้ามเนื้อ บริเวณไหล่","n":219},{"code":"L30.9","name":"ผิวหนังอักเสบ ไม่ระบุรายละเอียด","n":143},{"code":"F20.9","name":"โรคจิตเภท ไม่ระบุรายละเอียด","n":135},{"code":"H10.3","name":"เยื่อตาอักเสบเฉียบพลัน ไม่ระบุรายละเอียด","n":130},{"code":"A09.9","name":"กระเพาะอาหารกับลำไส้อักเสบ และลำไส้อักเสบจากสาเหตุที่ไม่ระบุรายละเอียด","n":120},{"code":"M54.56","name":"ปวดหลังส่วนล่าง บริเวณเอว","n":111},{"code":"K02.0","name":"ฟันผุที่จำกัดเฉพาะเคลือบฟัน","n":109},{"code":"L50.9","name":"ลมพิษ ไม่ระบุรายละเอียด","n":105},{"code":"I10","name":"ความดันโลหิตสูงไม่ทราบสาเหตุ (ปฐมภูมิ)","n":76},{"code":"K06.0","name":"เหงือกร่น","n":66},{"code":"R42","name":"เวียนศีรษะ","n":61}],"2570":[{"code":"J00","name":"คอหอยส่วนจมูกอักเสบเฉียบพลัน (ไข้หวัด)","n":33},{"code":"M79.1","name":"ปวดกล้ามเนื้อ","n":14},{"code":"K30","name":"อาหารไม่ย่อย","n":9},{"code":"H10.3","name":"เยื่อตาอักเสบเฉียบพลัน ไม่ระบุรายละเอียด","n":7},{"code":"F20.9","name":"โรคจิตเภท ไม่ระบุรายละเอียด","n":6},{"code":"L30.9","name":"ผิวหนังอักเสบ ไม่ระบุรายละเอียด","n":5},{"code":"R42","name":"เวียนศีรษะ","n":5},{"code":"J03.9","name":"ทอนซิลอักเสบเฉียบพลัน ไม่ระบุรายละเอียด","n":4},{"code":"B36.9","name":"โรคติดเชื้อราที่ผิว ไม่ระบุรายละเอียด","n":3},{"code":"T63.4","name":"พิษสัตว์ขาปล้องอื่น","n":3},{"code":"M79.11","name":"ปวดกล้ามเนื้อ บริเวณไหล่","n":3},{"code":"R63.0","name":"เบื่ออาหาร","n":2},{"code":"K08.80","name":"ปวดฟัน NOS","n":2},{"code":"L08.9","name":"การติดเชื้อเฉพาะที่ของผิวหนังและเนื้อเยื่อใต้ผิวหนัง ไม่ระบุรายละเอียด","n":2},{"code":"B37.3","name":"โรคติดเชื้อราแคนดิตาที่อวัยวะสืบพันธุ์สตรีภายนอกและช่องคลอด","n":2}]},"chronic":{"totals":{"DM":174,"HT":309,"COPD/หอบหืด":40,"CKD":4,"วัณโรค":1,"หัวใจขาดเลือด":1,"หลอดเลือดสมอง":1},"ht_dm_both":140,"any":374,"by_village":{"ม.15 ดงสวนพัฒนาใต้":{"DM":87,"HT":145,"COPD/หอบหืด":14,"CKD":3,"วัณโรค":1},"ม.7 ดงสวนพัฒนา":{"HT":126,"DM":69,"COPD/หอบหืด":15,"หลอดเลือดสมอง":1,"CKD":1},"ม.10 สร้างแข้":{"HT":38,"COPD/หอบหืด":11,"DM":18,"หัวใจขาดเลือด":1}}},"control":{"2566":{"ht":{"patients":309,"measured":283,"controlled":251},"dm":{"patients":174,"measured":67,"controlled":34}},"2567":{"ht":{"patients":309,"measured":277,"controlled":222},"dm":{"patients":174,"measured":78,"controlled":36}},"2568":{"ht":{"patients":309,"measured":291,"controlled":227},"dm":{"patients":174,"measured":46,"controlled":18}},"2569":{"ht":{"patients":309,"measured":289,"controlled":267},"dm":{"patients":174,"measured":47,"controlled":32}},"2570":{"ht":{"patients":309,"measured":18,"controlled":16},"dm":{"patients":174,"measured":0,"controlled":0}}},"elderly":{"total":461,"by_age":{"60-69":266,"70-79":127,"80+":68},"chronic_ht":185,"chronic_dm":106,"by_fy":{"2566":{"adl_screened":269,"adl":{"ติดสังคม":264,"ติดบ้าน":5},"adl_by_village":{"ม.7 ดงสวนพัฒนา":{"ติดสังคม":100},"ม.10 สร้างแข้":{"ติดสังคม":50},"ม.15 ดงสวนพัฒนาใต้":{"ติดสังคม":114,"ติดบ้าน":5}},"dep2q_screened":353,"dep2q_positive":4},"2567":{"adl_screened":368,"adl":{"ติดสังคม":341,"ติดบ้าน":26,"ติดเตียง":1},"adl_by_village":{"ม.7 ดงสวนพัฒนา":{"ติดบ้าน":10,"ติดสังคม":146},"ม.10 สร้างแข้":{"ติดสังคม":58,"ติดบ้าน":5},"ม.15 ดงสวนพัฒนาใต้":{"ติดสังคม":137,"ติดบ้าน":11,"ติดเตียง":1}},"dep2q_screened":370,"dep2q_positive":18},"2568":{"adl_screened":316,"adl":{"ติดสังคม":312,"ติดบ้าน":3,"ติดเตียง":1},"adl_by_village":{"ม.7 ดงสวนพัฒนา":{"ติดสังคม":136,"ติดบ้าน":2},"ม.10 สร้างแข้":{"ติดสังคม":60},"ม.15 ดงสวนพัฒนาใต้":{"ติดสังคม":116,"ติดบ้าน":1,"ติดเตียง":1}},"dep2q_screened":323,"dep2q_positive":0},"2569":{"adl_screened":432,"adl":{"ติดสังคม":423,"ติดบ้าน":9},"adl_by_village":{"ม.7 ดงสวนพัฒนา":{"ติดสังคม":178,"ติดบ้าน":4},"ม.10 สร้างแข้":{"ติดสังคม":76},"ม.15 ดงสวนพัฒนาใต้":{"ติดสังคม":169,"ติดบ้าน":5}},"dep2q_screened":433,"dep2q_positive":0},"2570":{"adl_screened":0,"adl":{},"adl_by_village":{"ม.7 ดงสวนพัฒนา":{},"ม.10 สร้างแข้":{},"ม.15 ดงสวนพัฒนาใต้":{}},"dep2q_screened":0,"dep2q_positive":0}}},"programs":[{"fy":2566,"ncd_screen":612,"ncd_screen_target35":518,"cancer_screen":49,"anc_persons":26,"deliveries":18,"epi_doses":1163,"epi_persons":505,"fp_persons":126,"dental_persons":345},{"fy":2567,"ncd_screen":789,"ncd_screen_target35":631,"cancer_screen":8,"anc_persons":15,"deliveries":16,"epi_doses":1032,"epi_persons":485,"fp_persons":144,"dental_persons":400},{"fy":2568,"ncd_screen":1313,"ncd_screen_target35":1074,"cancer_screen":582,"anc_persons":16,"deliveries":8,"epi_doses":848,"epi_persons":459,"fp_persons":117,"dental_persons":391},{"fy":2569,"ncd_screen":1367,"ncd_screen_target35":1154,"cancer_screen":632,"anc_persons":13,"deliveries":14,"epi_doses":757,"epi_persons":408,"fp_persons":112,"dental_persons":962},{"fy":2570,"ncd_screen":0,"ncd_screen_target35":0,"cancer_screen":0,"anc_persons":0,"deliveries":0,"epi_doses":28,"epi_persons":12,"fp_persons":8,"dental_persons":9}],"deaths":[{"fy":2566,"total":25,"หัวใจ/หลอดเลือด":16,"ไต":2,"มะเร็ง":1,"อื่นๆ":2,"อุบัติเหตุ/ภายนอก":1,"ติดเชื้อ":1,"ทางเดินหายใจ":1,"ชราภาพ/ไม่ทราบ":1},{"fy":2567,"total":24,"มะเร็ง":3,"อุบัติเหตุ/ภายนอก":5,"หัวใจ/หลอดเลือด":12,"ติดเชื้อ":2,"ทางเดินหายใจ":1,"ไต":1},{"fy":2568,"total":29,"มะเร็ง":5,"อื่นๆ":2,"หัวใจ/หลอดเลือด":14,"ไต":3,"ติดเชื้อ":2,"ทางเดินหายใจ":3},{"fy":2569,"total":34,"มะเร็ง":8,"หัวใจ/หลอดเลือด":20,"เบาหวาน/ต่อมไร้ท่อ":2,"ทางเดินหายใจ":1,"ติดเชื้อ":1,"อุบัติเหตุ/ภายนอก":1,"ไต":1},{"fy":2570,"total":1,"เบาหวาน/ต่อมไร้ท่อ":1}],"screening":{"meta":{"data_date":"2026-10-12","cur_fy":2570,"fys":[2567,2568,2569,2570],"goal_dmht":0.9,"goal_q2":0.8,"note":"ประชากรเป้าหมาย typelive 1,3 ยังไม่จำหน่าย ม.7/10/15; อายุ ณ วันเริ่มปีงบ"},"by_fy":{"2567":{"by_village":[{"moo":"ม.7 ดงสวนพัฒนา","dmht_target":421,"dmht_screened":230,"overall":{"ok":59,"warn":103,"bad":68},"bp":{"ok":82,"warn":92,"bad":56},"sugar":{"ok":156,"warn":59,"bad":14},"need":{"DM+HT":347,"DM":62,"HT":12},"q2_target":683,"q2_screened":157,"q2_positive":6},{"moo":"ม.10 สร้างแข้","dmht_target":180,"dmht_screened":136,"overall":{"ok":34,"warn":79,"bad":23},"bp":{"ok":38,"warn":78,"bad":20},"sugar":{"ok":111,"warn":21,"bad":4},"need":{"DM+HT":151,"DM":24,"HT":5},"q2_target":267,"q2_screened":63,"q2_positive":1},{"moo":"ม.15 ดงสวนพัฒนาใต้","dmht_target":505,"dmht_screened":209,"overall":{"ok":41,"warn":106,"bad":62},"bp":{"ok":50,"warn":103,"bad":56},"sugar":{"ok":162,"warn":35,"bad":12},"need":{"DM+HT":425,"DM":67,"HT":13},"q2_target":871,"q2_screened":150,"q2_positive":9}],"total":{"dmht_target":1106,"dmht_screened":575,"overall":{"ok":134,"warn":288,"bad":153},"bp":{"ok":170,"warn":273,"bad":132},"sugar":{"ok":429,"warn":115,"bad":30},"q2_target":1821,"q2_screened":370,"q2_positive":16}},"2568":{"by_village":[{"moo":"ม.7 ดงสวนพัฒนา","dmht_target":429,"dmht_screened":386,"overall":{"ok":163,"warn":180,"bad":43},"bp":{"ok":172,"warn":177,"bad":37},"sugar":{"ok":347,"warn":32,"bad":6},"need":{"DM+HT":355,"DM":62,"HT":12},"q2_target":703,"q2_screened":144,"q2_positive":0},{"moo":"ม.10 สร้างแข้","dmht_target":182,"dmht_screened":169,"overall":{"ok":68,"warn":82,"bad":19},"bp":{"ok":73,"warn":77,"bad":19},"sugar":{"ok":156,"warn":10,"bad":3},"need":{"DM+HT":153,"DM":24,"HT":5},"q2_target":273,"q2_screened":63,"q2_positive":0},{"moo":"ม.15 ดงสวนพัฒนาใต้","dmht_target":524,"dmht_screened":476,"overall":{"ok":235,"warn":187,"bad":54},"bp":{"ok":243,"warn":186,"bad":47},"sugar":{"ok":434,"warn":32,"bad":10},"need":{"DM+HT":444,"DM":67,"HT":13},"q2_target":889,"q2_screened":125,"q2_positive":0}],"total":{"dmht_target":1135,"dmht_screened":1031,"overall":{"ok":466,"warn":449,"bad":116},"bp":{"ok":488,"warn":440,"bad":103},"sugar":{"ok":937,"warn":74,"bad":19},"q2_target":1865,"q2_screened":332,"q2_positive":0}},"2569":{"by_village":[{"moo":"ม.7 ดงสวนพัฒนา","dmht_target":439,"dmht_screened":428,"overall":{"ok":131,"warn":226,"bad":71},"bp":{"ok":156,"warn":218,"bad":54},"sugar":{"ok":338,"warn":65,"bad":25},"need":{"DM+HT":365,"DM":62,"HT":12},"q2_target":726,"q2_screened":185,"q2_positive":0},{"moo":"ม.10 สร้างแข้","dmht_target":186,"dmht_screened":179,"overall":{"ok":53,"warn":115,"bad":11},"bp":{"ok":58,"warn":111,"bad":10},"sugar":{"ok":145,"warn":33,"bad":1},"need":{"DM+HT":157,"DM":24,"HT":5},"q2_target":281,"q2_screened":79,"q2_positive":0},{"moo":"ม.15 ดงสวนพัฒนาใต้","dmht_target":542,"dmht_screened":514,"overall":{"ok":180,"warn":276,"bad":58},"bp":{"ok":191,"warn":276,"bad":47},"sugar":{"ok":445,"warn":50,"bad":18},"need":{"DM+HT":462,"DM":67,"HT":13},"q2_target":911,"q2_screened":177,"q2_positive":0}],"total":{"dmht_target":1167,"dmht_screened":1121,"overall":{"ok":364,"warn":617,"bad":140},"bp":{"ok":405,"warn":605,"bad":111},"sugar":{"ok":928,"warn":148,"bad":44},"q2_target":1918,"q2_screened":441,"q2_positive":0}},"2570":{"by_village":[{"moo":"ม.7 ดงสวนพัฒนา","dmht_target":446,"dmht_screened":0,"overall":{"ok":0,"warn":0,"bad":0},"bp":{"ok":0,"warn":0,"bad":0},"sugar":{"ok":0,"warn":0,"bad":0},"need":{"DM+HT":371,"DM":63,"HT":12},"q2_target":744,"q2_screened":0,"q2_positive":0},{"moo":"ม.10 สร้างแข้","dmht_target":188,"dmht_screened":0,"overall":{"ok":0,"warn":0,"bad":0},"bp":{"ok":0,"warn":0,"bad":0},"sugar":{"ok":0,"warn":0,"bad":0},"need":{"DM+HT":159,"DM":24,"HT":5},"q2_target":289,"q2_screened":0,"q2_positive":0},{"moo":"ม.15 ดงสวนพัฒนาใต้","dmht_target":562,"dmht_screened":0,"overall":{"ok":0,"warn":0,"bad":0},"bp":{"ok":0,"warn":0,"bad":0},"sugar":{"ok":0,"warn":0,"bad":0},"need":{"DM+HT":481,"DM":68,"HT":13},"q2_target":930,"q2_screened":0,"q2_positive":0}],"total":{"dmht_target":1196,"dmht_screened":0,"overall":{"ok":0,"warn":0,"bad":0},"bp":{"ok":0,"warn":0,"bad":0},"sugar":{"ok":0,"warn":0,"bad":0},"q2_target":1963,"q2_screened":0,"q2_positive":0}}}},"kpi":{"meta":{"data_date":"2026-10-12","cur_fy":2570,"fys":[2566,2567,2568,2569,2570],"groups":[{"name":"HDC","nos":["1","2","3","4","5","6","7","8","9","10"]},{"name":"HDC (Workload)","nos":["11","12","13","14","15","16.1","16.2","16.3","16.4","17"]}]},"by_fy":{"2566":[{"no":"1","name":"ร้อยละหญิงตั้งครรภ์ที่ได้รับการดูแลก่อนคลอด 5 ครั้ง ตามเกณฑ์","target":16,"result":7,"pct":43.75,"goal":75,"status":"fail","unit":"คน","note":"หญิงคลอดในปีงบ มีฝากครรภ์ครบ 5 ช่วงอายุครรภ์ (≤12, 13–20, 21–26, 27–32, 33–40 สัปดาห์)"},{"no":"2","name":"ร้อยละของหญิงหลังคลอดได้รับการดูแลครบ 3 ครั้งตามเกณฑ์","target":16,"result":15,"pct":93.75,"goal":75,"status":"pass","unit":"คน","note":"หญิงคลอดในปีงบ (ครบ 42 วันแล้ว) ได้รับการดูแลหลังคลอดวันที่ 1–7, 8–15 และ 16–42"},{"no":"3","name":"ร้อยละหญิงตั้งครรภ์ได้รับการฝากครรภ์ครั้งแรกก่อนหรือเท่ากับ 12 สัปดาห์","target":16,"result":8,"pct":50.0,"goal":75,"status":"fail","unit":"คน","note":"หญิงคลอดในปีงบ ที่มีการฝากครรภ์ขณะอายุครรภ์ ≤12 สัปดาห์"},{"no":"4","name":"ร้อยละของประชากรอายุ 35 ปีขึ้นไปที่ได้รับการคัดกรองเพื่อวินิจฉัยเบาหวาน","target":1052,"result":441,"pct":41.92,"goal":90,"status":"fail","unit":"คน","note":"อายุ 35+ ณ 1 ต.ค. ไม่อยู่ในทะเบียนเบาหวาน ได้ตรวจน้ำตาลในแบบคัดกรอง NCD"},{"no":"5","name":"ร้อยละของประชากรอายุ 35 ปีขึ้นไปที่ได้รับการคัดกรองเพื่อวินิจฉัยความดันโลหิตสูง","target":930,"result":362,"pct":38.92,"goal":90,"status":"fail","unit":"คน","note":"อายุ 35+ ณ 1 ต.ค. ไม่อยู่ในทะเบียนความดันฯ ได้วัดความดันในแบบคัดกรอง NCD"},{"no":"6","name":"ร้อยละของประชากรกลุ่มเป้าหมายได้รับการคัดกรองมะเร็งลำไส้ใหญ่และลำไส้ตรง","target":584,"result":32,"pct":5.48,"goal":50,"status":"fail","unit":"คน","note":"อายุ 50–70 ปี ได้ตรวจคัดกรอง (รหัส 1B0060/1B0061 เช่น FIT test)"},{"no":"7","name":"จำนวนผู้รับบริการวัคซีนไข้หวัดใหญ่ประจำปี (work load)","target":null,"result":200,"pct":null,"goal":null,"status":"workload","unit":"คน","note":"จำนวนคนที่ได้รับวัคซีน FLU ในปีงบ (รวมคนนอกเขต)"},{"no":"8","name":"การให้บริการ เคลือบ/ทา ฟลูออไรด์(ครั้ง)ในประชาชน กลุ่มก่อนวัยสูงอายุ (40-59 ปี)","target":null,"result":0,"pct":null,"goal":null,"status":"wait","unit":"ครั้ง","note":"จำนวนครั้งที่เคลือบ/ทาฟลูออไรด์ ในคนในเขตอายุ 40–59 ปี"},{"no":"9","name":"ร้อยละการตรวจติดตามยืนยันวินิจฉัยกลุ่มสงสัยป่วยโรคเบาหวาน","target":18,"result":4,"pct":22.22,"goal":70,"status":"fail","unit":"คน","note":"สงสัยป่วยจากการคัดกรอง (FBS ≥126 หรือ ไม่อดอาหาร ≥200) แล้วมีผลตรวจน้ำตาลซ้ำที่ รพ.สต. ภายใน 90 วัน หรือขึ้นทะเบียนเบาหวาน (ผลตรวจยืนยันที่โรงพยาบาลไม่อยู่ใน JHCIS)"},{"no":"10","name":"ร้อยละการตรวจติดตามยืนยันวินิจฉัยกลุ่มสงสัยป่วยโรคความดันโลหิตสูง","target":55,"result":26,"pct":47.27,"goal":93,"status":"fail","unit":"คน","note":"สงสัยป่วยจากการคัดกรอง (≥140/90) แล้วมีการวัดความดันซ้ำภายใน 90 วัน หรือขึ้นทะเบียนความดันฯ (ไม่รวมการวัดที่บ้านที่ไม่ได้บันทึกใน JHCIS)"},{"no":"11","name":"ร้อยละของเด็ก 0-5 ปี ที่ได้รับการตรวจพัฒนาการทั้งหมด (คน)","target":149,"result":133,"pct":89.26,"goal":90,"status":"fail","unit":"คน","note":"เด็กในเขตที่อายุครบ 9, 18, 30, 42, 60 เดือนในปีงบ ได้ตรวจคัดกรองพัฒนาการ DSPM ในเดือนอายุนั้น"},{"no":"12","name":"ร้อยละของเด็กอายุ 6 - 14 ปี สูงดีสมส่วน และส่วนสูงเฉลี่ยที่อายุ 12 ปี","target":null,"result":null,"pct":null,"goal":66,"status":"na","unit":"คน","note":"ยังคำนวณไม่ได้: ต้องใช้เกณฑ์อ้างอิงการเจริญเติบโตของกรมอนามัย (ส่วนสูงตามอายุ น้ำหนักตามส่วนสูง) ซึ่งไม่มีใน JHCIS"},{"no":"13","name":"ร้อยละเด็กอายุ 4-12 ปี ได้รับการ เคลือบ/ทา ฟลูออไรด์เฉพาะเขตรับผิดชอบ (คน)","target":385,"result":6,"pct":1.56,"goal":null,"status":"workload","unit":"คน","note":"เด็กในเขตอายุ 4–12 ปี ได้เคลือบ/ทาฟลูออไรด์ในปีงบ"},{"no":"14","name":"ร้อยละเด็กอายุ 6-12 ปี ได้รับการ เคลือบหลุมร่องฟันกรามแท้ เฉพาะเขตรับผิดชอบ (คน)","target":318,"result":0,"pct":0.0,"goal":null,"status":"workload","unit":"คน","note":"เด็กในเขตอายุ 6–12 ปี ได้เคลือบหลุมร่องฟันแท้ (รหัส 2387030/238703x)"},{"no":"15","name":"ร้อยละการคัดกรองโรคซึมเศร้า (2Q) ในกลุ่มผู้สูงอายุ","target":325,"result":280,"pct":86.15,"goal":90,"status":"fail","unit":"คน","note":"ผู้สูงอายุในเขต 60+ ได้คัดกรอง 2Q ในปีงบ"},{"no":"16.1","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 1 ปี (fully immunized)","target":29,"result":28,"pct":96.55,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 1 ปีในปีงบ ได้รับ BCG, D21, D22, D23, HBV1, MMR, OPV3 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.2","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 2 ปี (fully immunized)","target":25,"result":24,"pct":96.0,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 2 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, HBV1, J11, MMR, OPV3, OPV4 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.3","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 3 ปี (fully immunized)","target":31,"result":26,"pct":83.87,"goal":90,"status":"fail","unit":"คน","note":"เด็กในเขตที่อายุครบ 3 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, HBV1, J11, J12, MMR, MMR2, OPV3, OPV4 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.4","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 5 ปี (fully immunized)","target":34,"result":2,"pct":5.88,"goal":90,"status":"fail","unit":"คน","note":"เด็กในเขตที่อายุครบ 5 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, DTP5, HBV1, J11, J12, MMR, MMR2, OPV3, OPV4, OPV5 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"17","name":"ร้อยละของผู้ป่วยนอกที่มารับบริการในระดับปฐมภูมิได้รับการรักษาด้วยการแพทย์แผนไทยและการแพทย์ทางเลือก","target":6570,"result":1606,"pct":24.44,"goal":35,"status":"fail","unit":"ครั้ง","note":"ครั้งบริการผู้ป่วยนอกที่ได้รับวินิจฉัยรหัส U, ยาสมุนไพร หรือหัตถการแผนไทย ÷ ครั้งบริการผู้ป่วยนอกทั้งหมด"}],"2567":[{"no":"1","name":"ร้อยละหญิงตั้งครรภ์ที่ได้รับการดูแลก่อนคลอด 5 ครั้ง ตามเกณฑ์","target":13,"result":3,"pct":23.08,"goal":75,"status":"fail","unit":"คน","note":"หญิงคลอดในปีงบ มีฝากครรภ์ครบ 5 ช่วงอายุครรภ์ (≤12, 13–20, 21–26, 27–32, 33–40 สัปดาห์)"},{"no":"2","name":"ร้อยละของหญิงหลังคลอดได้รับการดูแลครบ 3 ครั้งตามเกณฑ์","target":13,"result":6,"pct":46.15,"goal":75,"status":"fail","unit":"คน","note":"หญิงคลอดในปีงบ (ครบ 42 วันแล้ว) ได้รับการดูแลหลังคลอดวันที่ 1–7, 8–15 และ 16–42"},{"no":"3","name":"ร้อยละหญิงตั้งครรภ์ได้รับการฝากครรภ์ครั้งแรกก่อนหรือเท่ากับ 12 สัปดาห์","target":13,"result":4,"pct":30.77,"goal":75,"status":"fail","unit":"คน","note":"หญิงคลอดในปีงบ ที่มีการฝากครรภ์ขณะอายุครรภ์ ≤12 สัปดาห์"},{"no":"4","name":"ร้อยละของประชากรอายุ 35 ปีขึ้นไปที่ได้รับการคัดกรองเพื่อวินิจฉัยเบาหวาน","target":1076,"result":554,"pct":51.49,"goal":90,"status":"fail","unit":"คน","note":"อายุ 35+ ณ 1 ต.ค. ไม่อยู่ในทะเบียนเบาหวาน ได้ตรวจน้ำตาลในแบบคัดกรอง NCD"},{"no":"5","name":"ร้อยละของประชากรอายุ 35 ปีขึ้นไปที่ได้รับการคัดกรองเพื่อวินิจฉัยความดันโลหิตสูง","target":953,"result":478,"pct":50.16,"goal":90,"status":"fail","unit":"คน","note":"อายุ 35+ ณ 1 ต.ค. ไม่อยู่ในทะเบียนความดันฯ ได้วัดความดันในแบบคัดกรอง NCD"},{"no":"6","name":"ร้อยละของประชากรกลุ่มเป้าหมายได้รับการคัดกรองมะเร็งลำไส้ใหญ่และลำไส้ตรง","target":604,"result":62,"pct":10.26,"goal":50,"status":"fail","unit":"คน","note":"อายุ 50–70 ปี ได้ตรวจคัดกรอง (รหัส 1B0060/1B0061 เช่น FIT test)"},{"no":"7","name":"จำนวนผู้รับบริการวัคซีนไข้หวัดใหญ่ประจำปี (work load)","target":null,"result":247,"pct":null,"goal":null,"status":"workload","unit":"คน","note":"จำนวนคนที่ได้รับวัคซีน FLU ในปีงบ (รวมคนนอกเขต)"},{"no":"8","name":"การให้บริการ เคลือบ/ทา ฟลูออไรด์(ครั้ง)ในประชาชน กลุ่มก่อนวัยสูงอายุ (40-59 ปี)","target":null,"result":0,"pct":null,"goal":null,"status":"wait","unit":"ครั้ง","note":"จำนวนครั้งที่เคลือบ/ทาฟลูออไรด์ ในคนในเขตอายุ 40–59 ปี"},{"no":"9","name":"ร้อยละการตรวจติดตามยืนยันวินิจฉัยกลุ่มสงสัยป่วยโรคเบาหวาน","target":24,"result":0,"pct":0.0,"goal":70,"status":"fail","unit":"คน","note":"สงสัยป่วยจากการคัดกรอง (FBS ≥126 หรือ ไม่อดอาหาร ≥200) แล้วมีผลตรวจน้ำตาลซ้ำที่ รพ.สต. ภายใน 90 วัน หรือขึ้นทะเบียนเบาหวาน (ผลตรวจยืนยันที่โรงพยาบาลไม่อยู่ใน JHCIS)"},{"no":"10","name":"ร้อยละการตรวจติดตามยืนยันวินิจฉัยกลุ่มสงสัยป่วยโรคความดันโลหิตสูง","target":94,"result":32,"pct":34.04,"goal":93,"status":"fail","unit":"คน","note":"สงสัยป่วยจากการคัดกรอง (≥140/90) แล้วมีการวัดความดันซ้ำภายใน 90 วัน หรือขึ้นทะเบียนความดันฯ (ไม่รวมการวัดที่บ้านที่ไม่ได้บันทึกใน JHCIS)"},{"no":"11","name":"ร้อยละของเด็ก 0-5 ปี ที่ได้รับการตรวจพัฒนาการทั้งหมด (คน)","target":144,"result":132,"pct":91.67,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 9, 18, 30, 42, 60 เดือนในปีงบ ได้ตรวจคัดกรองพัฒนาการ DSPM ในเดือนอายุนั้น"},{"no":"12","name":"ร้อยละของเด็กอายุ 6 - 14 ปี สูงดีสมส่วน และส่วนสูงเฉลี่ยที่อายุ 12 ปี","target":null,"result":null,"pct":null,"goal":66,"status":"na","unit":"คน","note":"ยังคำนวณไม่ได้: ต้องใช้เกณฑ์อ้างอิงการเจริญเติบโตของกรมอนามัย (ส่วนสูงตามอายุ น้ำหนักตามส่วนสูง) ซึ่งไม่มีใน JHCIS"},{"no":"13","name":"ร้อยละเด็กอายุ 4-12 ปี ได้รับการ เคลือบ/ทา ฟลูออไรด์เฉพาะเขตรับผิดชอบ (คน)","target":368,"result":0,"pct":0.0,"goal":null,"status":"workload","unit":"คน","note":"เด็กในเขตอายุ 4–12 ปี ได้เคลือบ/ทาฟลูออไรด์ในปีงบ"},{"no":"14","name":"ร้อยละเด็กอายุ 6-12 ปี ได้รับการ เคลือบหลุมร่องฟันกรามแท้ เฉพาะเขตรับผิดชอบ (คน)","target":298,"result":0,"pct":0.0,"goal":null,"status":"workload","unit":"คน","note":"เด็กในเขตอายุ 6–12 ปี ได้เคลือบหลุมร่องฟันแท้ (รหัส 2387030/238703x)"},{"no":"15","name":"ร้อยละการคัดกรองโรคซึมเศร้า (2Q) ในกลุ่มผู้สูงอายุ","target":360,"result":353,"pct":98.06,"goal":90,"status":"pass","unit":"คน","note":"ผู้สูงอายุในเขต 60+ ได้คัดกรอง 2Q ในปีงบ"},{"no":"16.1","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 1 ปี (fully immunized)","target":26,"result":26,"pct":100.0,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 1 ปีในปีงบ ได้รับ BCG, D21, D22, D23, HBV1, MMR, OPV3 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.2","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 2 ปี (fully immunized)","target":29,"result":28,"pct":96.55,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 2 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, HBV1, J11, MMR, OPV3, OPV4 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.3","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 3 ปี (fully immunized)","target":25,"result":23,"pct":92.0,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 3 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, HBV1, J11, J12, MMR, MMR2, OPV3, OPV4 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.4","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 5 ปี (fully immunized)","target":36,"result":10,"pct":27.78,"goal":90,"status":"fail","unit":"คน","note":"เด็กในเขตที่อายุครบ 5 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, DTP5, HBV1, J11, J12, MMR, MMR2, OPV3, OPV4, OPV5 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"17","name":"ร้อยละของผู้ป่วยนอกที่มารับบริการในระดับปฐมภูมิได้รับการรักษาด้วยการแพทย์แผนไทยและการแพทย์ทางเลือก","target":6295,"result":1234,"pct":19.6,"goal":35,"status":"fail","unit":"ครั้ง","note":"ครั้งบริการผู้ป่วยนอกที่ได้รับวินิจฉัยรหัส U, ยาสมุนไพร หรือหัตถการแผนไทย ÷ ครั้งบริการผู้ป่วยนอกทั้งหมด"}],"2568":[{"no":"1","name":"ร้อยละหญิงตั้งครรภ์ที่ได้รับการดูแลก่อนคลอด 5 ครั้ง ตามเกณฑ์","target":7,"result":1,"pct":14.29,"goal":75,"status":"fail","unit":"คน","note":"หญิงคลอดในปีงบ มีฝากครรภ์ครบ 5 ช่วงอายุครรภ์ (≤12, 13–20, 21–26, 27–32, 33–40 สัปดาห์)"},{"no":"2","name":"ร้อยละของหญิงหลังคลอดได้รับการดูแลครบ 3 ครั้งตามเกณฑ์","target":7,"result":7,"pct":100.0,"goal":75,"status":"pass","unit":"คน","note":"หญิงคลอดในปีงบ (ครบ 42 วันแล้ว) ได้รับการดูแลหลังคลอดวันที่ 1–7, 8–15 และ 16–42"},{"no":"3","name":"ร้อยละหญิงตั้งครรภ์ได้รับการฝากครรภ์ครั้งแรกก่อนหรือเท่ากับ 12 สัปดาห์","target":7,"result":1,"pct":14.29,"goal":75,"status":"fail","unit":"คน","note":"หญิงคลอดในปีงบ ที่มีการฝากครรภ์ขณะอายุครรภ์ ≤12 สัปดาห์"},{"no":"4","name":"ร้อยละของประชากรอายุ 35 ปีขึ้นไปที่ได้รับการคัดกรองเพื่อวินิจฉัยเบาหวาน","target":1105,"result":1021,"pct":92.4,"goal":90,"status":"pass","unit":"คน","note":"อายุ 35+ ณ 1 ต.ค. ไม่อยู่ในทะเบียนเบาหวาน ได้ตรวจน้ำตาลในแบบคัดกรอง NCD"},{"no":"5","name":"ร้อยละของประชากรอายุ 35 ปีขึ้นไปที่ได้รับการคัดกรองเพื่อวินิจฉัยความดันโลหิตสูง","target":982,"result":900,"pct":91.65,"goal":90,"status":"pass","unit":"คน","note":"อายุ 35+ ณ 1 ต.ค. ไม่อยู่ในทะเบียนความดันฯ ได้วัดความดันในแบบคัดกรอง NCD"},{"no":"6","name":"ร้อยละของประชากรกลุ่มเป้าหมายได้รับการคัดกรองมะเร็งลำไส้ใหญ่และลำไส้ตรง","target":635,"result":65,"pct":10.24,"goal":50,"status":"fail","unit":"คน","note":"อายุ 50–70 ปี ได้ตรวจคัดกรอง (รหัส 1B0060/1B0061 เช่น FIT test)"},{"no":"7","name":"จำนวนผู้รับบริการวัคซีนไข้หวัดใหญ่ประจำปี (work load)","target":null,"result":255,"pct":null,"goal":null,"status":"workload","unit":"คน","note":"จำนวนคนที่ได้รับวัคซีน FLU ในปีงบ (รวมคนนอกเขต)"},{"no":"8","name":"การให้บริการ เคลือบ/ทา ฟลูออไรด์(ครั้ง)ในประชาชน กลุ่มก่อนวัยสูงอายุ (40-59 ปี)","target":null,"result":0,"pct":null,"goal":null,"status":"wait","unit":"ครั้ง","note":"จำนวนครั้งที่เคลือบ/ทาฟลูออไรด์ ในคนในเขตอายุ 40–59 ปี"},{"no":"9","name":"ร้อยละการตรวจติดตามยืนยันวินิจฉัยกลุ่มสงสัยป่วยโรคเบาหวาน","target":15,"result":0,"pct":0.0,"goal":70,"status":"fail","unit":"คน","note":"สงสัยป่วยจากการคัดกรอง (FBS ≥126 หรือ ไม่อดอาหาร ≥200) แล้วมีผลตรวจน้ำตาลซ้ำที่ รพ.สต. ภายใน 90 วัน หรือขึ้นทะเบียนเบาหวาน (ผลตรวจยืนยันที่โรงพยาบาลไม่อยู่ใน JHCIS)"},{"no":"10","name":"ร้อยละการตรวจติดตามยืนยันวินิจฉัยกลุ่มสงสัยป่วยโรคความดันโลหิตสูง","target":76,"result":58,"pct":76.32,"goal":93,"status":"fail","unit":"คน","note":"สงสัยป่วยจากการคัดกรอง (≥140/90) แล้วมีการวัดความดันซ้ำภายใน 90 วัน หรือขึ้นทะเบียนความดันฯ (ไม่รวมการวัดที่บ้านที่ไม่ได้บันทึกใน JHCIS)"},{"no":"11","name":"ร้อยละของเด็ก 0-5 ปี ที่ได้รับการตรวจพัฒนาการทั้งหมด (คน)","target":137,"result":124,"pct":90.51,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 9, 18, 30, 42, 60 เดือนในปีงบ ได้ตรวจคัดกรองพัฒนาการ DSPM ในเดือนอายุนั้น"},{"no":"12","name":"ร้อยละของเด็กอายุ 6 - 14 ปี สูงดีสมส่วน และส่วนสูงเฉลี่ยที่อายุ 12 ปี","target":null,"result":null,"pct":null,"goal":66,"status":"na","unit":"คน","note":"ยังคำนวณไม่ได้: ต้องใช้เกณฑ์อ้างอิงการเจริญเติบโตของกรมอนามัย (ส่วนสูงตามอายุ น้ำหนักตามส่วนสูง) ซึ่งไม่มีใน JHCIS"},{"no":"13","name":"ร้อยละเด็กอายุ 4-12 ปี ได้รับการ เคลือบ/ทา ฟลูออไรด์เฉพาะเขตรับผิดชอบ (คน)","target":354,"result":177,"pct":50.0,"goal":null,"status":"workload","unit":"คน","note":"เด็กในเขตอายุ 4–12 ปี ได้เคลือบ/ทาฟลูออไรด์ในปีงบ"},{"no":"14","name":"ร้อยละเด็กอายุ 6-12 ปี ได้รับการ เคลือบหลุมร่องฟันกรามแท้ เฉพาะเขตรับผิดชอบ (คน)","target":287,"result":0,"pct":0.0,"goal":null,"status":"workload","unit":"คน","note":"เด็กในเขตอายุ 6–12 ปี ได้เคลือบหลุมร่องฟันแท้ (รหัส 2387030/238703x)"},{"no":"15","name":"ร้อยละการคัดกรองโรคซึมเศร้า (2Q) ในกลุ่มผู้สูงอายุ","target":390,"result":324,"pct":83.08,"goal":90,"status":"fail","unit":"คน","note":"ผู้สูงอายุในเขต 60+ ได้คัดกรอง 2Q ในปีงบ"},{"no":"16.1","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 1 ปี (fully immunized)","target":29,"result":29,"pct":100.0,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 1 ปีในปีงบ ได้รับ BCG, D21, D22, D23, HBV1, MMR, OPV3 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.2","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 2 ปี (fully immunized)","target":26,"result":25,"pct":96.15,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 2 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, HBV1, J11, MMR, OPV3, OPV4 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.3","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 3 ปี (fully immunized)","target":29,"result":28,"pct":96.55,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 3 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, HBV1, J11, J12, MMR, MMR2, OPV3, OPV4 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.4","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 5 ปี (fully immunized)","target":31,"result":25,"pct":80.65,"goal":90,"status":"fail","unit":"คน","note":"เด็กในเขตที่อายุครบ 5 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, DTP5, HBV1, J11, J12, MMR, MMR2, OPV3, OPV4, OPV5 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"17","name":"ร้อยละของผู้ป่วยนอกที่มารับบริการในระดับปฐมภูมิได้รับการรักษาด้วยการแพทย์แผนไทยและการแพทย์ทางเลือก","target":6508,"result":1102,"pct":16.93,"goal":35,"status":"fail","unit":"ครั้ง","note":"ครั้งบริการผู้ป่วยนอกที่ได้รับวินิจฉัยรหัส U, ยาสมุนไพร หรือหัตถการแผนไทย ÷ ครั้งบริการผู้ป่วยนอกทั้งหมด"}],"2569":[{"no":"1","name":"ร้อยละหญิงตั้งครรภ์ที่ได้รับการดูแลก่อนคลอด 5 ครั้ง ตามเกณฑ์","target":11,"result":6,"pct":54.55,"goal":75,"status":"fail","unit":"คน","note":"หญิงคลอดในปีงบ มีฝากครรภ์ครบ 5 ช่วงอายุครรภ์ (≤12, 13–20, 21–26, 27–32, 33–40 สัปดาห์)"},{"no":"2","name":"ร้อยละของหญิงหลังคลอดได้รับการดูแลครบ 3 ครั้งตามเกณฑ์","target":11,"result":11,"pct":100.0,"goal":75,"status":"pass","unit":"คน","note":"หญิงคลอดในปีงบ (ครบ 42 วันแล้ว) ได้รับการดูแลหลังคลอดวันที่ 1–7, 8–15 และ 16–42"},{"no":"3","name":"ร้อยละหญิงตั้งครรภ์ได้รับการฝากครรภ์ครั้งแรกก่อนหรือเท่ากับ 12 สัปดาห์","target":11,"result":7,"pct":63.64,"goal":75,"status":"fail","unit":"คน","note":"หญิงคลอดในปีงบ ที่มีการฝากครรภ์ขณะอายุครรภ์ ≤12 สัปดาห์"},{"no":"4","name":"ร้อยละของประชากรอายุ 35 ปีขึ้นไปที่ได้รับการคัดกรองเพื่อวินิจฉัยเบาหวาน","target":1137,"result":1101,"pct":96.83,"goal":90,"status":"pass","unit":"คน","note":"อายุ 35+ ณ 1 ต.ค. ไม่อยู่ในทะเบียนเบาหวาน ได้ตรวจน้ำตาลในแบบคัดกรอง NCD"},{"no":"5","name":"ร้อยละของประชากรอายุ 35 ปีขึ้นไปที่ได้รับการคัดกรองเพื่อวินิจฉัยความดันโลหิตสูง","target":1014,"result":973,"pct":95.96,"goal":90,"status":"pass","unit":"คน","note":"อายุ 35+ ณ 1 ต.ค. ไม่อยู่ในทะเบียนความดันฯ ได้วัดความดันในแบบคัดกรอง NCD"},{"no":"6","name":"ร้อยละของประชากรกลุ่มเป้าหมายได้รับการคัดกรองมะเร็งลำไส้ใหญ่และลำไส้ตรง","target":653,"result":80,"pct":12.25,"goal":50,"status":"fail","unit":"คน","note":"อายุ 50–70 ปี ได้ตรวจคัดกรอง (รหัส 1B0060/1B0061 เช่น FIT test)"},{"no":"7","name":"จำนวนผู้รับบริการวัคซีนไข้หวัดใหญ่ประจำปี (work load)","target":null,"result":255,"pct":null,"goal":null,"status":"workload","unit":"คน","note":"จำนวนคนที่ได้รับวัคซีน FLU ในปีงบ (รวมคนนอกเขต)"},{"no":"8","name":"การให้บริการ เคลือบ/ทา ฟลูออไรด์(ครั้ง)ในประชาชน กลุ่มก่อนวัยสูงอายุ (40-59 ปี)","target":null,"result":89,"pct":null,"goal":null,"status":"workload","unit":"ครั้ง","note":"จำนวนครั้งที่เคลือบ/ทาฟลูออไรด์ ในคนในเขตอายุ 40–59 ปี"},{"no":"9","name":"ร้อยละการตรวจติดตามยืนยันวินิจฉัยกลุ่มสงสัยป่วยโรคเบาหวาน","target":42,"result":1,"pct":2.38,"goal":70,"status":"fail","unit":"คน","note":"สงสัยป่วยจากการคัดกรอง (FBS ≥126 หรือ ไม่อดอาหาร ≥200) แล้วมีผลตรวจน้ำตาลซ้ำที่ รพ.สต. ภายใน 90 วัน หรือขึ้นทะเบียนเบาหวาน (ผลตรวจยืนยันที่โรงพยาบาลไม่อยู่ใน JHCIS)"},{"no":"10","name":"ร้อยละการตรวจติดตามยืนยันวินิจฉัยกลุ่มสงสัยป่วยโรคความดันโลหิตสูง","target":104,"result":41,"pct":39.42,"goal":93,"status":"fail","unit":"คน","note":"สงสัยป่วยจากการคัดกรอง (≥140/90) แล้วมีการวัดความดันซ้ำภายใน 90 วัน หรือขึ้นทะเบียนความดันฯ (ไม่รวมการวัดที่บ้านที่ไม่ได้บันทึกใน JHCIS)"},{"no":"11","name":"ร้อยละของเด็ก 0-5 ปี ที่ได้รับการตรวจพัฒนาการทั้งหมด (คน)","target":122,"result":120,"pct":98.36,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 9, 18, 30, 42, 60 เดือนในปีงบ ได้ตรวจคัดกรองพัฒนาการ DSPM ในเดือนอายุนั้น"},{"no":"12","name":"ร้อยละของเด็กอายุ 6 - 14 ปี สูงดีสมส่วน และส่วนสูงเฉลี่ยที่อายุ 12 ปี","target":null,"result":null,"pct":null,"goal":66,"status":"na","unit":"คน","note":"ยังคำนวณไม่ได้: ต้องใช้เกณฑ์อ้างอิงการเจริญเติบโตของกรมอนามัย (ส่วนสูงตามอายุ น้ำหนักตามส่วนสูง) ซึ่งไม่มีใน JHCIS"},{"no":"13","name":"ร้อยละเด็กอายุ 4-12 ปี ได้รับการ เคลือบ/ทา ฟลูออไรด์เฉพาะเขตรับผิดชอบ (คน)","target":325,"result":290,"pct":89.23,"goal":null,"status":"workload","unit":"คน","note":"เด็กในเขตอายุ 4–12 ปี ได้เคลือบ/ทาฟลูออไรด์ในปีงบ"},{"no":"14","name":"ร้อยละเด็กอายุ 6-12 ปี ได้รับการ เคลือบหลุมร่องฟันกรามแท้ เฉพาะเขตรับผิดชอบ (คน)","target":269,"result":0,"pct":0.0,"goal":null,"status":"workload","unit":"คน","note":"เด็กในเขตอายุ 6–12 ปี ได้เคลือบหลุมร่องฟันแท้ (รหัส 2387030/238703x)"},{"no":"15","name":"ร้อยละการคัดกรองโรคซึมเศร้า (2Q) ในกลุ่มผู้สูงอายุ","target":426,"result":423,"pct":99.3,"goal":90,"status":"pass","unit":"คน","note":"ผู้สูงอายุในเขต 60+ ได้คัดกรอง 2Q ในปีงบ"},{"no":"16.1","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 1 ปี (fully immunized)","target":15,"result":15,"pct":100.0,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 1 ปีในปีงบ ได้รับ BCG, D21, D22, D23, HBV1, MMR, OPV3 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.2","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 2 ปี (fully immunized)","target":29,"result":29,"pct":100.0,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 2 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, HBV1, J11, MMR, OPV3, OPV4 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.3","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 3 ปี (fully immunized)","target":26,"result":25,"pct":96.15,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 3 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, HBV1, J11, J12, MMR, MMR2, OPV3, OPV4 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.4","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 5 ปี (fully immunized)","target":25,"result":23,"pct":92.0,"goal":90,"status":"pass","unit":"คน","note":"เด็กในเขตที่อายุครบ 5 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, DTP5, HBV1, J11, J12, MMR, MMR2, OPV3, OPV4, OPV5 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"17","name":"ร้อยละของผู้ป่วยนอกที่มารับบริการในระดับปฐมภูมิได้รับการรักษาด้วยการแพทย์แผนไทยและการแพทย์ทางเลือก","target":7804,"result":2057,"pct":26.36,"goal":35,"status":"fail","unit":"ครั้ง","note":"ครั้งบริการผู้ป่วยนอกที่ได้รับวินิจฉัยรหัส U, ยาสมุนไพร หรือหัตถการแผนไทย ÷ ครั้งบริการผู้ป่วยนอกทั้งหมด"}],"2570":[{"no":"1","name":"ร้อยละหญิงตั้งครรภ์ที่ได้รับการดูแลก่อนคลอด 5 ครั้ง ตามเกณฑ์","target":0,"result":0,"pct":null,"goal":75,"status":"wait","unit":"คน","note":"หญิงคลอดในปีงบ มีฝากครรภ์ครบ 5 ช่วงอายุครรภ์ (≤12, 13–20, 21–26, 27–32, 33–40 สัปดาห์)"},{"no":"2","name":"ร้อยละของหญิงหลังคลอดได้รับการดูแลครบ 3 ครั้งตามเกณฑ์","target":0,"result":0,"pct":null,"goal":75,"status":"wait","unit":"คน","note":"หญิงคลอดในปีงบ (ครบ 42 วันแล้ว) ได้รับการดูแลหลังคลอดวันที่ 1–7, 8–15 และ 16–42"},{"no":"3","name":"ร้อยละหญิงตั้งครรภ์ได้รับการฝากครรภ์ครั้งแรกก่อนหรือเท่ากับ 12 สัปดาห์","target":0,"result":0,"pct":null,"goal":75,"status":"wait","unit":"คน","note":"หญิงคลอดในปีงบ ที่มีการฝากครรภ์ขณะอายุครรภ์ ≤12 สัปดาห์"},{"no":"4","name":"ร้อยละของประชากรอายุ 35 ปีขึ้นไปที่ได้รับการคัดกรองเพื่อวินิจฉัยเบาหวาน","target":1166,"result":0,"pct":0.0,"goal":90,"status":"progress","unit":"คน","note":"อายุ 35+ ณ 1 ต.ค. ไม่อยู่ในทะเบียนเบาหวาน ได้ตรวจน้ำตาลในแบบคัดกรอง NCD"},{"no":"5","name":"ร้อยละของประชากรอายุ 35 ปีขึ้นไปที่ได้รับการคัดกรองเพื่อวินิจฉัยความดันโลหิตสูง","target":1041,"result":0,"pct":0.0,"goal":90,"status":"progress","unit":"คน","note":"อายุ 35+ ณ 1 ต.ค. ไม่อยู่ในทะเบียนความดันฯ ได้วัดความดันในแบบคัดกรอง NCD"},{"no":"6","name":"ร้อยละของประชากรกลุ่มเป้าหมายได้รับการคัดกรองมะเร็งลำไส้ใหญ่และลำไส้ตรง","target":673,"result":0,"pct":0.0,"goal":50,"status":"progress","unit":"คน","note":"อายุ 50–70 ปี ได้ตรวจคัดกรอง (รหัส 1B0060/1B0061 เช่น FIT test)"},{"no":"7","name":"จำนวนผู้รับบริการวัคซีนไข้หวัดใหญ่ประจำปี (work load)","target":null,"result":0,"pct":null,"goal":null,"status":"wait","unit":"คน","note":"จำนวนคนที่ได้รับวัคซีน FLU ในปีงบ (รวมคนนอกเขต)"},{"no":"8","name":"การให้บริการ เคลือบ/ทา ฟลูออไรด์(ครั้ง)ในประชาชน กลุ่มก่อนวัยสูงอายุ (40-59 ปี)","target":null,"result":0,"pct":null,"goal":null,"status":"wait","unit":"ครั้ง","note":"จำนวนครั้งที่เคลือบ/ทาฟลูออไรด์ ในคนในเขตอายุ 40–59 ปี"},{"no":"9","name":"ร้อยละการตรวจติดตามยืนยันวินิจฉัยกลุ่มสงสัยป่วยโรคเบาหวาน","target":0,"result":0,"pct":null,"goal":70,"status":"wait","unit":"คน","note":"สงสัยป่วยจากการคัดกรอง (FBS ≥126 หรือ ไม่อดอาหาร ≥200) แล้วมีผลตรวจน้ำตาลซ้ำที่ รพ.สต. ภายใน 90 วัน หรือขึ้นทะเบียนเบาหวาน (ผลตรวจยืนยันที่โรงพยาบาลไม่อยู่ใน JHCIS)"},{"no":"10","name":"ร้อยละการตรวจติดตามยืนยันวินิจฉัยกลุ่มสงสัยป่วยโรคความดันโลหิตสูง","target":0,"result":0,"pct":null,"goal":93,"status":"wait","unit":"คน","note":"สงสัยป่วยจากการคัดกรอง (≥140/90) แล้วมีการวัดความดันซ้ำภายใน 90 วัน หรือขึ้นทะเบียนความดันฯ (ไม่รวมการวัดที่บ้านที่ไม่ได้บันทึกใน JHCIS)"},{"no":"11","name":"ร้อยละของเด็ก 0-5 ปี ที่ได้รับการตรวจพัฒนาการทั้งหมด (คน)","target":4,"result":0,"pct":0.0,"goal":90,"status":"progress","unit":"คน","note":"เด็กในเขตที่อายุครบ 9, 18, 30, 42, 60 เดือนในปีงบ ได้ตรวจคัดกรองพัฒนาการ DSPM ในเดือนอายุนั้น"},{"no":"12","name":"ร้อยละของเด็กอายุ 6 - 14 ปี สูงดีสมส่วน และส่วนสูงเฉลี่ยที่อายุ 12 ปี","target":null,"result":null,"pct":null,"goal":66,"status":"na","unit":"คน","note":"ยังคำนวณไม่ได้: ต้องใช้เกณฑ์อ้างอิงการเจริญเติบโตของกรมอนามัย (ส่วนสูงตามอายุ น้ำหนักตามส่วนสูง) ซึ่งไม่มีใน JHCIS"},{"no":"13","name":"ร้อยละเด็กอายุ 4-12 ปี ได้รับการ เคลือบ/ทา ฟลูออไรด์เฉพาะเขตรับผิดชอบ (คน)","target":310,"result":5,"pct":1.61,"goal":null,"status":"workload","unit":"คน","note":"เด็กในเขตอายุ 4–12 ปี ได้เคลือบ/ทาฟลูออไรด์ในปีงบ"},{"no":"14","name":"ร้อยละเด็กอายุ 6-12 ปี ได้รับการ เคลือบหลุมร่องฟันกรามแท้ เฉพาะเขตรับผิดชอบ (คน)","target":255,"result":0,"pct":0.0,"goal":null,"status":"workload","unit":"คน","note":"เด็กในเขตอายุ 6–12 ปี ได้เคลือบหลุมร่องฟันแท้ (รหัส 2387030/238703x)"},{"no":"15","name":"ร้อยละการคัดกรองโรคซึมเศร้า (2Q) ในกลุ่มผู้สูงอายุ","target":461,"result":0,"pct":0.0,"goal":90,"status":"progress","unit":"คน","note":"ผู้สูงอายุในเขต 60+ ได้คัดกรอง 2Q ในปีงบ"},{"no":"16.1","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 1 ปี (fully immunized)","target":0,"result":0,"pct":null,"goal":90,"status":"wait","unit":"คน","note":"เด็กในเขตที่อายุครบ 1 ปีในปีงบ ได้รับ BCG, D21, D22, D23, HBV1, MMR, OPV3 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.2","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 2 ปี (fully immunized)","target":0,"result":0,"pct":null,"goal":90,"status":"wait","unit":"คน","note":"เด็กในเขตที่อายุครบ 2 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, HBV1, J11, MMR, OPV3, OPV4 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.3","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 3 ปี (fully immunized)","target":2,"result":2,"pct":100.0,"goal":90,"status":"progress","unit":"คน","note":"เด็กในเขตที่อายุครบ 3 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, HBV1, J11, J12, MMR, MMR2, OPV3, OPV4 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"16.4","name":"ความครอบคลุมการได้รับวัคซีนแต่ละชนิดครบตามเกณฑ์ในเด็กอายุครบ 5 ปี (fully immunized)","target":0,"result":0,"pct":null,"goal":90,"status":"wait","unit":"คน","note":"เด็กในเขตที่อายุครบ 5 ปีในปีงบ ได้รับ BCG, D21, D22, D23, DTP4, DTP5, HBV1, J11, J12, MMR, MMR2, OPV3, OPV4, OPV5 ครบ (นับจากที่บันทึกใน JHCIS)"},{"no":"17","name":"ร้อยละของผู้ป่วยนอกที่มารับบริการในระดับปฐมภูมิได้รับการรักษาด้วยการแพทย์แผนไทยและการแพทย์ทางเลือก","target":159,"result":64,"pct":40.25,"goal":35,"status":"progress","unit":"ครั้ง","note":"ครั้งบริการผู้ป่วยนอกที่ได้รับวินิจฉัยรหัส U, ยาสมุนไพร หรือหัตถการแผนไทย ÷ ครั้งบริการผู้ป่วยนอกทั้งหมด"}]}}};
+const $ = s => document.querySelector(s);
+const fmt = n => Number(n||0).toLocaleString('th-TH');
+const pct = (a,b) => b ? (100*a/b).toLocaleString('th-TH',{maximumFractionDigits:1})+'%' : '–';
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a={},p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const tip=$('#tip');
+function showTip(html,ev){tip.innerHTML=html;tip.style.opacity=1;const w=tip.offsetWidth,h=tip.offsetHeight;let x=ev.clientX+14,y=ev.clientY-h-10;if(x+w>innerWidth-8)x=ev.clientX-w-14;if(y<8)y=ev.clientY+16;tip.style.left=x+'px';tip.style.top=y+'px'}
+function hideTip(){tip.style.opacity=0}
+function segInit(id,cb){const g=$(id);g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));cb(b.dataset.k)})}
+const TM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const thDate=s=>{const [y,m,d]=s.split('-').map(Number);return d+' '+TM[m-1]+' '+(y+543)};
+const ASOF=thDate(D.meta.data_date);
+$('#asof').textContent=ASOF;$('#asof2').textContent=ASOF;
+const P=D.population, FYS=D.meta.fys, CUR=D.meta.cur_fy;
+const fyLabel=f=>f===CUR?`${f} (สะสมถึง ${ASOF})`:String(f);
+const short=f=>f===CUR?`ปีงบ ${f} (ถึง ${ASOF})`:`ปีงบ ${f}`;
+let FY=D.meta.default_fy;
+const fySel=$('#fySel');
+fySel.innerHTML=FYS.slice().reverse().map(f=>`<option value="${f}" ${f===FY?'selected':''}>${fyLabel(f)}</option>`).join('');
+const vf=f=>D.visits_fy.find(r=>r.fy===f)||{visits:0,persons:0,outreach:0};
+const df=f=>D.deaths.find(r=>r.fy===f)||{fy:f,total:0};
+const houses=P.by_village.reduce((a,v)=>a+v.houses,0);
+
+/* KPI */
+function drawKpi(){
+  const c=vf(FY),p=vf(FY-1),partial=FY===CUR;
+  const kp=[
+    ['ประชากรในเขต',fmt(P.total)+' คน',`${fmt(houses)} หลังคาเรือน · 3 หมู่บ้าน`],
+    ['ผู้สูงอายุ 60+',fmt(D.elderly.total)+' คน',`${pct(D.elderly.total,P.total)} ของประชากร`],
+    [`การรับบริการ ปีงบ ${FY}`,fmt(c.visits)+' ครั้ง',partial?`${fmt(c.persons)} คน · ยอดสะสมถึง ${ASOF}`:`${fmt(c.persons)} คน · ${c.visits>=p.visits?'เพิ่มขึ้น':'ลดลง'}จากปีก่อน ${pct(Math.abs(c.visits-p.visits),p.visits)}`],
+    ['ผู้ป่วยความดันโลหิตสูง',fmt(D.chronic.totals.HT)+' คน',`เบาหวาน ${fmt(D.chronic.totals.DM)} คน · เป็นทั้งสองโรค ${fmt(D.chronic.ht_dm_both)}`],
+    [`เสียชีวิต ปีงบ ${FY}`,fmt(df(FY).total)+' ราย',`ปีงบ ${FY-1}: ${fmt(df(FY-1).total)} ราย`],
+  ];
+  $('#kpis').innerHTML=kp.map(([l,v,d])=>`<div class="kpi"><span class="l">${l}</span><span class="v num">${v}</span><span class="d">${d}</span></div>`).join('');
+}
+
+/* Pyramid */
+const sel=$('#pyrSel');
+sel.innerHTML='<option value="">ทุกหมู่บ้าน</option>'+Object.keys(P.pyramid_by_village).map(v=>`<option>${v}</option>`).join('');
+function drawPyr(){
+  const rows=(sel.value?P.pyramid_by_village[sel.value]:P.pyramid).slice().reverse();
+  const W=560,rh=17,gap=3,top=4,mid=W/2,lab=44,H=top+rows.length*(rh+gap)+24;
+  const mx=Math.max(1,...rows.map(r=>Math.max(r.male,r.female)));
+  const nice=mx<=20?5:mx<=60?20:mx<=120?40:50, mxN=Math.ceil(mx/nice)*nice;
+  const half=mid-lab/2-6, sx=v=>v/mxN*half;
+  const host=$('#pyr');host.innerHTML='';const s=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'ปิรามิดประชากรแยกเพศและกลุ่มอายุ'},host);
+  for(let t=0;t<=mxN;t+=nice){for(const sgn of[-1,1]){const x=mid+sgn*(lab/2+sx(t));el('line',{x1:x,x2:x,y1:top,y2:H-20,class:'gr'},s);if(t>0||sgn===1){const tx=el('text',{x,y:H-6,'text-anchor':'middle'},s);tx.textContent=fmt(t)}}}
+  rows.forEach((r,i)=>{const y=top+i*(rh+gap);
+    const t=el('text',{x:mid,y:y+rh-4,'text-anchor':'middle'},s);t.textContent=r.band;
+    const wm=sx(r.male),wf=sx(r.female);
+    el('rect',{x:mid-lab/2-wm,y,width:Math.max(wm,0),height:rh,rx:3,fill:'var(--s-male)'},s);
+    el('rect',{x:mid+lab/2,y,width:Math.max(wf,0),height:rh,rx:3,fill:'var(--s-female)'},s);
+    const hit=el('rect',{x:0,y:y-1,width:W,height:rh+gap,class:'hit'},s);
+    hit.addEventListener('mousemove',e=>showTip(`<b>อายุ ${r.band} ปี</b><br>ชาย ${fmt(r.male)} · หญิง ${fmt(r.female)}<br>รวม ${fmt(r.male+r.female)} คน`,e));hit.addEventListener('mouseleave',hideTip);
+  });
+}
+sel.addEventListener('change',drawPyr);drawPyr();
+
+/* Village table + age stacks */
+const AG=[['g0_14','0–14 ปี','var(--a-young)'],['g15_59','15–59 ปี','var(--a-adult)'],['g60','60 ปีขึ้นไป','var(--a-old)']];
+$('#villTbl').innerHTML='<thead><tr><th>หมู่บ้าน</th><th>หลังคาเรือน</th><th>ชาย</th><th>หญิง</th><th>รวม</th></tr></thead><tbody>'+
+  P.by_village.map(v=>`<tr><td>${v.village}</td><td class="num">${fmt(v.houses)}</td><td class="num">${fmt(v.male)}</td><td class="num">${fmt(v.female)}</td><td class="num"><b>${fmt(v.pop)}</b></td></tr>`).join('')+'</tbody>';
+$('#ageLegend').innerHTML=AG.map(a=>`<span><i style="background:${a[2]}"></i>${a[1]}</span>`).join('');
+$('#villStacks').innerHTML=P.by_village.map(v=>`<div><div class="row" style="font-size:13px"><span>${v.village}</span><span class="num" style="color:var(--ink-3)">ผู้สูงอายุ ${pct(v.g60,v.pop)}</span></div><div class="stack" data-v="${v.village}">`+
+  AG.map(a=>`<span data-k="${a[0]}" style="flex:${v[a[0]]};background:${a[2]}"></span>`).join('')+'</div></div>').join('');
+document.querySelectorAll('#villStacks .stack span').forEach(sp=>{const v=P.by_village.find(x=>x.village===sp.parentNode.dataset.v),a=AG.find(x=>x[0]===sp.dataset.k);
+  sp.addEventListener('mousemove',e=>showTip(`<b>${v.village}</b><br>${a[1]}: ${fmt(v[a[0]])} คน (${pct(v[a[0]],v.pop)})`,e));sp.addEventListener('mouseleave',hideTip)});
+
+/* Monthly visits */
+const MN=['ต.ค.','พ.ย.','ธ.ค.','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.'];
+const byFy={};D.visits_monthly.forEach(r=>{(byFy[r.fy]=byFy[r.fy]||Array(12).fill(null));const m=+r.month.slice(5,7);byFy[r.fy][(m+2)%12]=r});
+let svcK='visits',svcCmp=FY-1;
+function drawCmpButtons(){
+  const opts=FYS.filter(f=>f<FY);if(!opts.includes(svcCmp))svcCmp=opts[opts.length-1];
+  $('#svcCmp').innerHTML=opts.map((f,i)=>`<button data-k="${f}" aria-pressed="${f===svcCmp}">${i===0?'เทียบ ':''}${f}</button>`).join('');
+  $('#svcCmp').hidden=!opts.length;
+}
+$('#svcCmp').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;svcCmp=+b.dataset.k;drawCmpButtons();drawSvc()});
+function drawSvc(){
+  const get=f=>(byFy[f]||Array(12).fill(null)).map(r=>r?r[svcK]:null);
+  const cur=get(FY),prv=svcCmp?get(svcCmp):Array(12).fill(null);
+  const lastIdx=cur.reduce((a,v,i)=>v!=null?i:a,-1);
+  $('#svcLegend').innerHTML=`<span><i class="ln" style="background:var(--s-cur)"></i>${short(FY)}</span>`+(svcCmp?`<span><i class="ln" style="background:var(--s-prev)"></i>ปีงบ ${svcCmp}</span>`:'');
+  const W=640,H=280,L=46,R=12,T=12,B=28,iw=W-L-R,ih=H-T-B;
+  const vals=[...cur,...prv].filter(v=>v!=null),mx=Math.max(10,...vals),step=mx>1000?250:mx>500?100:mx>100?50:10,mxN=Math.ceil(mx/step)*step;
+  const x=i=>L+i*iw/11,y=v=>T+ih-v/mxN*ih;
+  const host=$('#svcChart');host.innerHTML='';const s=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'กราฟเส้นการรับบริการรายเดือน'},host);
+  for(let t=0;t<=mxN;t+=step){el('line',{x1:L,x2:W-R,y1:y(t),y2:y(t),class:t?'gr':'ax'},s);const tx=el('text',{x:L-6,y:y(t)+4,'text-anchor':'end'},s);tx.textContent=fmt(t)}
+  MN.forEach((m,i)=>{const t=el('text',{x:x(i),y:H-8,'text-anchor':'middle'},s);t.textContent=m});
+  const path=a=>{let d='',pen=false;a.forEach((v,i)=>{if(v==null){pen=false;return}d+=(pen?'L':'M')+x(i)+','+y(v);pen=true});return d};
+  if(lastIdx>=0){const pts=cur.slice(0,lastIdx+1);el('path',{d:path(pts)+`L${x(lastIdx)},${y(0)}L${x(0)},${y(0)}Z`,fill:'var(--s-cur)','fill-opacity':.08},s)}
+  el('path',{d:path(prv),fill:'none',stroke:'var(--s-prev)','stroke-width':2,'stroke-linejoin':'round'},s);
+  el('path',{d:path(cur),fill:'none',stroke:'var(--s-cur)','stroke-width':2.5,'stroke-linejoin':'round'},s);
+  if(lastIdx>=0){const cv=cur.map(v=>v??-1),ci=cv.indexOf(Math.max(...cv));el('circle',{cx:x(ci),cy:y(cur[ci]),r:4.5,fill:'var(--s-cur)',stroke:'var(--surface)','stroke-width':2},s);
+    const pk=el('text',{x:Math.min(Math.max(x(ci),L+40),W-R-40),y:y(cur[ci])-10,'text-anchor':'middle','font-weight':600},s);pk.style.fill='var(--ink)';pk.textContent=(lastIdx>0?'สูงสุด ':'')+fmt(cur[ci])}
+  const cross=el('line',{y1:T,y2:T+ih,stroke:'var(--ink-3)','stroke-dasharray':'3 3',opacity:0},s);
+  const d1=el('circle',{r:4,fill:'var(--s-cur)',stroke:'var(--surface)','stroke-width':2,opacity:0},s),d2=el('circle',{r:4,fill:'var(--s-prev)',stroke:'var(--surface)','stroke-width':2,opacity:0},s);
+  const hit=el('rect',{x:L,y:T,width:iw,height:ih,class:'hit'},s);
+  hit.addEventListener('mousemove',e=>{const r=s.getBoundingClientRect(),px=(e.clientX-r.left)*W/r.width,i=Math.max(0,Math.min(11,Math.round((px-L)/(iw/11))));
+    cross.setAttribute('opacity',1);cross.setAttribute('x1',x(i));cross.setAttribute('x2',x(i));
+    for(const [dot,arr] of [[d1,cur],[d2,prv]]){if(arr[i]==null){dot.setAttribute('opacity',0)}else{dot.setAttribute('opacity',1);dot.setAttribute('cx',x(i));dot.setAttribute('cy',y(arr[i]))}}
+    const u=svcK==='visits'?'ครั้ง':'คน',a=cur[i],b=prv[i];
+    let h=`<b>${MN[i]}</b><br>ปีงบ ${FY}: ${a==null?'ยังไม่มีข้อมูล':fmt(a)+' '+u}`;
+    if(svcCmp)h+=`<br>ปีงบ ${svcCmp}: ${b==null?'–':fmt(b)+' '+u}`;
+    if(a!=null&&b!=null)h+=`<br>${a>=b?'เพิ่มขึ้น':'ลดลง'} ${fmt(Math.abs(a-b))} ${u}`;
+    showTip(h,e)});
+  hit.addEventListener('mouseleave',()=>{hideTip();[cross,d1,d2].forEach(o=>o.setAttribute('opacity',0))});
+}
+segInit('#svcMetric',k=>{svcK=k;drawSvc()});
+function drawFyTbl(){
+  $('#fyTbl').innerHTML='<thead><tr><th>ปีงบ</th><th>ครั้ง</th><th>คน</th><th>นอกสถานบริการ</th></tr></thead><tbody>'+
+    D.visits_fy.map(r=>`<tr style="${r.fy===FY?'background:var(--accent-soft);font-weight:600':''}"><td>${r.fy}${r.fy===CUR?' *':''}</td><td class="num">${fmt(r.visits)}</td><td class="num">${fmt(r.persons)}</td><td class="num">${pct(r.outreach,r.visits)}</td></tr>`).join('')+'</tbody>';
+}
+
+/* Diagnoses */
+function drawDx(){const L=D.top_dx[FY]||[];$('#dxTitle').textContent=`${short(FY)} · ครั้งที่วินิจฉัยเป็นโรคหลัก`;
+  if(!L.length){$('#dxList').innerHTML='<p class="note">ยังไม่มีข้อมูลการวินิจฉัยในปีงบนี้</p>';return}
+  const mx=L[0].n;
+  $('#dxList').innerHTML=L.map(r=>`<div class="dx"><div class="nm"><small class="num">${r.code}</small>${r.name}</div><div class="n num">${fmt(r.n)}</div><div class="bt"><span style="width:${100*r.n/mx}%"></span></div></div>`).join('')}
+
+/* Chronic (ทะเบียนปัจจุบัน) */
+const G=['HT','DM','COPD/หอบหืด','CKD'],GN={HT:'ความดันฯ',DM:'เบาหวาน','COPD/หอบหืด':'COPD/หอบหืด',CKD:'ไตเรื้อรัง'};
+const CV=D.chronic.by_village;
+let rowsN=P.by_village.map(v=>{const c=CV[v.village]||{},a=v.g15_59+v.g60;return `<tr><td>${v.village}</td>`+G.map(g=>`<td class="num">${fmt(c[g]||0)} <span style="color:var(--ink-3)">(${pct(c[g]||0,a)})</span></td>`).join('')+'</tr>'});
+Object.keys(CV).filter(k=>!P.by_village.some(v=>v.village===k)).forEach(k=>rowsN.push(`<tr><td>${k}</td>`+G.map(g=>`<td class="num">${fmt(CV[k][g]||0)}</td>`).join('')+'</tr>'));
+const a15=P.by_village.reduce((s,v)=>s+v.g15_59+v.g60,0);
+rowsN.push('<tr><td><b>รวม</b></td>'+G.map(g=>`<td class="num"><b>${fmt(D.chronic.totals[g]||0)}</b> <span style="color:var(--ink-3)">(${pct(D.chronic.totals[g]||0,a15)})</span></td>`).join('')+'</tr>');
+$('#ncdTbl').innerHTML='<thead><tr><th>หมู่บ้าน</th>'+G.map(g=>`<th>${GN[g]}</th>`).join('')+'</tr></thead><tbody>'+rowsN.join('')+'</tbody>';
+const other=Object.entries(D.chronic.totals).filter(([k])=>!G.includes(k)).map(([k,n])=>`${k} ${n}`).join(', ');
+$('#ncdNote').textContent=`ผู้ป่วยโรคเรื้อรังรวม ${fmt(D.chronic.any)} คน (นับคนไม่ซ้ำ) เป็นทั้งความดันและเบาหวาน ${fmt(D.chronic.ht_dm_both)} คน`+(other?` · โรคอื่นในทะเบียน: ${other}`:'');
+function meter(t,c){
+  const name=t==='HT'?'ความดันโลหิตสูง':'เบาหวาน',goal=t==='HT'?.6:.4;
+  if(!c.measured)return `<div class="meter"><b style="font-family:var(--f-display);font-size:16px">${name}</b><p class="note">ยังไม่มีผลตรวจในปีงบนี้</p></div>`;
+  const r=c.controlled/c.measured,ok=r>=goal;
+  return `<div class="meter"><div class="row"><b style="font-family:var(--f-display);font-size:16px">${name}</b><span class="pill ${ok?'good':'warn'}">${ok?'✓ ผ่านเกณฑ์':'! ต่ำกว่าเกณฑ์'} ${goal*100}%</span></div>
+  <div><span class="big num">${pct(c.controlled,c.measured)}</span> <span class="note" style="display:inline">ควบคุมได้ ${fmt(c.controlled)} จาก ${fmt(c.measured)} คนที่มีผลตรวจ</span></div>
+  <div class="track" aria-hidden="true"><div class="fill" style="width:${100*r}%"></div></div>
+  <div class="note">มีผลตรวจใน รพ.สต. ${fmt(c.measured)} จาก ${fmt(c.patients)} คน (${pct(c.measured,c.patients)})</div></div>`}
+function drawCtl(){const c=D.control[FY];$('#ctlTitle').textContent=`ผลการควบคุมโรค ${short(FY)}`;$('#ctl').innerHTML=meter('HT',c.ht)+meter('DM',c.dm)}
+
+/* Elderly */
+const E=D.elderly;
+function drawOld(){const e=E.by_fy[FY];
+  $('#oldSum').innerHTML=`<h3>ภาพรวม · ${short(FY)}</h3><div><span class="big num">${fmt(E.total)}</span> <span class="note" style="display:inline">คน (${pct(E.total,P.total)} ของประชากร)</span></div>
+  <table><tbody>
+  <tr><td>คัดกรอง ADL แล้ว</td><td class="num">${fmt(e.adl_screened)} (${pct(e.adl_screened,E.total)})</td></tr>
+  <tr><td>ติดสังคม</td><td class="num">${fmt(e.adl['ติดสังคม'])}</td></tr>
+  <tr><td>ติดบ้าน</td><td class="num">${fmt(e.adl['ติดบ้าน'])}</td></tr>
+  <tr><td>ติดเตียง</td><td class="num">${fmt(e.adl['ติดเตียง'])}</td></tr>
+  <tr><td>คัดกรองซึมเศร้า 2Q</td><td class="num">${fmt(e.dep2q_screened)} (${pct(e.dep2q_screened,E.total)})</td></tr>
+  <tr><td>เป็นความดันฯ / เบาหวาน</td><td class="num">${fmt(E.chronic_ht)} / ${fmt(E.chronic_dm)}</td></tr>
+  </tbody></table>`;
+  $('#adlTbl').innerHTML='<thead><tr><th>หมู่บ้าน</th><th>ติดสังคม</th><th>ติดบ้าน</th><th>ติดเตียง</th></tr></thead><tbody>'+
+    Object.entries(e.adl_by_village).map(([v,c])=>`<tr><td>${v}</td><td class="num">${fmt(c['ติดสังคม'])}</td><td class="num">${fmt(c['ติดบ้าน'])}</td><td class="num">${fmt(c['ติดเตียง'])}</td></tr>`).join('')+'</tbody>';
+}
+const amx=Math.max(...Object.values(E.by_age));
+$('#oldAge').innerHTML=['60-69','70-79','80+'].map(k=>`<div class="dx"><div class="nm">${k.replace('-','–')} ปี</div><div class="n num">${fmt(E.by_age[k])}</div><div class="bt"><span style="width:${100*(E.by_age[k]||0)/amx}%;background:var(--s-warm)"></span></div></div>`).join('')+
+  `<p class="note">อายุ 80 ปีขึ้นไป ${pct(E.by_age['80+'],E.total)} ของผู้สูงอายุ</p>`;
+
+/* Programs */
+const PR=[['ncd_screen','คัดกรองเบาหวาน/ความดัน (คน)'],['ncd_screen_target35','  ในจำนวนนี้ เป็นคนในเขตอายุ 35+'],['cancer_screen','คัดกรองมะเร็ง (คน)'],['dental_persons','ตรวจสุขภาพช่องปาก (คน)'],
+  ['anc_persons','หญิงตั้งครรภ์ฝากครรภ์ (คน)'],['deliveries','การคลอด (ครั้ง)'],['epi_persons','รับวัคซีน EPI (คน)'],['epi_doses','วัคซีน EPI (เข็ม)'],['fp_persons','วางแผนครอบครัว (คน)']];
+const pop35=P.pyramid.slice(7).reduce((s,r)=>s+r.male+r.female,0);
+function spark(vals,hi){const mx=Math.max(...vals)||1,n=vals.length;return `<svg viewBox="0 0 ${n*18} 22" style="width:${n*18}px;display:inline-block;vertical-align:middle" aria-hidden="true">`+vals.map((v,i)=>`<rect x="${i*18+2}" y="${22-Math.max(1,20*v/mx)}" width="14" height="${Math.max(1,20*v/mx)}" rx="2" fill="${i===hi?'var(--s-cur)':'var(--s-prev)'}"/>`).join('')+'</svg>'}
+function drawPP(){const hi=D.programs.findIndex(r=>r.fy===FY);
+  $('#ppTbl').innerHTML='<thead><tr><th>กิจกรรม</th>'+D.programs.map(r=>`<th style="${r.fy===FY?'color:var(--accent)':''}">${r.fy}${r.fy===CUR?' *':''}</th>`).join('')+'<th>แนวโน้ม</th></tr></thead><tbody>'+
+    PR.map(([k,n])=>`<tr><td style="${n.startsWith('  ')?'padding-left:22px;color:var(--ink-2)':''}">${n.trim()}</td>`+D.programs.map(r=>`<td class="num" style="${r.fy===FY?'background:var(--accent-soft);font-weight:600':''}">${fmt(r[k])}</td>`).join('')+`<td>${spark(D.programs.map(r=>r[k]),hi)}</td></tr>`).join('')+'</tbody>';
+  const p=D.programs[hi];
+  $('#ppNote').textContent=`คนในเขตอายุ 35 ปีขึ้นไปมี ${fmt(pop35)} คน ปีงบ ${FY} คัดกรองแล้ว ${fmt(p.ncd_screen_target35)} คน (${pct(p.ncd_screen_target35,pop35)}) โดยยังไม่ได้ตัดผู้ป่วยเบาหวาน/ความดันออกจากตัวหาร · * ปีงบ ${CUR} เป็นยอดสะสมถึง ${ASOF}`;
+}
+$('#ppTbl').insertAdjacentHTML('afterend','<p class="note" id="ppNote"></p>');
+
+/* Deaths */
+function drawDeaths(){
+  const R=D.deaths,W=480,H=200,L=30,B=26,T=18,mx=Math.max(10,Math.ceil(Math.max(...R.map(r=>r.total))/10)*10),iw=W-L-10,bw=Math.min(48,iw/R.length-14);
+  const host=$('#dChart');host.innerHTML='';
+  const s=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'จำนวนผู้เสียชีวิตรายปีงบ'},host);const y=v=>T+(H-T-B)*(1-v/mx);
+  for(let t=0;t<=mx;t+=10){el('line',{x1:L,x2:W-10,y1:y(t),y2:y(t),class:t?'gr':'ax'},s);const tx=el('text',{x:L-6,y:y(t)+4,'text-anchor':'end'},s);tx.textContent=t}
+  R.forEach((r,i)=>{const cx=L+iw*(i+.5)/R.length;const rc=el('rect',{x:cx-bw/2,y:y(r.total),width:bw,height:Math.max(0,y(0)-y(r.total)),rx:4,fill:r.fy===FY?'var(--s-cur)':'var(--s-prev)'},s);
+    const v=el('text',{x:cx,y:y(r.total)-6,'text-anchor':'middle','font-weight':600},s);v.style.fill='var(--ink)';v.textContent=r.total;
+    const t=el('text',{x:cx,y:H-8,'text-anchor':'middle'},s);t.textContent=r.fy+(r.fy===CUR?' *':'');
+    const hc=Object.entries(r).filter(([k])=>k!=='fy'&&k!=='total').sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${k} ${n}`).join('<br>');
+    rc.addEventListener('mousemove',e=>showTip(`<b>ปีงบ ${r.fy}: ${r.total} ราย</b><br>${hc}`,e));rc.addEventListener('mouseleave',hideTip)});
+  const r=df(FY),cs=Object.entries(r).filter(([k])=>k!=='fy'&&k!=='total').sort((a,b)=>b[1]-a[1]);
+  $('#dCauseTitle').textContent=`สาเหตุ ${short(FY)}`;
+  $('#dCause').innerHTML=cs.length?cs.map(([k,n])=>`<div class="dx"><div class="nm">${k}</div><div class="n num">${n} <span style="color:var(--ink-3);font-weight:400">${pct(n,r.total)}</span></div><div class="bt"><span style="width:${100*n/cs[0][1]}%"></span></div></div>`).join('')+
+   '<p class="note">หัวใจ/หลอดเลือดรวมกล้ามเนื้อหัวใจขาดเลือด (I21) และหัวใจล้มเหลว (I50) ซึ่งเป็นรหัสที่พบมากที่สุด</p>':'<p class="note">ไม่มีผู้เสียชีวิตในปีงบนี้</p>';
+}
+
+/* Screening coverage (data: D.screening from screening/coverage.py) */
+function scrMeter(name,n,t,goal,extra){
+  const r=t?n/t:0,ok=r>=goal;
+  return `<div class="meter"><div class="row"><b style="font-family:var(--f-display);font-size:16px">${name}</b>${goal?`<span class="pill ${ok?'good':'warn'}">${ok?'✓ ผ่านเกณฑ์':'! ต่ำกว่าเกณฑ์'} ${goal*100}%</span>`:''}</div>
+  <div><span class="big num">${pct(n,t)}</span> <span class="note" style="display:inline">คัดกรองแล้ว ${fmt(n)} จาก ${fmt(t)} คน</span></div>
+  <div class="track" aria-hidden="true"><div class="fill" style="width:${100*r}%"></div></div>${extra?`<div class="note">${extra}</div>`:''}</div>`}
+function drawScr(){
+  const S=D.screening, y=S&&S.by_fy[FY];
+  $('#scrTitle').textContent=`ความครอบคลุมการคัดกรอง ${short(FY)}`;
+  if(!y){$('#scrMeters').innerHTML='<p class="note">ไม่มีข้อมูลปีงบนี้</p>';$('#scrTbl').innerHTML='';return}
+  const T=y.total;
+  $('#scrMeters').innerHTML=scrMeter('เบาหวานและความดัน (35 ปีขึ้นไป)',T.dmht_screened,T.dmht_target,S.meta.goal_dmht,
+      `ยังไม่ได้คัดกรอง ${fmt(T.dmht_target-T.dmht_screened)} คน`)+
+    scrMeter('ซึมเศร้า 2Q (15 ปีขึ้นไป)',T.q2_screened,T.q2_target,0,
+      `ผลผิดปกติ (ควรประเมิน 9Q ต่อ) ${fmt(T.q2_positive)} คน`);
+  const seg=o=>{const n=o.ok+o.warn+o.bad;if(!n)return '<span class="note">–</span>';
+    return `<div class="stack" role="img" aria-label="ปกติ ${o.ok} เสี่ยง ${o.warn} สงสัยป่วย ${o.bad}">`+
+      [['ok','var(--good)'],['warn','var(--s-warm)'],['bad','var(--bad)']].map(([k,col])=>o[k]?`<span style="width:${100*o[k]/n}%;background:${col}" title="${o[k]}"></span>`:'').join('')+'</div>'};
+  const tr=r=>`<tr><td>${r.moo}</td><td class="num">${fmt(r.dmht_target)}</td><td class="num">${pct(r.dmht_screened,r.dmht_target)}</td>
+    <td class="num">${fmt(r.overall.ok)}</td><td class="num">${fmt(r.overall.warn)}</td><td class="num">${fmt(r.overall.bad)}</td><td class="bar">${seg(r.overall)}</td>
+    <td class="num">${pct(r.q2_screened,r.q2_target)}</td></tr>`;
+  $('#scrTbl').innerHTML='<thead><tr><th>หมู่บ้าน</th><th>เป้าหมาย</th><th>คัดกรองแล้ว</th><th>ปกติ</th><th>เสี่ยง</th><th>สงสัยป่วย</th><th></th><th>2Q</th></tr></thead><tbody>'+
+    y.by_village.map(tr).join('')+tr(Object.assign({moo:'<b>รวม</b>'},T))+'</tbody>';
+}
+
+/* HDC KPI table (data: D.kpi from kpi.py) */
+const KST={pass:['good','✓ ผ่าน'],fail:['bad','✕ ไม่ผ่าน'],progress:['info','◷ สะสมระหว่างปี'],workload:['muted','ผลงาน'],wait:['muted','รอข้อมูล'],na:['warn','คำนวณไม่ได้']};
+function drawKpiTbl(){
+  const K=D.kpi,rows=K&&K.by_fy[FY];
+  $('#kpiTitle').textContent=`ตัวชี้วัด ${short(FY)}`;
+  if(!rows){$('#kpiTbl').innerHTML='<tbody><tr><td>ไม่มีข้อมูลปีงบนี้</td></tr></tbody>';$('#kpiSum').innerHTML='';return}
+  const by=Object.fromEntries(rows.map(r=>[r.no,r]));
+  const cnt=k=>rows.filter(r=>r.status===k).length;
+  $('#kpiSum').innerHTML=[['pass','ผ่าน'],['fail','ไม่ผ่าน'],['progress','สะสมระหว่างปี']].filter(([k])=>cnt(k)).map(([k,l])=>`<span class="pill ${KST[k][0]}">${l} ${cnt(k)}</span>`).join('');
+  const tr=r=>{const [cls,lab]=KST[r.status];const p=r.pct;
+    const bar=p==null?'':`<div class="pbar" aria-hidden="true"><span style="width:${Math.min(100,p)}%;background:${r.status==='fail'?'var(--bad)':r.status==='pass'?'var(--good)':'var(--s-cur)'}"></span>${r.goal!=null?`<i style="left:${r.goal}%"></i>`:''}</div>`;
+    return `<tr><td><span class="no">${r.no}.</span>${r.name}<span class="how">${r.note}</span></td>
+      <td class="num">${r.target==null?'–':fmt(r.target)}</td><td class="num">${r.result==null?'–':fmt(r.result)+(r.unit!=='คน'?' '+r.unit:'')}</td>
+      <td class="num">${p==null?'–':p.toLocaleString('th-TH',{maximumFractionDigits:2})}${bar}</td>
+      <td><span class="pill ${cls}">${lab}</span>${r.goal!=null&&r.status!=='na'?`<span class="how">เกณฑ์ ≥${r.goal}%</span>`:''}</td></tr>`};
+  $('#kpiTbl').innerHTML='<thead><tr><th>ตัวชี้วัด</th><th>เป้าหมาย</th><th>ผลงาน</th><th>ร้อยละ</th><th>สถานะ</th></tr></thead><tbody>'+
+    K.meta.groups.map(g=>`<tr class="grp"><td colspan="5">${g.name}</td></tr>`+g.nos.filter(n=>by[n]).map(n=>tr(by[n])).join('')).join('')+'</tbody>';
+}
+
+function renderAll(){drawKpi();drawKpiTbl();drawCmpButtons();drawSvc();drawFyTbl();drawDx();drawCtl();drawOld();drawScr();drawPP();drawDeaths()}
+fySel.addEventListener('change',()=>{FY=+fySel.value;svcCmp=FY-1;renderAll()});
+renderAll();
+</script>
