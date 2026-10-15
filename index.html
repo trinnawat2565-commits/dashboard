@@ -1,43 +1,28 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>แดชบอร์ดสุขภาพดงสวนพัฒนา</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap">
 <style>
 /* Layout: แถบหัวรายงานแบบเอกสารราชการ → แถว KPI → ส่วนข้อมูลเรียงตามงานของ รพ.สต. (ประชากร, บริการ, โรค, NCD, ผู้สูงอายุ, งานส่งเสริม, การตาย) ในกริด 12 คอลัมน์ */
-:root{
-  --bg:#f1f6f4; --surface:#ffffff; --ink:#123430; --ink-2:#4a6661; --ink-3:#7d9792;
-  --line:#dbe7e3; --grid:#eaf1ef; --accent:#0f7a6f; --accent-soft:#dff1ec;
-  --band-1:#0b4a46; --band-2:#13806f; --band-ink:#f3fbf8; --band-ink-2:#bfe6dc;
-  --s-male:#2f6db5; --s-female:#e0607e; --s-cur:#13867a; --s-prev:#bccdc8;
-  --a-young:#9fdccb; --a-adult:#2a9d8f; --a-old:#1f5a66; --s-warm:#e39b3a;
-  --t-1:#e3f4ee; --t-2:#fdf1dc; --t-3:#e4eefb; --t-4:#fce7ec; --t-5:#ece9f7;
-  --good:#1f8a57; --good-soft:#e1f3e8; --warn:#a86a00; --warn-soft:#fbf0d9; --bad:#c23b3a;
+:root{ --bg:#0d1b3e; --surface:#ffffff; --ink:#14213d; --ink-2:#4a5878; --ink-3:#7d89a3; --line:#e2e7f1; --grid:#eef2f8; --accent:#2563eb; --accent-soft:#e6eefe; --band-1:#0a1530; --band-2:#16306b; --band-ink:#ffffff; --band-ink-2:#b9c8ea; --s-male:#2f6db5; --s-female:#e0607e; --s-cur:#2a78d6; --s-prev:#b8c2d6; --a-young:#9ec5f4; --a-adult:#3987e5; --a-old:#184f95; --s-warm:#f59e0b; --t-1:#eaf2fd; --t-2:#fff4e0; --t-3:#e7f6f0; --t-4:#fdecee; --t-5:#efedfb; --good:#15803d; --good-soft:#e3f6ea; --warn:#b45309; --warn-soft:#fdf0d8; --bad:#dc2626; --bg-ink:#ffffff; --bg-ink-2:#b9c8ea; --kpi-ink:#ffffff; --kpi-ink-2:#e6ecfb; --k-1:#1d4ed8; --k-2:#7c3aed; --k-3:#db2777; --k-4:#15803d; --k-5:#dc2626; --k-6:#0f766e; --title-1:#ffffff; --title-2:#ffd84d;
   --f-display:"Bai Jamjuree","IBM Plex Sans Thai",system-ui,sans-serif;
   --f-body:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0d1716; --surface:#152220; --ink:#e6f2ef; --ink-2:#a9c2bc; --ink-3:#7f9893;
-  --line:#253935; --grid:#1c2c29; --accent:#4cc3ad; --accent-soft:#143530;
-  --band-1:#0a3532; --band-2:#0f5e54; --band-ink:#eefaf6; --band-ink-2:#9fd6c8;
-  --s-male:#5b97e0; --s-female:#d9587a; --s-cur:#3fb3a2; --s-prev:#3f544f;
-  --a-young:#7fc9b6; --a-adult:#2a9d8f; --a-old:#3a7f8c; --s-warm:#d9922f;
-  --t-1:#143029; --t-2:#30260f; --t-3:#16253a; --t-4:#35182a; --t-5:#221f38;
-  --good:#5cc78c; --good-soft:#163323; --warn:#e0a83a; --warn-soft:#33280f; --bad:#e66767; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0d1716; --surface:#152220; --ink:#e6f2ef; --ink-2:#a9c2bc; --ink-3:#7f9893;
-  --line:#253935; --grid:#1c2c29; --accent:#4cc3ad; --accent-soft:#143530;
-  --band-1:#0a3532; --band-2:#0f5e54; --band-ink:#eefaf6; --band-ink-2:#9fd6c8;
-  --s-male:#5b97e0; --s-female:#d9587a; --s-cur:#3fb3a2; --s-prev:#3f544f;
-  --a-young:#7fc9b6; --a-adult:#2a9d8f; --a-old:#3a7f8c; --s-warm:#d9922f;
-  --t-1:#143029; --t-2:#30260f; --t-3:#16253a; --t-4:#35182a; --t-5:#221f38;
-  --good:#5cc78c; --good-soft:#163323; --warn:#e0a83a; --warn-soft:#33280f; --bad:#e66767; color-scheme:dark}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){ --bg:#070f24; --surface:#111d3b; --ink:#e8eefc; --ink-2:#aab8d6; --ink-3:#7f8eb0; --line:#22305a; --grid:#1a2649; --accent:#6c9cff; --accent-soft:#19295a; --band-1:#050b1c; --band-2:#0e1f48; --band-ink:#ffffff; --band-ink-2:#a9bbe6; --s-male:#3987e5; --s-female:#d9587a; --s-cur:#3987e5; --s-prev:#34446c; --a-young:#1c5cab; --a-adult:#3987e5; --a-old:#9ec5f4; --s-warm:#d9922f; --t-1:#14233d; --t-2:#2f2612; --t-3:#12291f; --t-4:#331a22; --t-5:#221f3d; --good:#4ade80; --good-soft:#12301f; --warn:#f0b44a; --warn-soft:#33280f; --bad:#f87171; --bg-ink:#ffffff; --bg-ink-2:#a9bbe6; --kpi-ink:#ffffff; --kpi-ink-2:#e6ecfb; --k-1:#1d4ed8; --k-2:#6d28d9; --k-3:#be185d; --k-4:#15803d; --k-5:#b91c1c; --k-6:#0f766e; --title-1:#ffffff; --title-2:#ffd84d; color-scheme:dark}}
+:root[data-theme="dark"]{ --bg:#070f24; --surface:#111d3b; --ink:#e8eefc; --ink-2:#aab8d6; --ink-3:#7f8eb0; --line:#22305a; --grid:#1a2649; --accent:#6c9cff; --accent-soft:#19295a; --band-1:#050b1c; --band-2:#0e1f48; --band-ink:#ffffff; --band-ink-2:#a9bbe6; --s-male:#3987e5; --s-female:#d9587a; --s-cur:#3987e5; --s-prev:#34446c; --a-young:#1c5cab; --a-adult:#3987e5; --a-old:#9ec5f4; --s-warm:#d9922f; --t-1:#14233d; --t-2:#2f2612; --t-3:#12291f; --t-4:#331a22; --t-5:#221f3d; --good:#4ade80; --good-soft:#12301f; --warn:#f0b44a; --warn-soft:#33280f; --bad:#f87171; --bg-ink:#ffffff; --bg-ink-2:#a9bbe6; --kpi-ink:#ffffff; --kpi-ink-2:#e6ecfb; --k-1:#1d4ed8; --k-2:#6d28d9; --k-3:#be185d; --k-4:#15803d; --k-5:#b91c1c; --k-6:#0f766e; --title-1:#ffffff; --title-2:#ffd84d; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
 .wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
 h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.25}
-h1{font-size:clamp(24px,4vw,34px);font-weight:700}
-h2{font-size:21px;font-weight:600;color:var(--ink)}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;background:linear-gradient(90deg,var(--title-1),var(--title-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-size:21px;font-weight:600;color:var(--bg-ink)}
+.card h2,.card h3{color:var(--ink-2)}
 section .sh h2::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--accent);margin-right:10px;vertical-align:2px}
 h3{font-size:15px;font-weight:600;color:var(--ink-2)}
 .num{font-variant-numeric:tabular-nums}
@@ -52,24 +37,33 @@ nav.sec{display:flex;flex-wrap:wrap;gap:6px}
 nav.sec a{font-size:13px;color:var(--ink-2);text-decoration:none;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
 nav.sec a:hover,nav.sec a:focus-visible{color:var(--accent);border-color:var(--accent);outline:none}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
-.kpi{background:var(--surface);border:1px solid transparent;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
-.kpi .l{font-size:13px;color:var(--ink-2);font-weight:500}
-.kpi:nth-child(1){background:var(--t-1)}.kpi:nth-child(2){background:var(--t-2)}.kpi:nth-child(3){background:var(--t-3)}.kpi:nth-child(4){background:var(--t-4)}.kpi:nth-child(5){background:var(--t-5)}
-.kpi .v{font-family:var(--f-display);font-size:30px;font-weight:600;line-height:1.15}
-.kpi .d{font-size:12.5px;color:var(--ink-3)}
+@media (min-width:1000px){.kpis{grid-template-columns:repeat(6,1fr)}}
+.kpi{position:relative;background:var(--surface);color:var(--kpi-ink);border:1px solid transparent;border-radius:14px;padding:14px 14px 14px 16px;display:flex;flex-direction:column;gap:2px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.kpi .ic{position:absolute;right:12px;top:12px;width:30px;height:30px;opacity:.9}
+.kpi .ic path,.kpi .ic circle{fill:none;stroke:var(--kpi-ink);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.kpi .l{font-size:13px;color:var(--kpi-ink-2);font-weight:600;padding-right:34px;line-height:1.35;min-height:2.7em}
+.kpi:nth-child(1){background:var(--k-1)}.kpi:nth-child(2){background:var(--k-2)}.kpi:nth-child(3){background:var(--k-3)}.kpi:nth-child(4){background:var(--k-4)}.kpi:nth-child(5){background:var(--k-5)}.kpi:nth-child(6){background:var(--k-6)}
+.kpi .v{font-family:var(--f-display);font-size:clamp(22px,2.2vw,30px);font-weight:600;line-height:1.15;white-space:nowrap}
+.kpi .d{font-size:12.5px;color:var(--kpi-ink-2)}
+.donuts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.donut{display:flex;align-items:center;gap:10px;min-width:0}
+.donut svg{width:96px;flex:none}
+.donut .lg{display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--ink-2);min-width:0}
+.donut .lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+@media (max-width:480px){.donuts{grid-template-columns:1fr}}
 section{display:flex;flex-direction:column;gap:14px;scroll-margin-top:12px}
 .sh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px}
-.sh p{margin:0;color:var(--ink-2);font-size:14px;max-width:70ch}
+.sh p{margin:0;color:var(--bg-ink-2);font-size:14px;max-width:70ch}
 .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(15,60,55,.05);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c12{grid-column:span 12}
 @media (max-width:900px){.c4,.c5,.c6,.c7,.c8{grid-column:span 12}}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--grid)}
 .seg button{font:inherit;font-size:13px;border:0;background:transparent;color:var(--ink-2);padding:5px 11px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface);font-weight:600}
 .seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-select{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+select{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
 .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--ink-2)}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .legend i.ln{height:3px;border-radius:2px;vertical-align:3px;width:16px}
@@ -99,7 +93,7 @@ td.bar{width:38%;min-width:120px}
 .dx .bt{grid-column:1/2;height:8px;background:var(--grid);border-radius:4px;overflow:hidden}
 .dx .bt span{display:block;height:100%;background:linear-gradient(90deg,var(--a-adult),var(--s-cur));border-radius:0 4px 4px 0}
 .dx .n{grid-row:1/3;grid-column:2;text-align:right;font-weight:600;white-space:nowrap;min-width:48px}
-#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12.5px;line-height:1.45;padding:7px 10px;border-radius:7px;z-index:10;max-width:260px;opacity:0;transition:opacity .1s}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--surface);font-size:12.5px;line-height:1.45;padding:7px 10px;border-radius:7px;z-index:10;max-width:260px;opacity:0;transition:opacity .1s}
 #tip b{font-weight:600}
 .hit{fill:transparent;cursor:crosshair}
 .kpi-tbl td{vertical-align:top}
@@ -113,9 +107,12 @@ td.bar{width:38%;min-width:120px}
 .pill.bad{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
 .pill.muted{background:var(--grid);color:var(--ink-2)}
 .pill.info{background:var(--t-3);color:var(--s-male)}
-footer{font-size:12.5px;color:var(--ink-3);border-top:1px solid var(--line);padding-top:14px}
+footer{font-size:12.5px;color:var(--bg-ink-2);border-top:1px solid var(--line);padding-top:14px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+</head>
+<body>
+
 
 <div class="wrap">
   <header class="top">
@@ -154,6 +151,7 @@ footer{font-size:12.5px;color:var(--ink-3);border-top:1px solid var(--line);padd
       </div>
       <div class="card c5">
         <h3>รายหมู่บ้าน</h3>
+        <div class="donuts" id="donuts"></div>
         <div class="tbl-wrap"><table id="villTbl"></table></div>
         <div class="legend" id="ageLegend"></div>
         <div id="villStacks" style="display:flex;flex-direction:column;gap:10px"></div>
@@ -278,10 +276,17 @@ function drawKpi(){
     ['ประชากรในเขต',fmt(P.total)+' คน',`${fmt(houses)} หลังคาเรือน · 3 หมู่บ้าน`],
     ['ผู้สูงอายุ 60+',fmt(D.elderly.total)+' คน',`${pct(D.elderly.total,P.total)} ของประชากร`],
     [`การรับบริการ ปีงบ ${FY}`,fmt(c.visits)+' ครั้ง',partial?`${fmt(c.persons)} คน · ยอดสะสมถึง ${ASOF}`:`${fmt(c.persons)} คน · ${c.visits>=p.visits?'เพิ่มขึ้น':'ลดลง'}จากปีก่อน ${pct(Math.abs(c.visits-p.visits),p.visits)}`],
-    ['ผู้ป่วยความดันโลหิตสูง',fmt(D.chronic.totals.HT)+' คน',`เบาหวาน ${fmt(D.chronic.totals.DM)} คน · เป็นทั้งสองโรค ${fmt(D.chronic.ht_dm_both)}`],
+    ['ผู้ป่วยความดันโลหิตสูง',fmt(D.chronic.totals.HT)+' คน',`${pct(D.chronic.totals.HT,a15)} ของคนอายุ 15+`],
+    ['ผู้ป่วยเบาหวาน',fmt(D.chronic.totals.DM)+' คน',`เป็นทั้งสองโรค ${fmt(D.chronic.ht_dm_both)} คน`],
     [`เสียชีวิต ปีงบ ${FY}`,fmt(df(FY).total)+' ราย',`ปีงบ ${FY-1}: ${fmt(df(FY-1).total)} ราย`],
   ];
-  $('#kpis').innerHTML=kp.map(([l,v,d])=>`<div class="kpi"><span class="l">${l}</span><span class="v num">${v}</span><span class="d">${d}</span></div>`).join('');
+  const IC=['<circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9" r="2.6"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6M14.5 14.6c3.3-.6 6.5 1.4 6.5 5.4"/>',
+    '<circle cx="12" cy="5.5" r="2.8"/><path d="M12 9v6M8 21l4-6 3 6M7.5 12.5 12 10l4 3M18 13v8"/>',
+    '<path d="M3 21h18M5 21V8l7-5 7 5v13M10 21v-5h4v5M12 7v4M10 9h4"/>',
+    '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/><path d="M6.5 12h3l1.5-2.5 2 4 1.5-1.5h3"/>',
+    '<path d="M12 3s6 6.6 6 11a6 6 0 0 1-12 0c0-4.4 6-11 6-11Z"/><path d="M10 15h4M12 13v4"/>',
+    '<path d="M8 3h8l3 5-7 13L5 8Z"/><path d="M5 8h14"/>'];
+  $('#kpis').innerHTML=kp.map(([l,v,d],i)=>`<div class="kpi"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${IC[i]}</svg><span class="l">${l}</span><span class="v num">${v}</span><span class="d">${d}</span></div>`).join('');
 }
 
 /* Pyramid */
@@ -305,6 +310,18 @@ function drawPyr(){
   });
 }
 sel.addEventListener('change',drawPyr);drawPyr();
+
+/* Donuts */
+function donut(parts,center){const R=40,r=26,cx=48,cy=48,tot=parts.reduce((a,p)=>a+p.v,0)||1;let a0=-Math.PI/2,h='';
+  parts.forEach(p=>{const a1=a0+2*Math.PI*p.v/tot,large=a1-a0>Math.PI?1:0,pt=(rad,a)=>[cx+rad*Math.cos(a),cy+rad*Math.sin(a)];
+    const [x0,y0]=pt(R,a0),[x1,y1]=pt(R,a1),[x2,y2]=pt(r,a1),[x3,y3]=pt(r,a0);
+    h+=`<path d="M${x0} ${y0}A${R} ${R} 0 ${large} 1 ${x1} ${y1}L${x2} ${y2}A${r} ${r} 0 ${large} 0 ${x3} ${y3}Z" fill="${p.c}" stroke="var(--surface)" stroke-width="1.5"><title>${p.l}: ${fmt(p.v)} (${pct(p.v,tot)})</title></path>`;a0=a1});
+  return `<svg viewBox="0 0 96 96" role="img" aria-label="${parts.map(p=>p.l+' '+p.v).join(', ')}">${h}<text x="48" y="52" text-anchor="middle" style="font-weight:600;font-size:13px;fill:var(--ink)">${center}</text></svg>`+
+    `<div class="lg">${parts.map(p=>`<span><i style="background:${p.c}"></i>${p.l} <b class="num">${pct(p.v,tot)}</b></span>`).join('')}</div>`}
+(function(){const VC=['var(--k-1)','var(--k-2)','var(--k-6)'];
+  const sx=P.by_village.reduce((a,v)=>(a.m+=v.male,a.f+=v.female,a),{m:0,f:0});
+  $('#donuts').innerHTML=`<div class="donut">${donut(P.by_village.map((v,i)=>({l:v.village.split(' ')[0],v:v.pop,c:VC[i%3]})),'หมู่บ้าน')}</div>`+
+    `<div class="donut">${donut([{l:'ชาย',v:sx.m,c:'var(--s-male)'},{l:'หญิง',v:sx.f,c:'var(--s-female)'}],'เพศ')}</div>`;})();
 
 /* Village table + age stacks */
 const AG=[['g0_14','0–14 ปี','var(--a-young)'],['g15_59','15–59 ปี','var(--a-adult)'],['g60','60 ปีขึ้นไป','var(--a-old)']];
@@ -485,3 +502,6 @@ function renderAll(){drawKpi();drawKpiTbl();drawCmpButtons();drawSvc();drawFyTbl
 fySel.addEventListener('change',()=>{FY=+fySel.value;svcCmp=FY-1;renderAll()});
 renderAll();
 </script>
+
+</body>
+</html>
