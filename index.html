@@ -33,6 +33,17 @@ header.top{margin-top:20px;padding:26px 28px;border-radius:16px;background:linea
 .stamp{font-size:13px;color:var(--band-ink-2);text-align:right;background:rgba(255,255,255,.1);padding:8px 12px;border-radius:10px}
 .stamp b{color:var(--band-ink);font-weight:600}
 .stamp select{margin-bottom:4px;font-weight:600}
+nav.sec a.home-link{color:var(--accent);border-color:var(--accent);font-weight:600}
+body.is-home nav.sec, body.is-home section{display:none}
+body:not(.is-home) #home{display:none}
+#home .intro{color:var(--bg-ink-2);font-size:14.5px;margin:4px 0 14px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.tile{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--tc);border-radius:14px;padding:14px 16px 12px;transition:transform .12s,box-shadow .12s}
+.tile:hover,.tile:focus-visible{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.18);outline:none;border-color:var(--tc)}
+.tile .t{font-size:14px;font-weight:700;color:var(--ink-2);display:flex;justify-content:space-between;gap:8px;align-items:center}
+.tile .v{font-family:var(--f-display);font-size:26px;font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .s{font-size:12.5px;color:var(--ink-3);min-height:2.6em}
+.tile .go{font-size:12.5px;color:var(--accent);font-weight:600;margin-top:auto}
 nav.sec{display:flex;flex-wrap:wrap;gap:6px}
 nav.sec a{font-size:13px;color:var(--ink-2);text-decoration:none;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
 nav.sec a:hover,nav.sec a:focus-visible{color:var(--accent);border-color:var(--accent);outline:none}
@@ -135,11 +146,17 @@ footer{font-size:12.5px;color:var(--bg-ink-2);border-top:1px solid var(--line);p
   </header>
 
   <nav class="sec" aria-label="ส่วนของแดชบอร์ด">
-    <a href="#kpi">ตัวชี้วัด HDC</a><a href="#pop">ประชากร</a><a href="#svc">การรับบริการ</a><a href="#dx">โรคที่พบบ่อย</a>
+    <a href="#home" class="home-link">← หน้าแรก</a>    <a href="#kpi">ตัวชี้วัด HDC</a><a href="#pop">ประชากร</a><a href="#svc">การรับบริการ</a><a href="#dx">โรคที่พบบ่อย</a>
     <a href="#ncd">โรคเรื้อรัง</a><a href="#epi">ระบาดวิทยา NCD</a><a href="#cvd">CVD Risk</a><a href="#scr">การคัดกรอง</a><a href="#hep">ไวรัสตับอักเสบ B/C</a><a href="#old">ผู้สูงอายุ</a><a href="#ttm">แพทย์แผนไทย</a><a href="#pp">งานส่งเสริมป้องกัน</a><a href="#death">การตาย</a>
   </nav>
 
   <div class="kpis" id="kpis"></div>
+
+  <div id="home">
+    <h2>ภาพรวมทุกด้าน</h2>
+    <p class="intro" id="homeIntro"></p>
+    <div class="tiles" id="tiles"></div>
+  </div>
 
   <section id="kpi">
     <div class="sh"><h2>ตัวชี้วัด HDC</h2><p>คำนวณจากข้อมูล JHCIS ของ รพ.สต. ตามนิยาม HDC เท่าที่ข้อมูลมี ตัวเลขอาจต่างจาก HDC จริง เพราะบริการที่หน่วยอื่นบันทึกจะไม่ถูกนับ</p></div>
@@ -604,6 +621,38 @@ function drawTtm(){
   $('#ttmDrugs').innerHTML=lst(x.top_drugs);$('#ttmDx').innerHTML=lst(x.top_dx,1);
 }
 
+/* Home page */
+function drawHome(){
+  const K=(D.kpi&&D.kpi.by_fy[FY])||[],pass=K.filter(r=>r.status==='pass').length,judged=K.filter(r=>['pass','fail'].includes(r.status)).length;
+  const sc=D.screening&&D.screening.by_fy[FY],T=sc&&sc.total,cv=D.cvd.by_fy[FY].estimated,hi=cv.levels.slice(2).reduce((a,l)=>a+l.n,0);
+  const hp=D.hep.by_fy[FY].slice(-1)[0],tt=D.ttm[FY],ep=D.ncd_epi.diseases.HT,ept=ep.trend.find(r=>r.fy===FY)||{},dx=(D.top_dx[FY]||[])[0];
+  const e=D.elderly.by_fy[FY],c=D.control[FY],v=vf(FY),pr=D.programs.find(r=>r.fy===FY)||{},dd=df(FY);
+  const pill=(ok,t)=>`<span class="pill ${ok?'good':'warn'}">${ok?'✓':'!'} ${t}</span>`;
+  const tiles=[
+    judged?['kpi','ตัวชี้วัด HDC',`ผ่าน ${pass} จาก ${judged} ข้อ`,`ที่ประเมินได้ จากทั้งหมด ${K.length} ข้อ ${short(FY)}`]
+      :['kpi','ตัวชี้วัด HDC',`ระหว่างปี ${K.length} ข้อ`,(()=>{const L=(D.kpi&&D.kpi.by_fy[FY-1])||[];return L.length?`ปีงบ ${FY-1} ผ่าน ${L.filter(r=>r.status==='pass').length} จาก ${L.filter(r=>['pass','fail'].includes(r.status)).length} ข้อ`:'ยังไม่ครบปี'})()],
+    ['pop','ประชากร',fmt(P.total)+' คน',`${fmt(houses)} หลังคาเรือน · ผู้สูงอายุ ${pct(D.elderly.total,P.total)}`],
+    ['svc','การรับบริการ',fmt(v.visits)+' ครั้ง',`${fmt(v.persons)} คน · นอกสถานบริการ ${pct(v.outreach,v.visits)}`],
+    ['dx','โรคที่พบบ่อย',dx?dx.name:'–',dx?`${dx.code} · ${fmt(dx.n)} ครั้ง (อันดับ 1)`:'ยังไม่มีข้อมูล'],
+    ['ncd','โรคเรื้อรัง',`HT ${fmt(D.chronic.totals.HT)} · DM ${fmt(D.chronic.totals.DM)}`,`ควบคุมความดันได้ ${pct(c.ht.controlled,c.ht.measured)} · เบาหวาน ${pct(c.dm.controlled,c.dm.measured)}`,c.ht.measured?pill(c.ht.controlled/c.ht.measured>=.6,'HT 60%'):''],
+    ['epi','ระบาดวิทยา NCD',`${(ept.prev_rate??ep.prev_rate).toLocaleString('th-TH')} ต่อ 1,000`,`ความชุกความดันโลหิตสูง (15+) · รายใหม่ ${typeof ept.new==='string'?ept.new:fmt(ept.new||0)} คน`],
+    ['cvd','CVD Risk',`เสี่ยงสูง ${fmt(hi)} คน`,`${pct(hi,cv.assessed)} ของผู้ป่วย DM/HT 35–70 ปีที่ประเมินได้`],
+    ['scr','การคัดกรอง DM/HT',T?pct(T.dmht_screened,T.dmht_target):'–',T?`${fmt(T.dmht_screened)} จาก ${fmt(T.dmht_target)} คน · 2Q ${pct(T.q2_screened,T.q2_target)}`:'ไม่มีข้อมูลปีงบนี้',T?pill(T.dmht_screened/T.dmht_target>=.9,'90%'):''],
+    ['hep','ไวรัสตับอักเสบ B/C',`เป้าหมาย ${fmt(hp.target)} คน`,`ตรวจในปีงบ ${fmt(hp.screened)} คน (${pct(hp.screened,hp.target)}) · สะสม ${pct(hp.cum_both,hp.eligible)}`],
+    ['old','ผู้สูงอายุ',fmt(D.elderly.total)+' คน',`คัดกรอง ADL ${pct(e.adl_screened,D.elderly.total)} · ติดบ้าน ${fmt(e.adl['ติดบ้าน']||0)} ติดเตียง ${fmt(e.adl['ติดเตียง']||0)}`],
+    ['ttm','แพทย์แผนไทย',fmt(tt.visits)+' ครั้ง',`${fmt(tt.persons)} คน · ${pct(tt.opd_ttm,tt.opd)} ของผู้ป่วยนอก`,tt.opd?pill(tt.opd_ttm/tt.opd>=.35,'35%'):''],
+    ['pp','งานส่งเสริมป้องกัน',`ฝากครรภ์ ${fmt(pr.anc_persons||0)} คน`,`คลอด ${fmt(pr.deliveries||0)} · วัคซีน ${fmt(pr.epi_persons||0)} คน · ช่องปาก ${fmt(pr.dental_persons||0)} คน`],
+    ['death','การตาย',fmt(dd.total)+' ราย',`ปีงบ ${FY-1}: ${fmt(df(FY-1).total)} ราย`],
+  ];
+  const TC=['var(--k-1)','var(--k-2)','var(--k-3)','var(--k-4)','var(--k-5)','var(--k-6)'];
+  $('#tiles').innerHTML=tiles.map(([id,t,v,s,p],i)=>`<a class="tile" href="#${id}" style="--tc:${TC[i%6]}"><div class="t">${t}${p||''}</div><div class="v num" title="${v}">${v}</div><div class="s">${s}</div><div class="go">ดูรายละเอียด →</div></a>`).join('');
+  $('#homeIntro').textContent=`สรุป ${short(FY)} · กดที่การ์ดเพื่อดูรายละเอียดแต่ละด้าน · เปลี่ยนปีงบได้ที่มุมขวาบน`;
+}
+function route(){const h=location.hash.slice(1),t=h&&h!=='home'&&document.getElementById(h);
+  document.body.classList.toggle('is-home',!t);
+  if(t)requestAnimationFrame(()=>t.scrollIntoView({block:'start'}));else window.scrollTo(0,0)}
+addEventListener('hashchange',route);
+
 /* Elderly */
 const E=D.elderly;
 function drawOld(){const e=E.by_fy[FY];
@@ -697,9 +746,9 @@ function drawKpiTbl(){
     K.meta.groups.map(g=>`<tr class="grp"><td colspan="5">${g.name}</td></tr>`+g.nos.filter(n=>by[n]).map(n=>tr(by[n])).join('')).join('')+'</tbody>';
 }
 
-function renderAll(){drawKpi();drawKpiTbl();drawCmpButtons();drawSvc();drawFyTbl();drawDx();drawCtl();drawEpi();drawCvd();drawOld();drawScr();drawHep();drawTtm();drawPP();drawDeaths()}
+function renderAll(){drawKpi();drawHome();drawKpiTbl();drawCmpButtons();drawSvc();drawFyTbl();drawDx();drawCtl();drawEpi();drawCvd();drawOld();drawScr();drawHep();drawTtm();drawPP();drawDeaths()}
 fySel.addEventListener('change',()=>{FY=+fySel.value;svcCmp=FY-1;renderAll()});
-renderAll();
+renderAll();route();
 </script>
 
 </body>
