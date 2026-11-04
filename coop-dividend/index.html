@@ -53,36 +53,61 @@ tbody tr:hover td{background:var(--bg)}
 tfoot td{font-weight:600;color:var(--g2);border-bottom:none}
 .note{font-size:13px;color:var(--mut);margin-top:10px}
 .hint{font-size:13px;color:var(--mut);margin-top:-6px;margin-bottom:10px}
-.btn{width:100%;border:none;background:linear-gradient(135deg,#8a1a38,#b02a50);color:#fff;border-radius:12px;padding:10px 14px;font:inherit;font-size:15px;font-weight:500;cursor:pointer;margin-top:6px}
-.btn:hover{filter:brightness(1.08)}
+.btn{width:100%;border:1.5px solid var(--line);background:transparent;color:var(--g2);border-radius:12px;padding:9px 14px;font:inherit;font-size:14.5px;font-weight:500;cursor:pointer}
+.btn:hover{background:var(--rose);border-color:var(--rose)}
 .foot{text-align:center;font-size:13px;color:var(--mut);margin-top:24px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 8px 24px rgba(110,18,41,.08);align-self:start;position:sticky;top:16px}
+@media (max-width:820px){.panel{position:static}}
+.ph h2{font-size:19px;font-weight:600;margin:0}
+.priv{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);margin:2px 0 14px}.priv svg{width:14px;height:14px}
+.grp{background:var(--bg);border-radius:16px;padding:14px 14px 4px;margin-bottom:12px}
+.gh{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.gi{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff}.gi svg{width:20px;height:20px}
+.g-a{background:linear-gradient(135deg,#8a1a38,#b02a50)}.g-b{background:linear-gradient(135deg,#c2385f,#e8879f)}
+.gt{font-weight:600;font-size:16px;line-height:1.2}.gs{font-size:12.5px;color:var(--mut)}
+.ifield{display:flex;align-items:center;background:var(--card);border:1.5px solid var(--line);border-radius:12px;height:44px;padding:0 12px;transition:border-color .15s,box-shadow .15s}
+.ifield:focus-within{border-color:var(--g2);box-shadow:0 0 0 4px rgba(155,28,63,.13)}
+.ifield input{flex:1;min-width:0;border:none!important;background:transparent!important;height:100%;box-shadow:none!important;padding:0 8px;font-size:17px;font-weight:500;text-align:right}
+.ifield input::placeholder{font-weight:400;color:#c3aab2;font-size:15px}
+.ifield .pre{color:var(--g2);font-weight:600}.ifield .suf{font-size:13px;color:var(--mut)}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}input[type=number]{-moz-appearance:textfield}
+.rng{-webkit-appearance:none;appearance:none;height:8px;border-radius:99px;background:var(--line);outline:none;margin:6px 0 2px}
+.rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:4px solid var(--g2);box-shadow:0 2px 6px rgba(110,18,41,.3);cursor:pointer}
+.rng::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:4px solid var(--g2);cursor:pointer}
+.scale{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mut)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:12px}
+.seg button{border:none;background:transparent;border-radius:9px;padding:8px 6px;font:inherit;font-size:13.5px;color:var(--mut);cursor:pointer}
+.seg button.on{background:linear-gradient(135deg,#8a1a38,#b02a50);color:#fff;font-weight:500;box-shadow:0 3px 8px rgba(110,18,41,.25)}
+.estbox{background:var(--rose);color:var(--g2);border-radius:10px;padding:8px 12px;font-size:14px;margin:-2px 0 12px}
 </style>
 </head>
 <body>
 <header class="hero"><div class="in"><span class="badge">เครื่องคำนวณสำหรับสมาชิก</span><h1>คำนวณปันผล-เฉลี่ยคืน</h1><p class="sub">สหกรณ์ออมทรัพย์สาธารณสุขกาฬสินธุ์ จำกัด · ใส่อัตราตามมติประชุมใหญ่ของปีนั้น ผลลัพธ์เป็นค่าประมาณ<br>เครื่องมือช่วยคำนวณส่วนบุคคล ไม่ใช่ระบบทางการของสหกรณ์ ยอดจริงให้ยึดตามประกาศของสหกรณ์</p></div></header>
 <div class="wrap">
 <div class="grid main">
-<div class="card">
-<h2><span class="dot"></span>กรอกข้อมูลของคุณ</h2>
-<p class="hint" style="margin-top:-4px">ตัวเลขที่กรอกเก็บไว้ในเครื่องของคุณเท่านั้น ไม่ถูกส่งไปที่ใด</p>
-<div class="sec s1">หุ้น → ปันผล</div>
-<div class="f"><label for="op">ทุนเรือนหุ้นยกมาต้นปีบัญชี (บาท)</label><input id="op" type="number" min="0" step="100" placeholder="เช่น 300000" inputmode="decimal"></div>
-<div class="f"><label for="mo">ส่งค่าหุ้นรายเดือน (บาท)</label><input id="mo" type="number" min="0" step="50" placeholder="เช่น 2000" inputmode="decimal"></div>
-<div class="f"><label for="nm">จำนวนเดือนที่ส่งหุ้นในปีนี้ <b id="nmv"></b></label><input id="nm" type="range" min="0" max="12" step="1" value="12"></div>
-<div class="f"><label for="dr">อัตราปันผล <b id="drv"></b></label><input id="dr" type="range" min="0" max="10" step="0.05" value="6"></div>
-
-<div class="sec s2">เงินกู้ → เฉลี่ยคืน</div>
-<div class="f"><label for="mode">วิธีกรอกดอกเบี้ย</label>
-<select id="mode"><option value="direct">ใส่ดอกเบี้ยสะสมทั้งปี (จากใบเสร็จ)</option><option value="est">ประมาณจากยอดหนี้ × อัตราดอกเบี้ย</option></select></div>
-<div id="dDirect"><div class="f"><label for="it">ดอกเบี้ยเงินกู้ที่จ่ายทั้งปี (บาท)</label><input id="it" type="number" min="0" step="100" placeholder="ดูจากใบเสร็จเดือนสุดท้ายของปีบัญชี" inputmode="decimal"></div></div>
+<aside class="panel">
+<div class="ph"><div><h2>กรอกข้อมูลของคุณ</h2><p class="priv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>ข้อมูลเก็บในเครื่องคุณเท่านั้น</p></div></div>
+<section class="grp">
+<div class="gh"><span class="gi g-a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/></svg></span><div><div class="gt">หุ้นสะสม</div><div class="gs">ใช้คิดเงินปันผล</div></div></div>
+<div class="f"><label for="op">ทุนเรือนหุ้นยกมาต้นปีบัญชี</label><div class="ifield"><span class="pre">฿</span><input id="op" type="number" min="0" step="100" placeholder="300,000" inputmode="decimal"><span class="suf">บาท</span></div></div>
+<div class="f"><label for="mo">ส่งค่าหุ้นรายเดือน</label><div class="ifield"><span class="pre">฿</span><input id="mo" type="number" min="0" step="50" placeholder="2,000" inputmode="decimal"><span class="suf">บาท</span></div></div>
+<div class="f"><label for="nm">จำนวนเดือนที่ส่งหุ้นในปีนี้ <b id="nmv"></b></label><input class="rng" id="nm" type="range" min="0" max="12" step="1" value="12"><div class="scale"><span>0</span><span>12 เดือน</span></div></div>
+<div class="f"><label for="dr">อัตราปันผล <b id="drv"></b></label><input class="rng" id="dr" type="range" min="0" max="10" step="0.05" value="6"><div class="scale"><span>0%</span><span>10%</span></div></div>
+</section>
+<section class="grp">
+<div class="gh"><span class="gi g-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20M6 15h4"/></svg></span><div><div class="gt">เงินกู้</div><div class="gs">ใช้คิดเงินเฉลี่ยคืน</div></div></div>
+<input type="hidden" id="mode" value="direct">
+<div class="seg" role="tablist"><button type="button" data-m="direct" class="on">ดอกเบี้ยจากใบเสร็จ</button><button type="button" data-m="est">ประมาณจากยอดหนี้</button></div>
+<div id="dDirect"><div class="f"><label for="it">ดอกเบี้ยเงินกู้ที่จ่ายทั้งปี</label><div class="ifield"><span class="pre">฿</span><input id="it" type="number" min="0" step="100" placeholder="ดูใบเสร็จเดือนสุดท้าย" inputmode="decimal"><span class="suf">บาท</span></div></div></div>
 <div id="dEst" hidden>
-<div class="f"><label for="lb">ยอดหนี้คงเหลือเฉลี่ยทั้งปี (บาท)</label><input id="lb" type="number" min="0" step="1000" placeholder="เช่น 700000" inputmode="decimal"></div>
-<div class="f"><label for="lr">อัตราดอกเบี้ยเงินกู้ <b id="lrv"></b></label><input id="lr" type="range" min="0" max="10" step="0.05" value="5.75"></div>
-<p class="hint">ดอกเบี้ยโดยประมาณ <b id="itEst"></b> บาท</p>
+<div class="f"><label for="lb">ยอดหนี้คงเหลือเฉลี่ยทั้งปี</label><div class="ifield"><span class="pre">฿</span><input id="lb" type="number" min="0" step="1000" placeholder="700,000" inputmode="decimal"><span class="suf">บาท</span></div></div>
+<div class="f"><label for="lr">อัตราดอกเบี้ยเงินกู้ <b id="lrv"></b></label><input class="rng" id="lr" type="range" min="0" max="10" step="0.05" value="5.75"><div class="scale"><span>0%</span><span>10%</span></div></div>
+<div class="estbox">ดอกเบี้ยโดยประมาณ <b id="itEst"></b> บาท</div>
 </div>
-<div class="f"><label for="rr">อัตราเฉลี่ยคืน <b id="rrv"></b></label><input id="rr" type="range" min="0" max="30" step="0.25" value="10"></div>
+<div class="f"><label for="rr">อัตราเฉลี่ยคืน <b id="rrv"></b></label><input class="rng" id="rr" type="range" min="0" max="30" step="0.25" value="10"><div class="scale"><span>0%</span><span>30%</span></div></div>
+</section>
 <button class="btn" id="reset" type="button">ล้างข้อมูลที่กรอก</button>
-</div>
+</aside>
 
 <div class="grid" style="align-content:start">
 <div class="grid kpis">
@@ -118,12 +143,15 @@ const DEF={op:'',mo:'',nm:12,dr:6,mode:'direct',it:'',lb:'',lr:5.75,rr:10};
 const ids=Object.keys(DEF);
 function load(){try{const s=JSON.parse(localStorage.getItem('ksnDiv2')||'null');if(s)ids.forEach(k=>{if(s[k]!==undefined)$(k).value=s[k]});}catch(e){}}
 function save(){try{const o={};ids.forEach(k=>o[k]=$(k).value);localStorage.setItem('ksnDiv2',JSON.stringify(o));}catch(e){}}
+function paint(){document.querySelectorAll('.rng').forEach(r=>{const p=(r.value-r.min)/(r.max-r.min)*100;r.style.background='linear-gradient(90deg,#8a1a38,#c2385f '+p+'%,var(--line) '+p+'%)';});
+document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.m===$('mode').value));}
+document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{$('mode').value=b.dataset.m;calc();}));
 let chart;
 function dividend(op,mo,nm,r){let b=0;for(let i=1;i<=nm;i++)b+=mo*r*(12-i)/12;return op*r+b;}
 function calc(){
 const op=+$('op').value||0,mo=+$('mo').value||0,nm=+$('nm').value,dr=+$('dr').value,rr=+$('rr').value,mode=$('mode').value;
 $('nmv').textContent=nm+' เดือน';$('drv').textContent=dr.toFixed(2)+'%';$('rrv').textContent=rr.toFixed(2)+'%';$('lrv').textContent=(+$('lr').value).toFixed(2)+'%';
-$('dDirect').hidden=mode!=='direct';$('dEst').hidden=mode==='direct';
+paint();$('dDirect').hidden=mode!=='direct';$('dEst').hidden=mode==='direct';
 const est=(+$('lb').value||0)*(+$('lr').value)/100;$('itEst').textContent=fmt(est);
 const it=mode==='direct'?(+$('it').value||0):est;
 const D=dividend(op,mo,nm,dr/100),R=it*rr/100,shares=op+mo*nm;
