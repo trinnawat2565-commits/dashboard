@@ -51,24 +51,25 @@ tfoot td{font-weight:600}
 
 <div class="grid main">
 <div class="card">
-<h2>ข้อมูลของฉัน</h2>
+<h2>กรอกข้อมูลของคุณ</h2>
+<p class="hint" style="margin-top:-4px">ตัวเลขที่กรอกเก็บไว้ในเครื่องของคุณเท่านั้น ไม่ถูกส่งไปที่ใด</p>
 <div class="sec">หุ้น</div>
-<div class="f"><label for="op">ทุนเรือนหุ้นยกมาต้นปีบัญชี (บาท)</label><input id="op" type="number" min="0" step="100" value="300000"></div>
-<div class="f"><label for="mo">ส่งค่าหุ้นรายเดือน (บาท)</label><input id="mo" type="number" min="0" step="50" value="2000"></div>
+<div class="f"><label for="op">ทุนเรือนหุ้นยกมาต้นปีบัญชี (บาท)</label><input id="op" type="number" min="0" step="100" placeholder="เช่น 300000" inputmode="decimal"></div>
+<div class="f"><label for="mo">ส่งค่าหุ้นรายเดือน (บาท)</label><input id="mo" type="number" min="0" step="50" placeholder="เช่น 2000" inputmode="decimal"></div>
 <div class="f"><label for="nm">จำนวนเดือนที่ส่งหุ้นในปีนี้ <b id="nmv"></b></label><input id="nm" type="range" min="0" max="12" step="1" value="12"></div>
 <div class="f"><label for="dr">อัตราปันผล <b id="drv"></b></label><input id="dr" type="range" min="0" max="10" step="0.05" value="6"></div>
 
 <div class="sec">เงินกู้</div>
 <div class="f"><label for="mode">วิธีกรอกดอกเบี้ย</label>
 <select id="mode"><option value="direct">ใส่ดอกเบี้ยสะสมทั้งปี (จากใบเสร็จ)</option><option value="est">ประมาณจากยอดหนี้ × อัตราดอกเบี้ย</option></select></div>
-<div id="dDirect"><div class="f"><label for="it">ดอกเบี้ยเงินกู้ที่จ่ายทั้งปี (บาท)</label><input id="it" type="number" min="0" step="100" value="40000"></div></div>
+<div id="dDirect"><div class="f"><label for="it">ดอกเบี้ยเงินกู้ที่จ่ายทั้งปี (บาท)</label><input id="it" type="number" min="0" step="100" placeholder="ดูจากใบเสร็จเดือนสุดท้ายของปีบัญชี" inputmode="decimal"></div></div>
 <div id="dEst" hidden>
-<div class="f"><label for="lb">ยอดหนี้คงเหลือเฉลี่ยทั้งปี (บาท)</label><input id="lb" type="number" min="0" step="1000" value="700000"></div>
+<div class="f"><label for="lb">ยอดหนี้คงเหลือเฉลี่ยทั้งปี (บาท)</label><input id="lb" type="number" min="0" step="1000" placeholder="เช่น 700000" inputmode="decimal"></div>
 <div class="f"><label for="lr">อัตราดอกเบี้ยเงินกู้ <b id="lrv"></b></label><input id="lr" type="range" min="0" max="10" step="0.05" value="5.75"></div>
 <p class="hint">ดอกเบี้ยโดยประมาณ <b id="itEst"></b> บาท</p>
 </div>
 <div class="f"><label for="rr">อัตราเฉลี่ยคืน <b id="rrv"></b></label><input id="rr" type="range" min="0" max="30" step="0.25" value="10"></div>
-<button class="btn" id="reset" type="button">ล้างค่ากลับเป็นตัวอย่าง</button>
+<button class="btn" id="reset" type="button">ล้างข้อมูลที่กรอก</button>
 </div>
 
 <div class="grid" style="align-content:start">
@@ -100,10 +101,10 @@ tfoot td{font-weight:600}
 <script>
 const $=id=>document.getElementById(id);
 const fmt=(n,d=2)=>n.toLocaleString('th-TH',{minimumFractionDigits:d,maximumFractionDigits:d});
-const DEF={op:300000,mo:2000,nm:12,dr:6,mode:'direct',it:40000,lb:700000,lr:5.75,rr:10};
+const DEF={op:'',mo:'',nm:12,dr:6,mode:'direct',it:'',lb:'',lr:5.75,rr:10};
 const ids=Object.keys(DEF);
-function load(){try{const s=JSON.parse(localStorage.getItem('ksnDiv')||'null');if(s)ids.forEach(k=>{if(s[k]!==undefined)$(k).value=s[k]});}catch(e){}}
-function save(){try{const o={};ids.forEach(k=>o[k]=$(k).value);localStorage.setItem('ksnDiv',JSON.stringify(o));}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem('ksnDiv2')||'null');if(s)ids.forEach(k=>{if(s[k]!==undefined)$(k).value=s[k]});}catch(e){}}
+function save(){try{const o={};ids.forEach(k=>o[k]=$(k).value);localStorage.setItem('ksnDiv2',JSON.stringify(o));}catch(e){}}
 let chart;
 function dividend(op,mo,nm,r){let b=0;for(let i=1;i<=nm;i++)b+=mo*r*(12-i)/12;return op*r+b;}
 function calc(){
@@ -113,9 +114,11 @@ $('dDirect').hidden=mode!=='direct';$('dEst').hidden=mode==='direct';
 const est=(+$('lb').value||0)*(+$('lr').value)/100;$('itEst').textContent=fmt(est);
 const it=mode==='direct'?(+$('it').value||0):est;
 const D=dividend(op,mo,nm,dr/100),R=it*rr/100,shares=op+mo*nm;
-$('kD').textContent=fmt(D);$('kDs').textContent='หุ้นสิ้นปี '+fmt(shares,0)+' บาท';
+const empty=!op&&!mo&&!it;
+if(empty){['kD','kR','kT'].forEach(k=>$(k).textContent='-');$('kDs').textContent='กรอกยอดหุ้นเพื่อเริ่มคำนวณ';$('kRs').textContent='กรอกดอกเบี้ยเงินกู้ (ถ้ามี)';$('kTs').textContent='';}
+else{$('kD').textContent=fmt(D);$('kDs').textContent='หุ้นสิ้นปี '+fmt(shares,0)+' บาท';
 $('kR').textContent=fmt(R);$('kRs').textContent='จากดอกเบี้ย '+fmt(it,0)+' บาท';
-$('kT').textContent=fmt(D+R);$('kTs').textContent='เฉลี่ยเดือนละ '+fmt((D+R)/12)+' บาท';
+$('kT').textContent=fmt(D+R);$('kTs').textContent='เฉลี่ยเดือนละ '+fmt((D+R)/12)+' บาท';}
 const tb=$('tb');tb.textContent='';
 const row=(a,b,c,d)=>{const tr=document.createElement('tr');[a,b,c,d].forEach(x=>{const td=document.createElement('td');td.textContent=x;tr.appendChild(td)});tb.appendChild(tr);};
 row('หุ้นยกมา',fmt(op,0),'12/12',fmt(op*dr/100));
