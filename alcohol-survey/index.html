@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>แดชบอร์ดลดละเลิกเหล้า</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap">
+<style>
+/* Layout: a colour-coded app shell; each of the 7 questionnaire sections owns one hue that recurs on its tab, its form card and the charts that come from it. */
+:root{
+  --bg:#F4F5FA; --surface:#FFFFFF; --sunk:#EEF0F7; --ink:#1A1F33; --muted:#5B6280; --line:#E1E4EE;
+  --accent:#E0436E; --accent-ink:#FFFFFF;
+  --s1:#3A6BE0; --s2:#E0436E; --s3:#EE8A2A; --s4a:#119E96; --s4b:#8650D6; --s5:#D9A21C; --s6:#2C9A58; --s7:#D5473A;
+  --good:#2C9A58; --warn:#E5A81E; --bad:#E06A2A; --crit:#C8323B;
+  --shadow:0 1px 2px rgba(26,31,51,.06),0 6px 18px rgba(26,31,51,.06);
+  --f-display:"Bai Jamjuree","IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11141F; --surface:#1A1E2D; --sunk:#151927; --ink:#ECEEF6; --muted:#A1A8C3; --line:#2B3147;
+  --accent:#FF6690; --accent-ink:#1A0C12;
+  --s1:#6E95FF; --s2:#FF6690; --s3:#FFA552; --s4a:#3CC9C0; --s4b:#AD82FF; --s5:#F2C24A; --s6:#4CC983; --s7:#FF7466;
+  --good:#4CC983; --warn:#F2C24A; --bad:#FF8E52; --crit:#FF5C66;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11141F; --surface:#1A1E2D; --sunk:#151927; --ink:#ECEEF6; --muted:#A1A8C3; --line:#2B3147;
+  --accent:#FF6690; --accent-ink:#1A0C12;
+  --s1:#6E95FF; --s2:#FF6690; --s3:#FFA552; --s4a:#3CC9C0; --s4b:#AD82FF; --s5:#F2C24A; --s6:#4CC983; --s7:#FF7466;
+  --good:#4CC983; --warn:#F2C24A; --bad:#FF8E52; --crit:#FF5C66;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
+*{box-sizing:border-box}
+html{color-scheme:light}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.25}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.num{font-variant-numeric:tabular-nums}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* header */
+header.top{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.spectrum{display:flex;height:5px}
+.spectrum i{flex:1}
+.toprow{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:12px}
+.brand{display:flex;flex-direction:column;min-width:0;margin-right:auto}
+.brand h1{font-size:1.3rem;font-weight:700}
+.brand small{color:var(--muted);font-size:.82rem}
+nav.tabs{display:flex;gap:4px;max-width:100%;overflow-x:auto;background:var(--sunk);padding:4px;border-radius:999px}
+nav.tabs button{border:0;background:transparent;padding:7px 16px;border-radius:999px;cursor:pointer;font-weight:600;color:var(--muted);white-space:nowrap}
+nav.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+@media (max-width:600px){nav.tabs{order:3;width:100%}nav.tabs button{padding:7px 12px;flex:1 0 auto}}
+.status{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.dot.ok{background:var(--good)} .dot.warn{background:var(--warn)}
+
+main{padding-block:24px 120px}
+.view[hidden]{display:none}
+.banner{background:var(--sunk);border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:.88rem;color:var(--muted);margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.banner b{color:var(--ink)}
+
+/* buttons */
+.btn{border:1px solid var(--line);background:var(--surface);padding:8px 16px;border-radius:10px;cursor:pointer;font-weight:600}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent}
+.btn.sm{padding:4px 10px;font-size:.85rem;border-radius:8px}
+.btn.danger{color:var(--crit)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* dashboard */
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.filters label{font-size:.82rem;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.filters select{padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);min-width:150px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--surface);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);border-top:4px solid var(--c,var(--accent));display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi .lab{font-size:.8rem;color:var(--muted)}
+.kpi .val{font-family:var(--f-display);font-size:1.9rem;font-weight:700;line-height:1.15}
+.kpi .sub{font-size:.78rem;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+.panel{background:var(--surface);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow);min-width:0;grid-column:span 6;display:flex;flex-direction:column;gap:8px}
+.panel.w4{grid-column:span 4}.panel.w8{grid-column:span 8}.panel.w12{grid-column:span 12}
+.panel h3{font-size:1rem;display:flex;align-items:center;gap:8px}
+.panel h3 .tag{font-family:var(--f-body);font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:999px;color:#fff;background:var(--c)}
+.panel .note{font-size:.8rem;color:var(--muted)}
+.chartbox{position:relative;height:250px}
+.empty{padding:36px 16px;text-align:center;color:var(--muted)}
+.empty h2{color:var(--ink);font-size:1.25rem;margin-bottom:6px}
+@media (max-width:860px){.panel,.panel.w4,.panel.w8{grid-column:span 12}}
+.tablewrap{overflow-x:auto;border-radius:10px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:var(--sunk);font-weight:600;color:var(--muted);font-size:.8rem}
+tr:last-child td{border-bottom:0}
+.pill{display:inline-block;padding:1px 9px;border-radius:999px;font-size:.78rem;font-weight:600;background:var(--sunk)}
+.pill.good{background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 22%,transparent);color:color-mix(in srgb,var(--warn) 70%,var(--ink))}
+.pill.bad{background:color-mix(in srgb,var(--bad) 18%,transparent);color:var(--bad)}
+.pill.crit{background:color-mix(in srgb,var(--crit) 18%,transparent);color:var(--crit)}
+.pill.demo{background:color-mix(in srgb,var(--s4b) 16%,transparent);color:var(--s4b)}
+.up{color:var(--crit)} .down{color:var(--good)}
+
+/* form */
+.formhead{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:16px 18px;margin-bottom:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px 16px;align-items:end}
+.formhead h2{grid-column:1/-1;font-size:1.15rem}
+.steps{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px}
+.step{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 12px;cursor:pointer;display:flex;gap:8px;align-items:center;text-align:left}
+.step .n{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-weight:700;font-family:var(--f-display);color:#fff;background:var(--c);font-size:.85rem}
+.step .t{font-size:.85rem;font-weight:600;line-height:1.2}
+.step .p{font-size:.72rem;color:var(--muted)}
+.step[aria-current="true"]{border-color:var(--c);box-shadow:0 0 0 2px color-mix(in srgb,var(--c) 30%,transparent)}
+.sec{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.sec>.sechead{padding:16px 18px;background:color-mix(in srgb,var(--c) 12%,var(--surface));border-bottom:3px solid var(--c)}
+.sechead h2{font-size:1.2rem}
+.sechead p{margin:4px 0 0;color:var(--muted);font-size:.86rem;max-width:75ch}
+.secbody{padding:8px 18px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 18px}
+.secbody>.full,.secbody>.subh{grid-column:1/-1}
+.subh{font-family:var(--f-display);font-weight:600;color:var(--c);margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);font-size:1rem}
+.secbody>.subh:first-child{border-top:0;margin-top:4px;padding-top:0}
+.fld{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fld>label,.fld>.lab{font-size:.86rem;font-weight:500}
+.fld .hint{font-size:.76rem;color:var(--muted)}
+.fld input[type=text],.fld input[type=number],.fld input[type=date],.fld select,.fld textarea,.rows input,.mini input,.mini select{border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:7px 10px;width:100%;min-width:0}
+.fld textarea{min-height:70px;resize:vertical}
+.unitwrap{display:flex;align-items:center;gap:6px}
+.unitwrap span{color:var(--muted);font-size:.85rem}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.opt span{display:inline-block;padding:5px 12px;border:1px solid var(--line);border-radius:999px;font-size:.86rem;background:var(--bg);cursor:pointer;user-select:none}
+.opt input:checked+span{background:var(--c);border-color:var(--c);color:#fff}
+.opt input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.check .opt span{border-radius:8px}
+.likert{display:flex;flex-direction:column;gap:2px}
+.lk{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.lk:last-child{border-bottom:0}
+.lk .q{font-size:.88rem}
+.lk .q b{color:var(--c);font-family:var(--f-display);margin-right:4px}
+.lk .opts{flex-wrap:nowrap;gap:4px}
+.lk .opt span{min-width:38px;text-align:center;padding:5px 8px}
+@media (max-width:640px){.lk{grid-template-columns:1fr}.lk .opts{flex-wrap:wrap}}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;color:var(--muted);background:var(--sunk);border-radius:10px;padding:8px 12px}
+.rows{overflow-x:auto}
+.rows table th,.rows table td{white-space:normal;padding:6px}
+.rows input{min-width:90px}
+.mini{display:grid;gap:8px}
+.calc{background:color-mix(in srgb,var(--c) 8%,var(--sunk));border-radius:12px;padding:12px 14px;display:flex;flex-wrap:wrap;gap:10px 22px;font-size:.86rem}
+.calc .k{color:var(--muted);font-size:.76rem;display:block}
+.calc .v{font-family:var(--f-display);font-size:1.15rem;font-weight:700}
+.secnav{display:flex;justify-content:space-between;gap:10px;padding:14px 18px;border-top:1px solid var(--line);background:var(--sunk)}
+.savebar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);z-index:8;padding-bottom:env(safe-area-inset-bottom,0px)}
+.savebar .wrap{display:flex;gap:10px;align-items:center;padding-block:10px;flex-wrap:wrap}
+.savebar .msg{margin-right:auto;font-size:.86rem;color:var(--muted);min-width:0}
+.savebar .msg.err{color:var(--crit)} .savebar .msg.ok{color:var(--good)}
+.fld.err input,.fld.err .opts{outline:2px solid var(--crit);outline-offset:2px;border-radius:9px}
+.howto{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px;font-size:.9rem;max-width:70ch}
+.howto code{background:var(--sunk);padding:1px 6px;border-radius:6px}
+.howto a{color:var(--s1)}
+.formrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.formrow input{border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:7px 10px;width:100%}
+.msg{font-size:.86rem;color:var(--muted)}.msg.err{color:var(--crit)}.msg.ok{color:var(--good)}
+.records-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.records-tools input{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 12px;min-width:0;flex:1 1 200px;max-width:320px}
+.records-tools .sp{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+@media (prefers-reduced-motion:no-preference){.btn,.opt span,.step{transition:background .15s,border-color .15s,box-shadow .15s}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="spectrum" aria-hidden="true"><i style="background:var(--s1)"></i><i style="background:var(--s2)"></i><i style="background:var(--s3)"></i><i style="background:var(--s4a)"></i><i style="background:var(--s4b)"></i><i style="background:var(--s5)"></i><i style="background:var(--s6)"></i><i style="background:var(--s7)"></i></div>
+  <div class="wrap toprow">
+    <div class="brand"><h1>แดชบอร์ดลดละเลิกเหล้า</h1><small>ALT · AST · AUDIT · HLQ20 · ความพร้อมงดดื่ม</small></div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" id="tab-dash" aria-selected="true" data-view="dash">แดชบอร์ด</button>
+      <button role="tab" id="tab-form" aria-selected="false" data-view="form">บันทึกข้อมูล</button>
+      <button role="tab" id="tab-rec" aria-selected="false" data-view="rec">รายการบันทึก</button>
+      <button role="tab" id="tab-set" aria-selected="false" data-view="set">ตั้งค่า</button>
+    </nav>
+    <div class="status"><span class="dot" id="sdot"></span><span id="stxt">กำลังเชื่อมต่อ…</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="banner" id="localBanner" hidden><span>ตอนนี้ข้อมูลเก็บไว้ใน<b>เบราว์เซอร์เครื่องนี้เท่านั้น</b> ถ้าต้องการให้หลายเครื่องใช้ข้อมูลชุดเดียวกัน ให้เชื่อม Google Sheets</span><button class="btn sm" data-go="set">ไปที่ตั้งค่า</button></div>
+  <div class="banner" id="demoBanner" hidden><span>ข้อมูลที่เห็นตอนนี้มี <b id="demoCount">0</b> รายการที่เป็น<b>ข้อมูลตัวอย่าง</b> (รหัสขึ้นต้นด้วย DEMO) เพื่อให้เห็นหน้าตาแดชบอร์ด</span><button class="btn sm danger" id="clearDemo">ลบข้อมูลตัวอย่างทั้งหมด</button></div>
+
+  <!-- DASHBOARD -->
+  <section class="view" id="view-dash">
+    <div class="filters">
+      <label>จังหวัด<select id="fProv"><option value="">ทั้งหมด</option></select></label>
+      <label>ประเภทสังกัด<select id="fOrg"><option value="">ทั้งหมด</option></select></label>
+      <label>เพศ<select id="fSex"><option value="">ทั้งหมด</option></select></label>
+      <label>ข้อมูล<select id="fDemo"><option value="">ทั้งหมด</option><option value="real">เฉพาะข้อมูลจริง</option></select></label>
+    </div>
+    <div id="dashEmpty" class="panel w12 empty" hidden>
+      <h2>ยังไม่มีข้อมูล</h2>
+      <p>ไปที่แท็บ <b>บันทึกข้อมูล</b> เพื่อกรอกแบบสอบถามรายแรก แดชบอร์ดจะสรุปผล ALT/AST, AUDIT, HLQ20 และขั้นความพร้อมให้ทันที</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn primary" data-go="form">เริ่มบันทึกข้อมูล</button><button class="btn" data-demo="1">ดูด้วยข้อมูลตัวอย่าง</button></div>
+    </div>
+    <div id="dashBody">
+      <div class="kpis" id="kpis"></div>
+      <div class="grid">
+        <div class="panel" style="--c:var(--s2)"><h3><span class="tag">ส่วน 2</span>ค่าตับ ALT / AST ก่อนและหลัง</h3><div class="note" id="n-liver"></div><div class="chartbox"><canvas id="c-liver"></canvas></div></div>
+        <div class="panel" style="--c:var(--s3)"><h3><span class="tag">ส่วน 3</span>ระดับความเสี่ยง AUDIT</h3><div class="note" id="n-audit"></div><div class="chartbox"><canvas id="c-audit"></canvas></div></div>
+        <div class="panel" style="--c:var(--s4a)"><h3><span class="tag">ส่วน 4ก</span>HLQ20 ราย 5 ทักษะ</h3><div class="note" id="n-hl"></div><div class="chartbox"><canvas id="c-hl"></canvas></div></div>
+        <div class="panel" style="--c:var(--s3)"><h3><span class="tag">ส่วน 3</span>ปริมาณเอทานอลเฉลี่ยตามรอบ</h3><div class="note" id="n-eth"></div><div class="chartbox"><canvas id="c-eth"></canvas></div></div>
+        <div class="panel w4" style="--c:var(--s7)"><h3><span class="tag">ส่วน 7</span>ขั้นความพร้อมงดดื่ม</h3><div class="note" id="n-stage"></div><div class="chartbox"><canvas id="c-stage"></canvas></div></div>
+        <div class="panel w4" style="--c:var(--s5)"><h3><span class="tag">ส่วน 5</span>ช่องทางที่รู้จักสื่อรณรงค์</h3><div class="note" id="n-media"></div><div class="chartbox"><canvas id="c-media"></canvas></div></div>
+        <div class="panel w4" style="--c:var(--s6)"><h3><span class="tag">ส่วน 6</span>สถานะการติดตาม</h3><div class="note" id="n-fu"></div><div class="chartbox"><canvas id="c-fu"></canvas></div></div>
+        <div class="panel" style="--c:var(--s1)"><h3><span class="tag">ส่วน 1</span>ผู้เข้าร่วมรายจังหวัด</h3><div class="chartbox"><canvas id="c-prov"></canvas></div></div>
+        <div class="panel" style="--c:var(--s1)"><h3><span class="tag">ส่วน 1</span>ประเภทสังกัด</h3><div class="chartbox"><canvas id="c-org"></canvas></div></div>
+        <div class="panel w12" style="--c:var(--accent)"><h3>ผลรายบุคคล (ตั้งต้นเทียบรอบติดตามล่าสุด)</h3><div class="tablewrap"><table id="t-people"></table></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORM -->
+  <section class="view" id="view-form" hidden>
+    <div class="formhead" id="formHead"></div>
+    <div class="steps" id="steps"></div>
+    <div id="secHost"></div>
+  </section>
+
+  <!-- RECORDS -->
+  <section class="view" id="view-rec" hidden>
+    <div class="records-tools">
+      <input type="search" id="recSearch" placeholder="ค้นหารหัสผู้เข้าร่วม หรือจังหวัด">
+      <div class="sp"><button class="btn" id="csvVisits">ดาวน์โหลด CSV</button><button class="btn primary" data-go="form" data-new="1">+ บันทึกใหม่</button></div>
+    </div>
+    <div class="tablewrap"><table id="t-rec"></table></div>
+    <p class="note" style="color:var(--muted);font-size:.8rem">ไฟล์ CSV เปิดใน Excel ได้ภาษาไทยถูกต้อง มี 1 แถวต่อผู้เข้าร่วม 1 รอบ รวมข้อมูลส่วนที่ 1 และค่าที่คำนวณแล้ว ไม่มีชื่อหรือข้อมูลติดต่อตามข้อกำหนดของแบบสอบถาม</p>
+  </section>
+  <!-- SETTINGS -->
+  <section class="view" id="view-set" hidden>
+    <div class="grid">
+      <div class="panel w8" style="--c:var(--s6)">
+        <h3><span class="tag">ฐานข้อมูล</span>เชื่อมกับ Google Sheets</h3>
+        <div id="setMode" class="note"></div>
+        <ol class="howto">
+          <li>สร้าง Google Sheet ใหม่ แล้วเปิดเมนู <b>ส่วนขยาย → Apps Script</b></li>
+          <li>ลบโค้ดเดิม วางโค้ดจากไฟล์ <a href="apps-script.gs" target="_blank" rel="noopener">apps-script.gs</a> แล้วแก้ <code>SECRET</code> เป็นรหัสลับของคุณเอง กดบันทึก</li>
+          <li>กด <b>ทำให้ใช้งานได้ (Deploy) → การทำให้ใช้งานได้รายการใหม่ → เว็บแอป</b> ตั้ง "เรียกใช้ในฐานะ" เป็น <b>ฉัน</b> และ "ผู้มีสิทธิ์เข้าถึง" เป็น <b>ทุกคน</b> แล้วกดอนุญาตสิทธิ์</li>
+          <li>คัดลอก <b>URL ของเว็บแอป</b> (ลงท้ายด้วย /exec) มาวางด้านล่าง พร้อมรหัสลับ</li>
+        </ol>
+        <div class="formrow">
+          <div class="fld"><label for="setUrl">Web app URL</label><input type="text" id="setUrl" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off"></div>
+          <div class="fld"><label for="setKey">รหัสลับ (SECRET)</label><input type="text" id="setKey" autocomplete="off"></div>
+        </div>
+        <label class="opt" style="align-self:flex-start;--c:var(--s6)"><input type="checkbox" id="setPush" checked><span>ส่งข้อมูลที่บันทึกไว้ในเครื่องนี้ขึ้น Google Sheets ด้วย</span></label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn primary" id="setSave">ทดสอบและเชื่อมต่อ</button><button class="btn danger" id="setDisconnect" hidden>ยกเลิกการเชื่อม</button></div>
+        <div class="msg" id="setMsg" role="status"></div>
+        <p class="note">ลิงก์และรหัสลับจะจำไว้ในเบราว์เซอร์นี้เท่านั้น ไม่ได้อยู่ในหน้าเว็บหรือ GitHub แต่ละเครื่องต้องใส่ครั้งแรกครั้งเดียว ห้ามเผยแพร่ลิงก์นี้ เพราะใครมีลิงก์และรหัสลับจะอ่านและแก้ข้อมูลได้</p>
+      </div>
+      <div class="panel w4" style="--c:var(--s4b)">
+        <h3><span class="tag">สำรอง</span>ไฟล์สำรองข้อมูล</h3>
+        <p class="note">ดาวน์โหลดข้อมูลทั้งหมดเป็นไฟล์ JSON เก็บไว้ หรือนำเข้าเพื่อย้ายข้อมูลไปเครื่องอื่น</p>
+        <button class="btn" id="bkExport">ดาวน์โหลดไฟล์สำรอง</button>
+        <label class="btn" style="text-align:center">นำเข้าไฟล์สำรอง<input type="file" id="bkImport" accept=".json,application/json" hidden></label>
+        <h3 style="margin-top:12px"><span class="tag">ตัวอย่าง</span>ข้อมูลตัวอย่าง</h3>
+        <p class="note">เพิ่มผู้เข้าร่วมสมมุติ 12 คน (รหัส DEMO-…) เพื่อดูหน้าตาแดชบอร์ด ลบได้ทีหลังด้วยปุ่มบนแถบด้านบน</p>
+        <button class="btn" data-demo="1">โหลดข้อมูลตัวอย่าง</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="savebar" id="saveBar" hidden>
+  <div class="wrap">
+    <div class="msg" id="saveMsg">กรอกรหัสผู้เข้าร่วม รอบ และวันที่ แล้วกดบันทึกได้ทุกเมื่อ</div>
+    <button class="btn ghost" id="btnReset">ล้างฟอร์ม</button>
+    <button class="btn primary" id="btnSave">บันทึก</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+<script>
+"use strict";
+/* ---------------- options ---------------- */
+const CH_MEDIA=['Facebook','Instagram','เว็บไซต์ สสส.','เพื่อน','ครู','ผู้ปกครอง/ครอบครัว','โทรทัศน์','โรงเรียน','สถานที่สาธารณะ','เจ้าหน้าที่สาธารณสุข/อสม.','LINE','อื่น ๆ'];
+const REGIONS=['เหนือ','ตะวันออกเฉียงเหนือ','กลาง','ตะวันออก','ตะวันตก','ใต้','กรุงเทพมหานคร'];
+const ORGT=['ประถมศึกษา','มัธยมศึกษา','อาชีวศึกษา','มหาวิทยาลัย','ภาครัฐ','ภาคเอกชน','รัฐวิสาหกิจ/องค์การมหาชน','ชุมชน'];
+const YNU=['ไม่มี','มี','ไม่ทราบ'];
+const HL_SCALE=[{v:0,l:'0'},{v:1,l:'1'},{v:2,l:'2'},{v:3,l:'3'},{v:4,l:'4'}];
+const B1_SCALE=[{v:3,l:'ใช่'},{v:1,l:'ไม่ใช่'},{v:2,l:'ไม่แน่ใจ'}];
+const B2_SCALE=[5,4,3,2,1].map(v=>({v,l:String(v)}));
+const HL_SKILLS=[
+ {k:'acc',name:'การเข้าถึง',items:[
+  ['HL01','ค้นหาข้อมูลแนวทางปฏิบัติตัวด้านสุขภาพที่ต้องการ จากแหล่งข้อมูลที่น่าเชื่อถือหลายแหล่งด้วยตนเอง'],
+  ['HL02','คัดเลือก/กลั่นกรองข้อมูล โดยพิจารณาหน่วยงาน/ผู้เขียนที่ได้รับการยอมรับ และวันเดือนปีว่าทันสมัย'],
+  ['HL03','ตรวจสอบความถูกต้องและเป็นจริงของข้อมูล ก่อนนำมาใช้หรือเผยแพร่ต่อ'],
+  ['HL04','ตรวจสอบได้ว่าข้อมูลที่ได้มาและจะนำมาใช้ มีความสมเหตุสมผล']]},
+ {k:'und',name:'การเข้าใจ',items:[
+  ['HL05','อ่านและฟังข้อมูลการปฏิบัติตัวด้านสุขภาพ และวิธีลด ละ เลิก การดื่ม ได้ถูกต้องครบถ้วน'],
+  ['HL06','อ่านและฟังข้อมูลวิธีลด ละ เลิก การดื่ม รวมถึงโทษของการดื่ม จนเกิดความเข้าใจ'],
+  ['HL07','จดจำข้อมูลวิธีลด ละ เลิก และโทษของการดื่ม ที่ได้รับจากบุคลากรสาธารณสุขได้ชัดเจน ถูกต้อง ครบถ้วน'],
+  ['HL08','ทำความเข้าใจข้อมูลวิธีลด ละ เลิก การดื่ม ที่ได้รับจากบุคลากรสาธารณสุขได้อย่างชัดเจน']]},
+ {k:'ask',name:'การไต่ถาม',items:[
+  ['HL09','วางแผนล่วงหน้าเพื่อซักถาม ก่อนไปพบแพทย์/บุคลากรสาธารณสุข หรือผู้เชี่ยวชาญ'],
+  ['HL10','จัดเตรียมข้อคำถาม โดยคิดและเขียนไว้ล่วงหน้าเสมอก่อนไปพบแพทย์/บุคลากรสาธารณสุข'],
+  ['HL11','ถามแพทย์/บุคลากรสาธารณสุข หรือผู้เชี่ยวชาญ เพื่อให้ได้ข้อมูลตามที่ต้องการจนคลายข้อสงสัย'],
+  ['HL12','ประเมินคำถามได้ว่าดีแล้ว หรือต้องปรับปรุงอย่างไร']]},
+ {k:'dec',name:'การตัดสินใจ',items:[
+  ['HL13','ระบุประเด็น/วิธีการลด ละ เลิก การดื่มที่ต้องตัดสินใจได้'],
+  ['HL14','กำหนดทางเลือกในการปฏิบัติตัว จนได้หลายทางเลือกที่ปฏิบัติได้จริง'],
+  ['HL15','ประเมินข้อดี-ข้อเสียของแต่ละทางเลือกในการปฏิบัติตัวได้'],
+  ['HL16','บอกจุดยืนและอธิบายเหตุผลของการตัดสินใจได้ว่าเหมาะสมกับตนเอง']]},
+ {k:'app',name:'การนำไปใช้',items:[
+  ['HL17','หาวิธีเตือนตนเองไม่ให้ลืมข้อมูล/การปฏิบัติที่สำคัญ เช่น จดโน้ต ปฏิทิน ตั้งนาฬิกา'],
+  ['HL18','หาวิธีเตือนตนเองโดยอาศัยความช่วยเหลือจากผู้อื่น เช่น ฝากญาติหรือคนใกล้ชิดให้ช่วยเตือน'],
+  ['HL19','จัดการตนเองโดยกำหนด/ตั้งเป้าหมายเพื่อให้เกิดการปฏิบัติจริง'],
+  ['HL20','ปรับวิธีจัดการตนเองให้เหมาะกับสถานการณ์อยู่เสมอ ทำให้ปฏิบัติได้ต่อเนื่อง']]}
+];
+const B1_ITEMS=[
+ ['b1_1','การดื่มแอลกอฮอล์ส่งผลต่อการทำงาน การเรียน หรือการใช้ชีวิตประจำวัน'],
+ ['b1_2','การดื่มไปนาน ๆ ทำให้เกิดโรค เช่น โรคหัวใจ ตับแข็ง มะเร็ง โรคทางสมอง และหลอดเลือด'],
+ ['b1_3','การดื่มแอลกอฮอล์นำไปสู่การใช้ความรุนแรงในครอบครัวและสังคม'],
+ ['b1_4','การดื่มแอลกอฮอล์ทำให้อยากใช้สิ่งเสพติดชนิดอื่นตามมา'],
+ ['b1_5','การดื่มแอลกอฮอล์ในปริมาณเล็กน้อยไม่เป็นอันตราย'],
+ ['b1_6','การออกกำลังกายและทำกิจกรรมสร้างสรรค์ทำให้ไม่อยากดื่มแอลกอฮอล์']];
+const B2_ITEMS=[
+ ['b2_7','หาข้อมูลและได้รับข้อมูลเกี่ยวกับผลเสียของการดื่มเครื่องดื่มแอลกอฮอล์'],
+ ['b2_8','ค้นหาข้อมูลกฎหมายควบคุมการดื่มขณะขับขี่จากแหล่งที่เชื่อถือได้'],
+ ['b2_9','หาข้อมูลเกี่ยวกับการติดเครื่องดื่มแอลกอฮอล์จากแหล่งที่น่าเชื่อถือหลายแหล่ง'],
+ ['b2_10','หาข้อมูลการปฏิเสธ ลด ละ เลิก และไม่ดื่ม จากแหล่งที่น่าเชื่อถือหลายแหล่ง'],
+ ['b2_11','หาข้อมูลกิจกรรมที่ส่งเสริมการลด ละ เลิกการดื่ม จากแหล่งที่น่าเชื่อถือหลายแหล่ง'],
+ ['b2_12','ให้ความเห็นเกี่ยวกับอันตรายของการดื่มที่เห็นในคำเตือนทางสื่อออนไลน์'],
+ ['b2_13','เมื่อสงสัย ถามเกี่ยวกับอันตรายของการดื่มจากเพื่อน ครอบครัว และคนอื่น ๆ'],
+ ['b2_14','เมื่อสงสัย ถามเกี่ยวกับประโยชน์ของการเข้าร่วมโครงการรณรงค์ลดการดื่มในชุมชน'],
+ ['b2_15','จะไม่ดื่มเมื่อรู้ว่าการดื่มส่งผลเสียต่อสุขภาพ'],
+ ['b2_16','จะไม่ดื่มเมื่อรู้ว่าการดื่มส่งผลเสียต่อการทำงานหรือการเรียน'],
+ ['b2_17','จะไม่ดื่มเมื่อรู้ว่าการดื่มส่งผลเสียต่อร่างกายและจิตใจ'],
+ ['b2_18','จะไม่ดื่มเมื่อถูกชักชวนในงานเลี้ยง'],
+ ['b2_19','จะเข้าร่วมกิจกรรมรณรงค์ไม่ดื่มในชุมชน เพราะทำให้ห่างไกลจากแอลกอฮอล์'],
+ ['b2_20','จะเตือนและเล่าถึงอันตรายของการดื่มให้เพื่อน ครอบครัว และคนอื่น ๆ ทราบ'],
+ ['b2_21','จะเล่าสิ่งที่ได้รู้จากกิจกรรมรณรงค์ให้ผู้อื่นทราบ เพื่อสนับสนุนการเลิกดื่ม']];
+const DX=[['dm','เบาหวาน'],['ht','ความดันโลหิตสูง'],['dlp','ไขมันในเลือดผิดปกติ'],['fl','ไขมันพอกตับ'],['cir','ตับแข็ง'],['oth','โรคอื่น']];
+const STAGES=['1 ก่อนพิจารณา','2 พิจารณา','3 เตรียมพร้อม','4 ลงมือปฏิบัติ','5 คงพฤติกรรม','จำแนกไม่ได้'];
+const Q71=['ยังไม่ได้เริ่ม/กลับมาดื่มอยู่','เริ่มงดและยังงดต่อเนื่อง','ไม่ทราบ/ไม่ประสงค์ตอบ'];
+const Q73=['ภายใน 30 วันข้างหน้า','หลัง 30 วัน แต่ภายใน 6 เดือน','ยังไม่ตั้งใจเริ่มภายใน 6 เดือน','ยังตัดสินใจไม่ได้','ไม่ประสงค์ตอบ'];
+const Q74=['กำหนดวันเริ่มงด','วางแผนรับมือสถานการณ์ชวนดื่ม','ขอความช่วยเหลือจากครอบครัว/บุคลากร','เคยทดลองงด','อื่น ๆ','ยังไม่ได้เตรียมการ'];
+const ACTS=['แจ้งผล ALT/AST','คืนผล AUDIT','ให้คำปรึกษาแบบสั้น','สนทนาเสริมแรงจูงใจ','ติดตามเป้าหมาย','ครอบครัว/อสม.สนับสนุน','ส่งต่อ','อื่น ๆ'];
+const FU_STATUS=['ได้รับบริการ','ติดต่อได้ขอเลื่อน','ติดต่อไม่ได้','ถอนตัว','อื่น ๆ'];
+
+/* ---------------- schema ---------------- */
+const SECTIONS=[
+ {key:'s1',n:'1',title:'ข้อมูลบุคคลและพื้นที่',short:'บุคคล/พื้นที่',c:'--s1',desc:'เก็บครั้งแรก ระบบจะดึงมาให้อัตโนมัติเมื่อกรอกรหัสผู้เข้าร่วมที่เคยบันทึกไว้ ห้ามใส่ชื่อหรือข้อมูลติดต่อในแบบนี้',fields:[
+  {h:'1.1 หน่วยบริการ'},
+  {id:'unit',l:'รหัสหน่วยบริการ',t:'text'},{id:'enroll',l:'วันที่เข้าร่วม',t:'date'},
+  {h:'1.2–1.4 พื้นที่'},
+  {id:'province',l:'จังหวัด',t:'text'},{id:'district',l:'อำเภอ',t:'text'},{id:'subdistrict',l:'ตำบล',t:'text'},
+  {id:'region',l:'ภาค',t:'select',o:REGIONS,hint:'เจ้าหน้าที่กำหนดจากจังหวัด'},
+  {id:'area',l:'เขตการปกครอง',t:'radio',o:['ในเขตเทศบาล','นอกเขตเทศบาล']},
+  {h:'1.5–1.8 ข้อมูลส่วนบุคคล'},
+  {id:'sex',l:'เพศ',t:'radio',o:['ชาย','หญิง','ผู้มีความหลากหลายทางเพศ','ไม่ต้องการระบุ','อื่น ๆ'],full:1},
+  {id:'dob',l:'วันเดือนปีเกิด',t:'date'},{id:'age',l:'อายุ',t:'num',u:'ปีเต็ม',min:0,max:120},
+  {id:'religion',l:'ศาสนา',t:'radio',o:['พุทธ','คริสต์','อิสลาม','ไม่นับถือศาสนา','อื่น ๆ'],full:1},
+  {id:'edu',l:'วุฒิการศึกษาสูงสุดที่สำเร็จ',t:'radio',o:['ต่ำกว่าประถม/ไม่เคยเรียน','ประถม','มัธยมต้น','มัธยมปลาย','ปวช.','อนุปริญญา/ปวส.','ปริญญาตรี','ปริญญาโท','ปริญญาเอก','อื่น ๆ'],full:1},
+  {h:'1.9–1.10 สังกัด'},
+  {id:'org',l:'ชื่อหมู่บ้าน/องค์กร/หน่วยงาน/สถานศึกษา',t:'text'},{id:'moo',l:'หมู่ที่',t:'text'},
+  {id:'orgtype',l:'ประเภทสังกัด',t:'radio',o:ORGT,full:1},
+  {h:'1.11 อื่น ๆ'},
+  {id:'occ',l:'อาชีพ',t:'text'},{id:'drinkyrs',l:'ดื่มแอลกอฮอล์มาประมาณ',t:'num',u:'ปี',min:0,max:100},{id:'height',l:'ส่วนสูง',t:'num',u:'ซม.',min:50,max:250}
+ ]},
+ {key:'s2',n:'2',title:'ประวัติสุขภาพและผลตรวจ',short:'สุขภาพ/ALT-AST',c:'--s2',desc:'บันทึก "ไม่ทราบ" ตามจริง ช่องที่ว่างจะไม่นับเป็น 0',fields:[
+  {h:'2.1 โรคที่เคยได้รับการวินิจฉัย'},{t:'dx',full:1},
+  {h:'2.2–2.3 ผลตรวจไวรัสตับ'},
+  {id:'hbv_test',l:'ไวรัสบี: ชื่อการตรวจ',t:'text'},{id:'hbv_res',l:'ผล',t:'text'},{id:'hbv_date',l:'วันที่',t:'date'},{id:'hbv_none',l:'',t:'flag',o:'ไม่พบข้อมูลผลตรวจไวรัสบี'},
+  {id:'hcv_test',l:'ไวรัสซี: ชื่อการตรวจ',t:'text'},{id:'hcv_res',l:'ผล',t:'text'},{id:'hcv_date',l:'วันที่',t:'date'},{id:'hcv_none',l:'',t:'flag',o:'ไม่พบข้อมูลผลตรวจไวรัสซี'},
+  {h:'2.4–2.7 ปัจจัยที่มีผลต่อค่าตับ'},
+  {id:'weight',l:'2.4 น้ำหนักที่ชั่งครั้งนี้',t:'num',u:'กก.',min:20,max:250,step:'0.1'},
+  {id:'ill',l:'2.5 โรคที่เพิ่งวินิจฉัย / เปลี่ยนการรักษา / เจ็บป่วยช่วงก่อนตรวจ',t:'radio',o:YNU,full:1},
+  {id:'ill_d',l:'ระบุพร้อมวันที่',t:'text',w:{f:'ill',eq:'มี'},full:1},
+  {id:'exert',l:'2.6 ใน 7 วันก่อนเจาะเลือด ยกน้ำหนัก ออกแรง หรือใช้กล้ามเนื้อหนักกว่าปกติ',t:'radio',o:YNU,full:1},
+  {id:'exert_d',l:'ระบุกิจกรรมและวันที่',t:'text',w:{f:'exert',eq:'มี'},full:1},
+  {id:'meds',l:'2.7 ใน 30 วันใช้ยา สมุนไพร หรืออาหารเสริม (รวมยาซื้อเองและยาแก้ปวด)',t:'radio',o:['ไม่มี','มี','ไม่ทราบ','ไม่ประสงค์ตอบ'],full:1},
+  {id:'meds_rows',t:'rows',w:{f:'meds',eq:'มี'},full:1,cols:[['name','ชื่อผลิตภัณฑ์','text'],['dose','ขนาด/ครั้ง และครั้ง/วัน','text'],['days','จำนวนวันที่ใช้','num'],['period','เริ่ม–หยุด/ยังใช้','text']]},
+  {h:'2.8 ผลเลือด (คัดจากใบรายงาน)'},
+  {id:'lab_date',l:'วันที่เจาะ',t:'date'},{id:'lab_name',l:'ห้องปฏิบัติการ',t:'text'},{id:'lab_code',l:'รหัสใบผล',t:'text'},
+  {t:'lab',full:1},
+  {id:'lab_note',l:'หมายเหตุคุณภาพตัวอย่างตามรายงาน',t:'text',full:1},
+  {t:'calc',fn:'s2',full:1}
+ ]},
+ {key:'s3',n:'3',title:'พฤติกรรมการดื่มและ AUDIT',short:'การดื่ม/AUDIT',c:'--s3',desc:'ทบทวนช่วง 30 วันที่ผ่านมา ระบบคำนวณกรัมเอทานอลต่อสัปดาห์และคะแนน AUDIT ให้อัตโนมัติ',fields:[
+  {id:'rv_from',l:'ช่วงทบทวน ตั้งแต่',t:'date'},{id:'rv_to',l:'ถึง',t:'date'},
+  {id:'ddays',l:'3.1 ใน 30 วันที่ผ่านมา ดื่มกี่วัน',t:'num',u:'วัน',min:0,max:30,hint:'ถ้าตอบ 0 ระบบจะบันทึกปริมาณและวันดื่มหนักเป็น 0 แล้วข้ามไปข้อ 3.4'},
+  {h:'3.2 ชนิดและปริมาณที่ดื่มเองใน 30 วัน',w:{f:'ddays',gt:0}},
+  {id:'drinks',t:'rows',w:{f:'ddays',gt:0},full:1,hint:'บันทึกเศษส่วนได้ เช่น ครึ่งขวด = 0.5 ใช้ปริมาตรก่อนเติมน้ำ/โซดา ถ้าไม่ทราบ % vol ให้เว้นว่างและเก็บชื่อผลิตภัณฑ์ไว้',cols:[['name','ชนิด/ยี่ห้อ','text'],['abv','% vol ตามฉลาก','num'],['ml','ขนาดภาชนะ มล.','num'],['n','จำนวนภาชนะรวม','num']]},
+  {id:'maxday',l:'3.3 วันที่ดื่มมากที่สุด ดื่มอะไรและเท่าใด',t:'text',w:{f:'ddays',gt:0},full:1},
+  {id:'heavy',l:'จำนวนวันที่ดื่มเอทานอล ≥ 60 กรัมในวันเดียว',t:'num',u:'วัน',min:0,max:30,w:{f:'ddays',gt:0}},
+  {h:'3.4 การดื่มครั้งสุดท้ายและการงด'},
+  {id:'last',l:'ดื่มครั้งสุดท้ายวันที่',t:'date'},{id:'last_forgot',l:'',t:'flag',o:'จำวันไม่ได้'},
+  {id:'abst',l:'ปัจจุบันตั้งใจงดอยู่หรือไม่',t:'radio',o:['งด','ไม่งด']},
+  {id:'abst_start',l:'เริ่มงดต่อเนื่องครั้งนี้วันที่',t:'date',w:{f:'abst',eq:'งด'}},
+  {id:'relapse',l:'ตั้งแต่พบครั้งก่อน เคยงดแล้วกลับไปดื่มหรือไม่',t:'radio',o:['เคย','ไม่เคย','ครั้งแรก','ไม่ทราบ'],w:{f:'abst',eq:'งด'},full:1},
+  {id:'relapse_date',l:'กลับไปดื่มวันที่',t:'date',w:{f:'relapse',eq:'เคย'}},
+  {h:'3.5 AUDIT (คัดจากแบบ AUDIT ภาษาไทยมาตรฐานของหน่วยบริการ)'},
+  {id:'audit_st',l:'สถานะ',t:'radio',o:['ประเมิน','ไม่ถึงรอบ','ขาดข้อมูล']},
+  {id:'audit_date',l:'วันที่ประเมิน',t:'date',w:{f:'audit_st',eq:'ประเมิน'}},{id:'audit_ver',l:'ฉบับ',t:'text',w:{f:'audit_st',eq:'ประเมิน'}},
+  {t:'audit',full:1,w:{f:'audit_st',eq:'ประเมิน'}},
+  {t:'calc',fn:'s3',full:1}
+ ]},
+ {key:'s4a',n:'4ก',title:'ความรอบรู้ด้านสุขภาพ HLQ20',short:'HLQ20',c:'--s4a',desc:'ท่านต้องใช้ความสามารถและทักษะในเรื่องต่อไปนี้มากน้อยเพียงใด เลือกหนึ่งช่องต่อข้อ แตะซ้ำเพื่อยกเลิก ช่องว่างไม่ใช่คะแนน 0',fields:[
+  {t:'legend',full:1,txt:['0 = ไม่ได้ทำ','1 = ทำได้ยากมาก','2 = ทำได้ยาก','3 = ทำได้ง่าย','4 = ทำได้ง่ายมาก']},
+  ...HL_SKILLS.flatMap(s=>[{h:'ทักษะ'+s.name},{t:'likert',full:1,items:s.items,scale:HL_SCALE}]),
+  {t:'calc',fn:'s4a',full:1}
+ ]},
+ {key:'s4b',n:'4ข',title:'ความคิดเห็นเกี่ยวกับแอลกอฮอล์',short:'ความคิดเห็น',c:'--s4b',desc:'เลือกตามความเห็นของผู้ตอบ หนึ่งช่องต่อข้อ ใช้คำถามฉบับเดียวกันตลอดการศึกษา',fields:[
+  {h:'4ข.1 ฉันเข้าใจว่า… (ใช่ = 3, ไม่แน่ใจ = 2, ไม่ใช่ = 1)'},{t:'likert',full:1,items:B1_ITEMS.map(([k,q],i)=>[k,q,'4ข.1.'+(i+1)]),scale:B1_SCALE},
+  {h:'4ข.2 คำตอบ 5 ระดับ'},
+  {t:'legend',full:1,txt:['5 = ใช่มากที่สุด','4 = ใช่','3 = ไม่แน่ใจ','2 = ไม่ใช่','1 = ไม่ใช่มากที่สุด']},
+  {t:'likert',full:1,items:B2_ITEMS.map(([k,q])=>[k,q,'4ข.2.'+k.split('_')[1]]),scale:B2_SCALE},
+  {t:'calc',fn:'s4b',full:1}
+ ]},
+ {key:'s5',n:'5',title:'การรับรู้สื่อและการร่วมกิจกรรม',short:'สื่อ/กิจกรรม',c:'--s5',desc:'ข้อที่เลือกได้หลายข้อ แตะเลือกได้ทุกช่องที่ตรงกับคำตอบ',fields:[
+  {id:'aware',l:'5.1 ทราบหรือรู้จักสื่อหรือกิจกรรมรณรงค์เกี่ยวกับเหล้าหรือเครื่องดื่มแอลกอฮอล์หรือไม่',t:'radio',o:['ทราบ','ไม่ทราบ'],full:1},
+  {id:'aware_ex',l:'5.1.1 ยกตัวอย่างชื่อสื่อหรือกิจกรรม',t:'text',full:1,w:{f:'aware',eq:'ทราบ'}},
+  {id:'aware_ch',l:'5.1.2 ทราบจากช่องทางใด',t:'check',o:CH_MEDIA,full:1,w:{f:'aware',eq:'ทราบ'}},
+  {id:'joined',l:'5.2 เคยเข้าร่วมกิจกรรมรณรงค์เกี่ยวกับเหล้าหรือเครื่องดื่มแอลกอฮอล์หรือไม่',t:'radio',o:['เคย','ไม่เคย'],full:1},
+  {id:'joined_ex',l:'5.2.1 ยกตัวอย่างกิจกรรม',t:'text',full:1,w:{f:'joined',eq:'เคย'}},
+  {id:'joined_ch',l:'5.2.2 ทราบข่าวกิจกรรมที่เข้าร่วมจากช่องทางใด',t:'check',o:CH_MEDIA,full:1,w:{f:'joined',eq:'เคย'}},
+  {id:'info_ch',l:'5.3 ช่องทางเข้าถึงข้อมูลความรู้เรื่องโทษของการดื่ม / การปฏิบัติตัวด้านสุขภาพ',t:'check',o:['เว็บไซต์ของหน่วยงาน','สื่ออิเล็กทรอนิกส์ (เฟซบุ๊ก ไลน์ อีเมล ยูทูป)','บุคลากรสาธารณสุข','เอกสาร/สิ่งพิมพ์เผยแพร่','สื่อวิดีทัศน์','อื่น ๆ'],full:1}
+ ]},
+ {key:'s6',n:'6',title:'กิจกรรมและการติดตามรายครั้ง',short:'การติดตาม',c:'--s6',desc:'บันทึกทุกครั้งที่นัดหรือติดต่อผู้เข้าร่วม',fields:[
+  {id:'appt',l:'6.1 วันนัด',t:'date'},{id:'svc',l:'วันที่ให้บริการ/ติดต่อจริง',t:'date'},{id:'recorder',l:'ผู้บันทึก (รหัส)',t:'text'},
+  {id:'channel',l:'6.2 ช่องทาง',t:'radio',o:['หน่วยบริการ','เยี่ยมบ้าน','โทรศัพท์','อื่น ๆ'],full:1},
+  {id:'fustat',l:'6.3 สถานะ',t:'radio',o:FU_STATUS,full:1},
+  {id:'missed',l:'เหตุผลขาดนัด/หยุดติดตาม',t:'text',full:1,w:{f:'fustat',in:['ติดต่อได้ขอเลื่อน','ติดต่อไม่ได้','ถอนตัว','อื่น ๆ']}},
+  {id:'acts',l:'6.4 กิจกรรมที่ได้รับจริง',t:'check',o:ACTS,full:1},
+  {id:'refer_to',l:'ส่งต่อไป',t:'text',w:{f:'acts',has:'ส่งต่อ'}},{id:'refer_why',l:'เหตุผล',t:'text',w:{f:'acts',has:'ส่งต่อ'}},{id:'refer_res',l:'ผลการส่งต่อ',t:'text',w:{f:'acts',has:'ส่งต่อ'}},
+  {id:'minutes',l:'ระยะเวลากิจกรรมรวม',t:'num',u:'นาที',min:0,max:600},
+  {id:'goal',l:'6.5 เป้าหมายที่ผู้เข้าร่วมเลือกและแนวทางที่ตกลงร่วมกัน',t:'area',full:1},
+  {id:'problems',l:'6.6 ปัญหาระหว่างติดตามหรือความช่วยเหลือที่ต้องการ',t:'area',full:1},
+  {id:'next',l:'6.7 นัดครั้งถัดไป',t:'date'},{id:'resp',l:'ผู้รับผิดชอบ',t:'text'},{id:'plan',l:'แผนติดตาม',t:'text'}
+ ]},
+ {key:'s7',n:'7',title:'ความพร้อมและแรงจูงใจในการงดดื่ม',short:'ความพร้อมงด',c:'--s7',desc:'ประเมินความพร้อมต่อ "การงดดื่มทุกชนิด" ไม่ใช่แค่ลดปริมาณ สัมภาษณ์ก่อนให้คำปรึกษาในวันนั้น ไม่มีคำตอบถูกหรือผิด',fields:[
+  {id:'q71',l:'7.1 ปัจจุบันได้เริ่มงดดื่มโดยตั้งใจและยังงดต่อเนื่องอยู่หรือไม่',t:'radio',o:Q71,full:1},
+  {id:'q71_why',l:'บันทึกเหตุผล',t:'text',full:1,w:{f:'q71',eq:Q71[2]}},
+  {h:'7.2 การงดครั้งปัจจุบัน',w:{f:'q71',eq:Q71[1]}},
+  {id:'q72_start',l:'วันที่เริ่มงดต่อเนื่องครั้งปัจจุบัน',t:'date',w:{f:'q71',eq:Q71[1]},hint:'ยืนยันกับข้อ 3.4 ไม่ต้องถามซ้ำหากครบ'},
+  {id:'q72_lapse',l:'ตั้งแต่วันนั้นถึงวันนี้ มีการดื่มแม้เพียงบางครั้งหรือไม่',t:'radio',o:['ไม่มี','มี','จำวันไม่ได้','ไม่ทราบ'],full:1,w:{f:'q71',eq:Q71[1]}},
+  {id:'q72_last',l:'ครั้งสุดท้ายวันที่',t:'date',w:{f:'q72_lapse',eq:'มี'}},{id:'q72_restart',l:'เริ่มงดใหม่วันที่',t:'date',w:{f:'q72_lapse',eq:'มี'}},
+  {id:'q72_approx',l:'ระยะเวลาที่ประมาณได้',t:'text',w:{f:'q72_lapse',eq:'จำวันไม่ได้'}},
+  {id:'q73',l:'7.3 ตั้งใจเริ่มงดดื่มเมื่อใด',t:'radio',o:Q73,full:1,w:{f:'q71',eq:Q71[0]}},
+  {id:'q74',l:'7.4 ในช่วง 12 เดือนที่ผ่านมา ได้ทำอะไรเพื่อเตรียมงดดื่มบ้าง',t:'check',o:Q74,full:1,w:{f:'q71',eq:Q71[0]}},
+  {id:'q74_d',l:'รายละเอียดหรือวันที่ดำเนินการ',t:'text',full:1,w:{f:'q71',eq:Q71[0]}},
+  {h:'7.5–7.7 ความสำคัญและความมั่นใจ (ตอบทุกคน)'},
+  {id:'q75',l:'7.5 การงดดื่มใน 30 วันข้างหน้ามีความสำคัญต่อท่านเพียงใด (0 = ไม่สำคัญเลย, 10 = สำคัญอย่างยิ่ง)',t:'s10',full:1},
+  {id:'q76',l:'7.6 มั่นใจเพียงใดว่าจะงดดื่มได้ตลอด 30 วันข้างหน้า (0 = ไม่มั่นใจเลย, 10 = มั่นใจอย่างยิ่ง)',t:'s10',full:1},
+  {id:'q77',l:'7.7 เหตุผลสำคัญที่สุดที่อยากงด หรือยังไม่พร้อมงด',t:'area',full:1},
+  {h:'เกณฑ์จำแนกขั้นสำหรับเจ้าหน้าที่'},
+  {t:'calc',fn:'s7',full:1},
+  {id:'stage',l:'ขั้นครั้งนี้ (ยืนยันหรือแก้ไข)',t:'select',o:STAGES},{id:'stage_why',l:'เหตุผล (กรณีจำแนกไม่ได้)',t:'text'},{id:'assessor',l:'ผู้ประเมิน (รหัส)',t:'text'}
+ ]}
+];
+const S1_IDS=SECTIONS[0].fields.filter(f=>f.id).flatMap(f=>[f.id,f.id+'_o']);
+
+/* ---------------- state ---------------- */
+let F={}; let editingId=null; let curSec=0;
+const DATA={parts:new Map(),visits:new Map()};
+let mode='connecting', canWrite=true;
+
+/* ---------------- helpers ---------------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isNum=v=>typeof v==='number'&&isFinite(v);
+const fmt=(v,d=1)=>isNum(v)?v.toLocaleString('th-TH',{maximumFractionDigits:d,minimumFractionDigits:0}):'–';
+const mean=a=>{a=a.filter(isNum);return a.length?a.reduce((x,y)=>x+y,0)/a.length:null};
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function safeId(s){s=String(s).trim();return /^[A-Za-z0-9_\-.~:@+]+$/.test(s)?s:'x'+[...new TextEncoder().encode(s)].map(b=>b.toString(16).padStart(2,'0')).join('')}
+function visitId(pid,m){return safeId(pid)+'__m'+m}
+function roundLabel(m){return m===0?'ตั้งต้น':'ติดตามเดือนที่ '+m}
+function thDate(d){if(!d)return'–';const x=new Date(d+'T00:00:00');return isNaN(x)?d:x.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'})}
+
+/* ---------------- calculations ---------------- */
+function auditRisk(t){if(!isNum(t))return null;if(t<=7)return{k:'good',l:'ความเสี่ยงต่ำ (0–7)',i:0};if(t<=15)return{k:'warn',l:'ดื่มแบบเสี่ยง (8–15)',i:1};if(t<=19)return{k:'bad',l:'ดื่มแบบอันตราย (16–19)',i:2};return{k:'crit',l:'น่าจะติด (20+)',i:3}}
+function monthsBetween(a,b){const x=new Date(a+'T00:00:00'),y=new Date(b+'T00:00:00');if(isNaN(x)||isNaN(y))return null;let m=(y.getFullYear()-x.getFullYear())*12+(y.getMonth()-x.getMonth());if(y.getDate()<x.getDate())m--;return m}
+function compute(a,p){
+  const c={};
+  const h=(p&&p.height)||a.height; if(isNum(a.weight)&&isNum(h)&&h>0)c.bmi=a.weight/((h/100)**2);
+  if(a.ddays===0){c.eth_wk=0;c.heavy=0}
+  else if(isNum(a.ddays)){const rows=(a.drinks||[]).filter(r=>r&&(r.name||r.abv!=null||r.ml!=null||r.n!=null));
+    let ok=rows.length>0,g=0;rows.forEach(r=>{if(isNum(r.abv)&&isNum(r.ml)&&isNum(r.n))g+=r.ml*r.n*(r.abv/100)*0.789;else ok=false});
+    c.eth_30=ok?g:null;c.eth_wk=ok?g*7/30:null;c.eth_incomplete=!ok;c.heavy=isNum(a.heavy)?a.heavy:null}
+  if(a.audit_st==='ประเมิน'){const it=[];for(let i=1;i<=10;i++)it.push(a['a'+i]);if(it.every(isNum))c.audit=it.reduce((x,y)=>x+y,0);c.audit_n=it.filter(isNum).length}
+  const r=auditRisk(c.audit);if(r)c.audit_risk=r.l;
+  let all=true,tot=0;HL_SKILLS.forEach(s=>{const v=s.items.map(([k])=>a[k]);if(v.every(isNum)){c['hl_'+s.k]=v.reduce((x,y)=>x+y,0);tot+=c['hl_'+s.k]}else all=false});
+  if(all)c.hl_total=tot;
+  const b1=B1_ITEMS.map(([k])=>a[k]);if(b1.every(isNum))c.b1=b1.reduce((x,y)=>x+y,0);
+  const b2=B2_ITEMS.map(([k])=>a[k]);if(b2.every(isNum))c.b2=b2.reduce((x,y)=>x+y,0);
+  ['alt','ast'].forEach(k=>{if(isNum(a[k])&&isNum(a[k+'_hi']))c[k+'_high']=a[k]>a[k+'_hi']});
+  c.stage_suggest=suggestStage(a);
+  return c;
+}
+function suggestStage(a){
+  if(a.q71===Q71[1]){const start=(a.q72_lapse==='มี'&&a.q72_restart)?a.q72_restart:a.q72_start;const ref=a._date;
+    if(a.q72_lapse==='จำวันไม่ได้'||a.q72_lapse==='ไม่ทราบ'||!start||!ref)return{s:'จำแนกไม่ได้',why:'ข้อมูลระยะเวลางดไม่พอแยกขั้น 4 กับ 5'};
+    const m=monthsBetween(start,ref);if(m==null)return{s:'จำแนกไม่ได้',why:'วันที่ไม่ถูกต้อง'};
+    return m>=6?{s:STAGES[4],why:'งดต่อเนื่องครบ '+m+' เดือนปฏิทิน'}:{s:STAGES[3],why:'งดต่อเนื่อง '+Math.max(m,0)+' เดือน ยังไม่ครบ 6 เดือน'}}
+  if(a.q71===Q71[0]){const prep=(a.q74||[]).some(x=>x!=='ยังไม่ได้เตรียมการ');
+    if(a.q73===Q73[0])return prep?{s:STAGES[2],why:'ตั้งใจเริ่มภายใน 30 วันและมีการเตรียมการ'}:{s:STAGES[1],why:'ตั้งใจเริ่มภายใน 30 วันแต่ยังไม่เตรียมการ'};
+    if(a.q73===Q73[1])return{s:STAGES[1],why:'ตั้งใจเริ่มภายใน 6 เดือน'};
+    if(a.q73===Q73[2])return{s:STAGES[0],why:'ไม่ตั้งใจเริ่มภายใน 6 เดือน'};
+    if(a.q73)return{s:'จำแนกไม่ได้',why:'ยังระบุช่วงเวลาไม่ได้'};return null}
+  if(a.q71===Q71[2])return{s:'จำแนกไม่ได้',why:'ไม่ทราบ/ไม่ประสงค์ตอบข้อ 7.1'};
+  return null;
+}
+
+/* ---------------- visibility ---------------- */
+function visible(w){if(!w)return true;const v=F[w.f];
+  if(w.eq!==undefined)return v===w.eq; if(w.gt!==undefined)return isNum(v)&&v>w.gt;
+  if(w.in)return w.in.includes(v); if(w.has)return Array.isArray(v)&&v.includes(w.has); return true}
+function applyVis(){document.querySelectorAll('[data-w]').forEach(el=>{el.hidden=!visible(JSON.parse(el.dataset.w))});
+  document.querySelectorAll('[data-other]').forEach(el=>{const v=F[el.dataset.other];el.hidden=!(v==='อื่น ๆ'||(Array.isArray(v)&&v.includes('อื่น ๆ')))})}
+
+/* ---------------- form rendering ---------------- */
+function optHTML(name,o,type,checked,extra=''){return `<label class="opt"><input type="${type}" name="${name}" value="${esc(o.v??o)}" data-k="${name}" ${extra} ${checked?'checked':''}><span>${esc(o.l??o)}</span></label>`}
+function numInput(id,f){return `<div class="unitwrap"><input type="number" id="f_${id}" data-k="${id}" data-num="1" inputmode="decimal" ${f.min!=null?'min="'+f.min+'"':''} ${f.max!=null?'max="'+f.max+'"':''} step="${f.step||'any'}" value="${F[id]??''}">${f.u?'<span>'+f.u+'</span>':''}</div>`}
+function fieldHTML(f){
+  const w=f.w?` data-w='${JSON.stringify(f.w)}'`:'';
+  const cls=f.full?' full':'';
+  if(f.h)return `<div class="subh"${w}>${esc(f.h)}</div>`;
+  const hint=f.hint?`<span class="hint">${esc(f.hint)}</span>`:'';
+  switch(f.t){
+   case 'text':return `<div class="fld${cls}"${w}><label for="f_${f.id}">${esc(f.l)}</label><input type="text" id="f_${f.id}" data-k="${f.id}" value="${esc(F[f.id]??'')}">${hint}</div>`;
+   case 'area':return `<div class="fld${cls}"${w}><label for="f_${f.id}">${esc(f.l)}</label><textarea id="f_${f.id}" data-k="${f.id}">${esc(F[f.id]??'')}</textarea>${hint}</div>`;
+   case 'date':return `<div class="fld${cls}"${w}><label for="f_${f.id}">${esc(f.l)}</label><input type="date" id="f_${f.id}" data-k="${f.id}" value="${esc(F[f.id]??'')}">${hint}</div>`;
+   case 'num':return `<div class="fld${cls}"${w}><label for="f_${f.id}">${esc(f.l)}</label>${numInput(f.id,f)}${hint}</div>`;
+   case 'select':return `<div class="fld${cls}"${w}><label for="f_${f.id}">${esc(f.l)}</label><select id="f_${f.id}" data-k="${f.id}"><option value="">— เลือก —</option>${f.o.map(o=>`<option ${F[f.id]===o?'selected':''}>${esc(o)}</option>`).join('')}</select>${hint}</div>`;
+   case 'flag':return `<div class="fld${cls}"${w}><span class="lab">&nbsp;</span><div class="opts check">${optHTML(f.id,f.o,'checkbox',F[f.id]===true,'data-flag="1"')}</div></div>`;
+   case 'radio':case 'check':{const multi=f.t==='check';const v=F[f.id];
+     const opts=f.o.map(o=>optHTML(f.id,o,multi?'checkbox':'radio',multi?(Array.isArray(v)&&v.includes(o)):v===o)).join('');
+     const other=f.o.includes('อื่น ๆ')?`<input type="text" data-k="${f.id}_o" id="f_${f.id}_o" data-other="${f.id}" placeholder="ระบุ" value="${esc(F[f.id+'_o']??'')}" style="margin-top:6px;border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:7px 10px">`:'';
+     return `<div class="fld${cls}"${w}><span class="lab">${esc(f.l)}</span><div class="opts ${multi?'check':''}" role="${multi?'group':'radiogroup'}">${opts}</div>${other}${hint}</div>`}
+   case 's10':{const v=F[f.id];const o=[...Array(11).keys()].map(i=>optHTML(f.id,{v:i,l:String(i)},'radio',v===i,'data-num="1"')).join('')+optHTML(f.id,{v:'ไม่ประสงค์ตอบ',l:'ไม่ประสงค์ตอบ'},'radio',v==='ไม่ประสงค์ตอบ');
+     return `<div class="fld${cls}"${w}><span class="lab">${esc(f.l)}</span><div class="opts" role="radiogroup">${o}</div></div>`}
+   case 'likert':return `<div class="likert${cls}"${w}>${f.items.map(([k,q,code])=>`<div class="lk"><div class="q"><b>${esc(code||k)}</b>${esc(q)}</div><div class="opts" role="radiogroup" aria-label="${esc(code||k)}">${f.scale.map(o=>optHTML(k,o,'radio',F[k]===o.v,'data-num="1"')).join('')}</div></div>`).join('')}</div>`;
+   case 'legend':return `<div class="legend${cls}">${f.txt.map(t=>`<span>${esc(t)}</span>`).join('')}</div>`;
+   case 'rows':return `<div class="fld${cls}"${w} id="rows_${f.id}">${rowsHTML(f)}</div>`;
+   case 'dx':return `<div class="full tablewrap rows"><table><thead><tr><th>โรค</th><th>การวินิจฉัย</th><th>แหล่งข้อมูล</th></tr></thead><tbody>${DX.map(([k,n])=>`<tr><td>${k==='oth'?`<input type="text" data-k="dx_oth_name" placeholder="โรคอื่น ระบุ" value="${esc(F.dx_oth_name??'')}">`:esc(n)}</td><td><div class="opts" role="radiogroup">${['เคย','ไม่เคยวินิจฉัย','ไม่ทราบ'].map(o=>optHTML('dx_'+k,o,'radio',F['dx_'+k]===o)).join('')}</div></td><td><div class="mini"><select data-k="dxs_${k}" aria-label="แหล่งข้อมูล ${esc(n)}"><option value="">—</option>${['ผู้ตอบ','เวชระเบียน','ทั้งสองแหล่ง'].map(o=>`<option ${F['dxs_'+k]===o?'selected':''}>${o}</option>`).join('')}</select></div></td></tr>`).join('')}</tbody></table></div>`;
+   case 'lab':return `<div class="full tablewrap rows"><table><thead><tr><th>รายการ</th><th>ผลจริง U/L</th><th>ช่วงอ้างอิง ต่ำสุด</th><th>ช่วงอ้างอิง สูงสุด</th><th>ถ้าไม่มีผล ระบุเหตุผล</th></tr></thead><tbody>${['alt','ast'].map(k=>`<tr><td><b>${k.toUpperCase()}</b></td>${['','_lo','_hi'].map(s=>`<td><input type="number" step="any" inputmode="decimal" data-k="${k+s}" data-num="1" aria-label="${k.toUpperCase()} ${s}" value="${F[k+s]??''}"></td>`).join('')}<td><input type="text" data-k="${k}_why" value="${esc(F[k+'_why']??'')}" aria-label="เหตุผลไม่มีผล ${k.toUpperCase()}"></td></tr>`).join('')}</tbody></table></div>`;
+   case 'audit':return `<div class="full"${w}><div class="tablewrap rows"><table><thead><tr><th>ข้อ</th>${[...Array(10).keys()].map(i=>`<th>${i+1}</th>`).join('')}</tr></thead><tbody><tr><td>คะแนน</td>${[...Array(10).keys()].map(i=>`<td><input type="number" min="0" max="4" step="${i>=8?2:1}" data-k="a${i+1}" data-num="1" aria-label="AUDIT ข้อ ${i+1}" value="${F['a'+(i+1)]??''}" style="min-width:52px"></td>`).join('')}</tr></tbody></table></div><span class="hint" style="font-size:.76rem;color:var(--muted)">ข้อ 1–8 ให้คะแนน 0–4 · ข้อ 9–10 ให้คะแนน 0, 2 หรือ 4</span></div>`;
+   case 'calc':return `<div class="calc full" data-calc="${f.fn}"></div>`;
+  }
+  return '';
+}
+function rowsHTML(f){const rows=F[f.id]&&F[f.id].length?F[f.id]:[{}];
+  return `<div class="rows tablewrap"><table><thead><tr>${f.cols.map(c=>`<th>${esc(c[1])}</th>`).join('')}<th></th></tr></thead><tbody>${rows.map((r,i)=>`<tr>${f.cols.map(([k,,t])=>`<td><input type="${t==='num'?'number':'text'}" ${t==='num'?'step="any" inputmode="decimal"':''} data-row="${f.id}" data-i="${i}" data-c="${k}" data-t="${t}" value="${esc(r[k]??'')}"></td>`).join('')}<td><button type="button" class="btn sm ghost" data-delrow="${f.id}" data-i="${i}" aria-label="ลบแถว">✕</button></td></tr>`).join('')}</tbody></table></div><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px"><button type="button" class="btn sm" data-addrow="${f.id}">+ เพิ่มแถว</button>${f.hint?`<span class="hint">${esc(f.hint)}</span>`:''}</div>`}
+
+const CALC={
+ s2(){const c=compute(F,null);const p=DATA.parts.get(safeId(F._pid||''));const h=F.height||(p&&p.height);const bmi=isNum(F.weight)&&isNum(h)?F.weight/((h/100)**2):null;
+   const flag=k=>!isNum(F[k])?'–':(isNum(F[k+'_hi'])?(F[k]>F[k+'_hi']?`<span class="pill crit">${F[k]} สูงกว่าช่วงอ้างอิง</span>`:`<span class="pill good">${F[k]} อยู่ในช่วง</span>`):F[k]);
+   const prev=prevVisit();const d=k=>prev&&isNum(prev.a[k])&&isNum(F[k])?((F[k]-prev.a[k]>0?'+':'')+fmt(F[k]-prev.a[k])):'–';
+   return `<div><span class="k">BMI</span><span class="v num">${fmt(bmi)}</span></div><div><span class="k">ALT</span><span class="v">${flag('alt')}</span></div><div><span class="k">AST</span><span class="v">${flag('ast')}</span></div><div><span class="k">ΔALT เทียบตั้งต้น</span><span class="v num">${d('alt')}</span></div><div><span class="k">ΔAST เทียบตั้งต้น</span><span class="v num">${d('ast')}</span></div>`},
+ s3(){const c=compute(F,null);const r=auditRisk(c.audit);
+   const eth=F.ddays===0?'0':(c.eth_incomplete?'<span class="pill warn">คำนวณไม่ได้ ข้อมูลไม่ครบ</span>':fmt(c.eth_wk));
+   return `<div><span class="k">เอทานอลรวม 30 วัน</span><span class="v num">${F.ddays===0?'0':fmt(c.eth_30)} ก.</span></div><div><span class="k">เฉลี่ยต่อสัปดาห์</span><span class="v num">${eth} ก.</span></div><div><span class="k">AUDIT รวม</span><span class="v num">${isNum(c.audit)?c.audit+' / 40':(F.audit_st==='ประเมิน'?'กรอก '+(c.audit_n||0)+'/10 ข้อ':'–')}</span></div><div><span class="k">ระดับความเสี่ยง</span><span class="v">${r?`<span class="pill ${r.k}">${r.l}</span>`:'–'}</span></div>`},
+ s4a(){const c=compute(F,null);return HL_SKILLS.map(s=>`<div><span class="k">${s.name}</span><span class="v num">${isNum(c['hl_'+s.k])?c['hl_'+s.k]+'/16':s.items.filter(([k])=>isNum(F[k])).length+'/4 ข้อ'}</span></div>`).join('')+`<div><span class="k">รวม HLQ20</span><span class="v num">${isNum(c.hl_total)?c.hl_total+'/80 ('+fmt(c.hl_total/80*100,0)+'%)':'–'}</span></div>`},
+ s4b(){const c=compute(F,null);return `<div><span class="k">4ข.1 รวม (6 ข้อ)</span><span class="v num">${isNum(c.b1)?c.b1+'/18':'–'}</span></div><div><span class="k">4ข.2 รวม (15 ข้อ)</span><span class="v num">${isNum(c.b2)?c.b2+'/75':'–'}</span></div><div style="flex-basis:100%;font-size:.78rem;color:var(--muted)">ข้อ 4ข.1.5 เป็นข้อความเชิงลบ ระบบเก็บคะแนนตามแบบฟอร์ม (ใช่ = 3) ยังไม่กลับคะแนนจนกว่าโครงการจะยืนยันเกณฑ์</div>`},
+ s7(){const s=suggestStage(F);return s?`<div><span class="k">ขั้นที่ระบบแนะนำ</span><span class="v">${esc(s.s)}</span></div><div style="flex:1 1 220px"><span class="k">เหตุผล</span>${esc(s.why)}</div>${F.stage!==s.s?`<div><button type="button" class="btn sm" id="useStage">ใช้ขั้นนี้</button></div>`:''}`:'<div>ตอบข้อ 7.1–7.4 แล้วระบบจะแนะนำขั้นตามเกณฑ์ของฉบับนี้</div>'}
+};
+function prevVisit(){if(!F._pid)return null;const pid=String(F._pid).trim();const m=F._round==='ติดตาม'?(F._m||0):0;if(m===0)return null;return DATA.visits.get(visitId(pid,0))||null}
+function refreshCalcs(){document.querySelectorAll('[data-calc]').forEach(el=>{el.innerHTML=CALC[el.dataset.calc]()})}
+
+function renderHead(){
+  const pids=[...DATA.parts.keys()].map(k=>DATA.parts.get(k).pid).filter(Boolean);
+  $('#formHead').innerHTML=`<h2>${editingId?'แก้ไขบันทึก':'บันทึกใหม่'} <span style="font-family:var(--f-body);font-size:.8rem;color:var(--muted);font-weight:400">ส่วนที่ 2–7 จะถูกผูกกับรหัสและรอบนี้</span></h2>
+   <div class="fld"><label for="f__pid">รหัสผู้เข้าร่วม *</label><input type="text" id="f__pid" data-k="_pid" list="pidList" value="${esc(F._pid??'')}" autocomplete="off"><datalist id="pidList">${pids.map(p=>`<option value="${esc(p)}">`).join('')}</datalist></div>
+   <div class="fld"><span class="lab">รอบ *</span><div class="opts" role="radiogroup" style="--c:var(--accent)">${['ตั้งต้น','ติดตาม'].map(o=>optHTML('_round',o,'radio',F._round===o)).join('')}</div></div>
+   <div class="fld" data-w='{"f":"_round","eq":"ติดตาม"}'><label for="f__m">ติดตามเดือนที่ *</label>${numInput('_m',{min:1,max:60,step:1})}</div>
+   <div class="fld"><label for="f__date">วันที่สัมภาษณ์ *</label><input type="date" id="f__date" data-k="_date" value="${esc(F._date??'')}"></div>`;
+}
+function secProgress(s){let tot=0,done=0;s.fields.forEach(f=>{if(f.w&&!visible(f.w))return;
+  if(f.id&&!['flag'].includes(f.t)&&f.t!=='rows'){tot++;const v=F[f.id];if(v!==undefined&&v!==''&&!(Array.isArray(v)&&!v.length))done++}
+  if(f.t==='likert')f.items.forEach(([k])=>{tot++;if(isNum(F[k]))done++});
+  if(f.t==='audit')for(let i=1;i<=10;i++){tot++;if(isNum(F['a'+i]))done++}
+  if(f.t==='lab')['alt','ast'].forEach(k=>{tot++;if(isNum(F[k])||F[k+'_why'])done++});
+  if(f.t==='dx')DX.forEach(([k])=>{tot++;if(F['dx_'+k])done++});});return [done,tot]}
+function renderSteps(){$('#steps').innerHTML=SECTIONS.map((s,i)=>{const [d,t]=secProgress(s);return `<button type="button" class="step" style="--c:var(${s.c})" data-sec="${i}" aria-current="${i===curSec}"><span class="n">${s.n}</span><span><span class="t">${esc(s.short)}</span><br><span class="p num">${d}/${t} ข้อ</span></span></button>`}).join('')}
+function renderSection(){const s=SECTIONS[curSec];
+  $('#secHost').innerHTML=`<div class="sec" style="--c:var(${s.c})"><div class="sechead"><h2>ส่วนที่ ${s.n} ${esc(s.title)}</h2><p>${esc(s.desc)}</p></div><div class="secbody" id="secBody">${s.fields.map(fieldHTML).join('')}</div>
+  <div class="secnav"><button type="button" class="btn" data-nav="-1" ${curSec===0?'disabled':''}>← ส่วนก่อนหน้า</button><button type="button" class="btn" data-nav="1" ${curSec===SECTIONS.length-1?'disabled':''}>ส่วนถัดไป →</button></div></div>`;
+  applyVis();refreshCalcs();}
+function renderForm(){renderHead();renderSteps();renderSection();applyVis()}
+
+/* ---------------- form events ---------------- */
+const host=document.getElementById('view-form');
+let wasChecked=false;
+host.addEventListener('pointerdown',e=>{const i=e.target.closest('.opt')?.querySelector('input[type=radio]');wasChecked=!!(i&&i.checked)});
+host.addEventListener('click',e=>{
+  const t=e.target;
+  const st=t.closest('[data-sec]');if(st){curSec=+st.dataset.sec;renderSteps();renderSection();return}
+  const nv=t.closest('[data-nav]');if(nv){curSec=Math.min(SECTIONS.length-1,Math.max(0,curSec+ +nv.dataset.nav));renderSteps();renderSection();window.scrollTo({top:0});return}
+  const ar=t.closest('[data-addrow]');if(ar){const k=ar.dataset.addrow;F[k]=(F[k]&&F[k].length?F[k]:[{}]).concat([{}]);rerenderRows(k);return}
+  const dr=t.closest('[data-delrow]');if(dr){const k=dr.dataset.delrow;(F[k]||[]).splice(+dr.dataset.i,1);rerenderRows(k);refreshCalcs();return}
+  if(t.id==='useStage'){const s=suggestStage(F);if(s){F.stage=s.s;const sel=document.getElementById('f_stage');if(sel)sel.value=s.s;refreshCalcs()}return}
+  if(t.matches('input[type=radio]')&&wasChecked){t.checked=false;delete F[t.dataset.k];wasChecked=false;after(t.dataset.k)}
+});
+function rerenderRows(k){const f=SECTIONS.flatMap(s=>s.fields).find(x=>x.id===k);const el=document.getElementById('rows_'+k);if(f&&el)el.innerHTML=rowsHTML(f)}
+function onInput(e){const t=e.target;
+  if(t.dataset.row){const k=t.dataset.row,i=+t.dataset.i;F[k]=F[k]&&F[k].length?F[k]:[{}];F[k][i]=F[k][i]||{};const v=t.value.trim();F[k][i][t.dataset.c]=t.dataset.t==='num'?(v===''?null:Number(v)):v;refreshCalcs();return}
+  const k=t.dataset.k;if(!k)return;
+  if(t.type==='checkbox'&&t.dataset.flag){F[k]=t.checked||undefined;if(!t.checked)delete F[k]}
+  else if(t.type==='checkbox'){F[k]=[...host.querySelectorAll(`input[name="${CSS.escape(k)}"]:checked`)].map(x=>x.value);if(!F[k].length)delete F[k]}
+  else if(t.type==='radio'){if(!t.checked)return;F[k]=t.dataset.num&&t.value!=='ไม่ประสงค์ตอบ'?Number(t.value):t.value}
+  else{const v=t.value;if(v===''){delete F[k]}else F[k]=t.dataset.num?Number(v):v}
+  t.closest('.fld')?.classList.remove('err');
+  after(k);
+}
+function after(k){applyVis();refreshCalcs();renderStepsLite();if(k==='_round'||k==='_m'||k==='_pid')refreshCalcs();if(k==='ddays'&&F.ddays===0){/* skip rule handled at save */}}
+let stT;function renderStepsLite(){clearTimeout(stT);stT=setTimeout(renderSteps,250)}
+host.addEventListener('input',onInput);host.addEventListener('change',e=>{onInput(e);if(e.target.dataset.k==='_pid')pullParticipant()});
+
+function pullParticipant(){const pid=String(F._pid||'').trim();const p=DATA.parts.get(safeId(pid));if(!p)return;
+  let filled=0;S1_IDS.forEach(k=>{if((F[k]===undefined||F[k]==='')&&p[k]!==undefined){F[k]=p[k];filled++}});
+  if(!F._round){const has=DATA.visits.has(visitId(pid,0));F._round=has?'ติดตาม':'ตั้งต้น';renderHead();applyVis()}
+  if(filled){if(curSec===0)renderSection();renderSteps();msg('ดึงข้อมูลส่วนที่ 1 ของ '+pid+' มาให้แล้ว','ok')}}
+
+/* ---------------- save ---------------- */
+function msg(t,k=''){const m=$('#saveMsg');m.textContent=t;m.className='msg '+k}
+function collectVisible(){const keep={};const allF=SECTIONS.flatMap(s=>s.fields);
+  const hiddenIds=new Set();allF.forEach(f=>{if(f.w&&!visible(f.w)){if(f.id){hiddenIds.add(f.id);hiddenIds.add(f.id+'_o')}if(f.t==='audit')for(let i=1;i<=10;i++)hiddenIds.add('a'+i)}});
+  Object.keys(F).forEach(k=>{if(!hiddenIds.has(k))keep[k]=F[k]});
+  if(keep.ddays===0){keep.heavy=0;delete keep.drinks}
+  ['drinks','meds_rows'].forEach(k=>{if(keep[k]){keep[k]=keep[k].filter(r=>r&&Object.values(r).some(v=>v!==null&&v!==''));if(!keep[k].length)delete keep[k]}});
+  return keep}
+function validate(a){const errs=[];
+  if(!a._pid||!String(a._pid).trim())errs.push(['_pid','กรอกรหัสผู้เข้าร่วม']);
+  if(!a._round)errs.push(['_round','เลือกรอบ']);
+  if(a._round==='ติดตาม'&&!(isNum(a._m)&&a._m>=1))errs.push(['_m','ระบุเดือนที่ติดตาม (1 ขึ้นไป)']);
+  if(!a._date)errs.push(['_date','ระบุวันที่สัมภาษณ์']);
+  if(isNum(a.ddays)&&(a.ddays<0||a.ddays>30))errs.push(['ddays','วันที่ดื่มต้องอยู่ระหว่าง 0–30']);
+  if(isNum(a.heavy)&&isNum(a.ddays)&&a.heavy>a.ddays)errs.push(['heavy','วันดื่มหนักมากกว่าจำนวนวันที่ดื่มไม่ได้']);
+  for(let i=1;i<=10;i++){const v=a['a'+i];if(isNum(v)&&(v<0||v>4||(i>=9&&![0,2,4].includes(v))))errs.push(['a'+i,'AUDIT ข้อ '+i+' คะแนนไม่ถูกต้อง'])}
+  return errs}
+async function save(){
+  const a=collectVisible();const errs=validate(a);
+  document.querySelectorAll('.fld.err').forEach(e=>e.classList.remove('err'));
+  if(errs.length){errs.forEach(([k])=>{const el=document.querySelector(`[data-k="${k}"]`);el?.closest('.fld')?.classList.add('err')});
+    msg(errs.map(e=>e[1]).join(' · '),'err');if(['_pid','_round','_m','_date'].includes(errs[0][0]))window.scrollTo({top:0,behavior:'smooth'});return}
+  const pid=String(a._pid).trim();const m=a._round==='ตั้งต้น'?0:a._m;const vid=visitId(pid,m);
+  const s1={};S1_IDS.forEach(k=>{if(a[k]!==undefined)s1[k]=a[k]});
+  const visitA={};Object.keys(a).forEach(k=>{if(!S1_IDS.includes(k)&&!k.startsWith('_'))visitA[k]=a[k]});
+  visitA._date=a._date;
+  const prevP=DATA.parts.get(safeId(pid))||{};
+  const part={...prevP,...s1,pid,updatedAt:new Date().toISOString()};delete part.id;
+  const c=compute({...visitA,_date:a._date},part);
+  const visit={pid,month:m,date:a._date,a:visitA,c,updatedAt:new Date().toISOString()};
+  if(String(pid).startsWith('DEMO'))visit.demo=part.demo=true;
+  if(editingId&&editingId!==vid&&DATA.visits.has(vid)){msg('มีบันทึกของ '+pid+' รอบ'+roundLabel(m)+' อยู่แล้ว เปิดจากรายการบันทึกเพื่อแก้ไข','err');return}
+  if(!editingId&&DATA.visits.has(vid)){msg('มีบันทึกของ '+pid+' '+roundLabel(m)+' อยู่แล้ว กดบันทึกอีกครั้งเพื่อเขียนทับ','err');editingId=vid;return}
+  $('#btnSave').disabled=true;msg('กำลังบันทึก…');
+  try{const ops=[{op:'set',col:'participants',id:safeId(pid),doc:part},{op:'set',col:'visits',id:vid,doc:visit}];
+    if(editingId&&editingId!==vid&&DATA.visits.has(editingId))ops.push({op:'del',col:'visits',id:editingId});
+    await write(ops);
+    editingId=vid;msg('บันทึก '+pid+' '+roundLabel(m)+' แล้ว','ok');renderHead();applyVis()}
+  catch(e){msg(mode==='sheets'?'บันทึกลง Google Sheets ไม่สำเร็จ ตรวจอินเทอร์เน็ตหรือการตั้งค่า แล้วกดบันทึกอีกครั้ง':'บันทึกไม่สำเร็จ ลองอีกครั้ง','err')}
+  finally{$('#btnSave').disabled=false}
+}
+$('#btnSave').addEventListener('click',save);
+$('#btnReset').addEventListener('click',()=>{newForm();msg('เริ่มฟอร์มใหม่แล้ว')});
+function newForm(){F={_date:new Date().toISOString().slice(0,10)};editingId=null;curSec=0;renderForm()}
+function editVisit(id){const v=DATA.visits.get(id);if(!v)return;const p=DATA.parts.get(safeId(v.pid))||{};
+  F=JSON.parse(JSON.stringify({...v.a}));S1_IDS.forEach(k=>{if(p[k]!==undefined)F[k]=p[k]});
+  F._pid=v.pid;F._round=v.month===0?'ตั้งต้น':'ติดตาม';if(v.month)F._m=v.month;F._date=v.date;editingId=id;curSec=v.month===0?0:1;
+  show('form');renderForm();msg('กำลังแก้ไข '+v.pid+' '+roundLabel(v.month))}
+
+/* ---------------- store: this browser, or a Google Sheet via Apps Script ---------------- */
+const LS='alc-dash-v1', CFG='alc-dash-sheets';
+let cfg={url:'',key:''};try{cfg=JSON.parse(localStorage.getItem(CFG)||'null')||cfg}catch(e){}
+function persist(){try{localStorage.setItem(LS,JSON.stringify({p:[...DATA.parts],v:[...DATA.visits]}))}catch(e){}}
+function loadLocal(){try{const j=JSON.parse(localStorage.getItem(LS)||'null');if(j){DATA.parts=new Map(j.p);DATA.visits=new Map(j.v)}}catch(e){}}
+function setStatus(k,t){$('#sdot').className='dot '+k;$('#stxt').textContent=t}
+async function sheetsCall(body){
+  const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),30000);
+  try{const r=body?await fetch(cfg.url,{method:'POST',body:JSON.stringify({...body,key:cfg.key}),signal:ctl.signal})
+                 :await fetch(cfg.url+(cfg.url.includes('?')?'&':'?')+'key='+encodeURIComponent(cfg.key)+'&t='+Date.now(),{signal:ctl.signal});
+    const j=await r.json();if(!j.ok)throw new Error(j.error||'error');return j}
+  finally{clearTimeout(t)}}
+async function write(ops){
+  if(mode==='sheets'){for(let i=0;i<ops.length;i+=40)await sheetsCall({ops:ops.slice(i,i+40)})}
+  ops.forEach(o=>{const m=o.col==='participants'?DATA.parts:DATA.visits;if(o.op==='set')m.set(o.id,o.doc);else m.delete(o.id)});
+  persist();renderAll();
+}
+const store={
+  setPart:(id,d)=>write([{op:'set',col:'participants',id,doc:d}]),
+  setVisit:(id,d)=>write([{op:'set',col:'visits',id,doc:d}]),
+  delVisit:id=>write([{op:'del',col:'visits',id}]),
+  delPart:id=>write([{op:'del',col:'participants',id}])
+};
+async function refresh(quiet){
+  if(mode!=='sheets')return;
+  if(!quiet)setStatus('','กำลังโหลดจาก Google Sheets…');
+  try{const j=await sheetsCall(null);DATA.parts=new Map(j.participants);DATA.visits=new Map(j.visits);persist();
+    setStatus('ok','ซิงก์กับ Google Sheets · '+new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}));renderAll()}
+  catch(e){setStatus('warn','ติดต่อ Google Sheets ไม่ได้ แสดงข้อมูลที่จำไว้ล่าสุด')}
+}
+async function connect(){
+  loadLocal();
+  if(cfg.url){mode='sheets';$('#localBanner').hidden=true;renderAll();await refresh()}
+  else{mode='local';$('#localBanner').hidden=false;setStatus('warn','เก็บในเบราว์เซอร์นี้');renderAll()}
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&mode==='sheets'&&view!=='form')refresh(true)});
+
+/* ---------------- dashboard ---------------- */
+const charts={};
+function people(){
+  const fp=$('#fProv').value,fo=$('#fOrg').value,fs=$('#fSex').value,fd=$('#fDemo').value;
+  const byP=new Map();DATA.visits.forEach((v,id)=>{const k=safeId(v.pid);if(!byP.has(k))byP.set(k,[]);byP.get(k).push({...v,id})});
+  const out=[];byP.forEach((vs,k)=>{const p=DATA.parts.get(k)||{pid:vs[0].pid};
+    if(fp&&p.province!==fp)return;if(fo&&p.orgtype!==fo)return;if(fs&&p.sex!==fs)return;if(fd==='real'&&(p.demo||vs[0].demo))return;
+    vs.sort((a,b)=>a.month-b.month);const base=vs.find(v=>v.month===0)||null;const fus=vs.filter(v=>v.month>0);const fu=fus.length?fus[fus.length-1]:null;
+    out.push({k,p,vs,base,fu,latest:vs[vs.length-1]})});
+  DATA.parts.forEach((p,k)=>{if(!byP.has(k)&&!(fp&&p.province!==fp)&&!(fo&&p.orgtype!==fo)&&!(fs&&p.sex!==fs)&&!(fd==='real'&&p.demo))out.push({k,p,vs:[],base:null,fu:null,latest:null})});
+  return out.sort((a,b)=>String(a.p.pid).localeCompare(String(b.p.pid)));
+}
+function fillFilter(sel,vals){const cur=sel.value;const first=sel.options[0].outerHTML;const extra=sel.id==='fDemo';if(extra)return;
+  sel.innerHTML=first+[...new Set(vals.filter(Boolean))].sort((a,b)=>a.localeCompare(b,'th')).map(v=>`<option ${v===cur?'selected':''}>${esc(v)}</option>`).join('')}
+function themeChart(){if(!window.Chart)return;Chart.defaults.color=css('--muted');Chart.defaults.borderColor=css('--line');Chart.defaults.font.family=css('--f-body');Chart.defaults.font.size=12;Chart.defaults.plugins.legend.labels.boxWidth=12;Chart.defaults.plugins.legend.labels.boxHeight=12;Chart.defaults.maintainAspectRatio=false}
+function mk(id,cfg){if(!window.Chart)return;if(charts[id])charts[id].destroy();charts[id]=new Chart(document.getElementById(id),cfg)}
+function kpi(l,v,sub,c){return `<div class="kpi" style="--c:var(${c})"><span class="lab">${l}</span><span class="val num">${v}</span><span class="sub">${sub}</span></div>`}
+function renderDash(){
+  const all=people();
+  fillFilter($('#fProv'),[...DATA.parts.values()].map(p=>p.province));fillFilter($('#fOrg'),[...DATA.parts.values()].map(p=>p.orgtype));fillFilter($('#fSex'),[...DATA.parts.values()].map(p=>p.sex));
+  const demoN=[...DATA.parts.values()].filter(p=>p.demo).length+[...DATA.visits.values()].filter(v=>v.demo).length;$('#demoBanner').hidden=!demoN;$('#demoCount').textContent=demoN;
+  const empty=!DATA.visits.size&&!DATA.parts.size;$('#dashEmpty').hidden=!empty;$('#dashBody').hidden=empty;if(empty)return;
+  themeChart();
+  const P=all.filter(x=>x.vs.length);const nV=P.reduce((s,x)=>s+x.vs.length,0);const nFU=P.filter(x=>x.fu).length;
+  const latestAudit=mean(P.map(x=>x.latest.c&&x.latest.c.audit));const latestEth=mean(P.map(x=>x.latest.c&&x.latest.c.eth_wk));
+  const abst=P.filter(x=>x.latest.a.abst==='งด'||x.latest.a.q71===Q71[1]).length;
+  const pair=k=>P.filter(x=>x.base&&x.fu&&isNum(x.base.a[k])&&isNum(x.fu.a[k]));
+  const pAlt=pair('alt');const dAlt=mean(pAlt.map(x=>x.fu.a.alt-x.base.a.alt));
+  $('#kpis').innerHTML=
+    kpi('ผู้เข้าร่วม',P.length.toLocaleString('th-TH'),nV+' การบันทึก','--s1')+
+    kpi('ติดตามแล้ว',nFU.toLocaleString('th-TH'),P.length?fmt(nFU/P.length*100,0)+'% ของผู้เข้าร่วม':'','--s6')+
+    kpi('AUDIT เฉลี่ยล่าสุด',fmt(latestAudit),'คะแนนเต็ม 40','--s3')+
+    kpi('เอทานอลเฉลี่ยล่าสุด',fmt(latestEth,0),'กรัม/สัปดาห์','--s2')+
+    kpi('ΔALT เฉลี่ย',isNum(dAlt)?(dAlt>0?'+':'')+fmt(dAlt):'–',pAlt.length+' คนที่มีผลทั้ง 2 รอบ (U/L)','--s4a')+
+    kpi('กำลังงดดื่ม',P.length?fmt(abst/P.length*100,0)+'%':'–',abst+' คน ณ รอบล่าสุด','--s7');
+
+  // liver
+  const pAst=pair('ast');
+  mk('c-liver',{type:'bar',data:{labels:['ALT','AST'],datasets:[
+     {label:'ตั้งต้น',data:[mean(pAlt.map(x=>x.base.a.alt)),mean(pAst.map(x=>x.base.a.ast))],backgroundColor:css('--s2'),borderRadius:6},
+     {label:'ติดตามล่าสุด',data:[mean(pAlt.map(x=>x.fu.a.alt)),mean(pAst.map(x=>x.fu.a.ast))],backgroundColor:css('--s4a'),borderRadius:6}]},
+    options:{plugins:{tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)+' U/L'}}},scales:{y:{beginAtZero:true,title:{display:true,text:'ค่าเฉลี่ย U/L'}},x:{grid:{display:false}}}}});
+  const dAst=mean(pAst.map(x=>x.fu.a.ast-x.base.a.ast));
+  $('#n-liver').innerHTML=pAlt.length||pAst.length?`เฉพาะคนที่มีผลทั้งตั้งต้นและติดตาม · ALT n=${pAlt.length}, ΔALT ${isNum(dAlt)?(dAlt>0?'+':'')+fmt(dAlt):'–'} · AST n=${pAst.length}, ΔAST ${isNum(dAst)?(dAst>0?'+':'')+fmt(dAst):'–'} U/L`:'ยังไม่มีผู้ที่มีผลเลือดครบทั้ง 2 รอบ';
+
+  // audit risk stacked
+  const riskCount=sel=>{const r=[0,0,0,0];P.forEach(x=>{const v=sel(x);const k=v&&v.c&&auditRisk(v.c.audit);if(k)r[k.i]++});return r};
+  const rb=riskCount(x=>x.base),rf=riskCount(x=>x.fu);const pct=(a)=>{const s=a.reduce((x,y)=>x+y,0);return a.map(v=>s?v/s*100:0)};
+  const pb=pct(rb),pf=pct(rf);const rl=['ต่ำ (0–7)','เสี่ยง (8–15)','อันตราย (16–19)','น่าจะติด (20+)'];const rc=['--good','--warn','--bad','--crit'];
+  mk('c-audit',{type:'bar',data:{labels:['ตั้งต้น (n='+rb.reduce((a,b)=>a+b,0)+')','ติดตามล่าสุด (n='+rf.reduce((a,b)=>a+b,0)+')'],datasets:rl.map((l,i)=>({label:l,data:[pb[i],pf[i]],raw:[rb[i],rf[i]],backgroundColor:css(rc[i]),borderRadius:4}))},
+    options:{indexAxis:'y',plugins:{tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.dataset.raw[c.dataIndex]+' คน ('+fmt(c.raw,0)+'%)'}}},scales:{x:{stacked:true,max:100,ticks:{callback:v=>v+'%'}},y:{stacked:true,grid:{display:false}}}}});
+  $('#n-audit').textContent='เกณฑ์มาตรฐาน AUDIT ขององค์การอนามัยโลก ควรยืนยันกับคู่มือที่หน่วยบริการใช้';
+
+  // HL radar
+  const hlm=sel=>HL_SKILLS.map(s=>mean(P.map(x=>{const v=sel(x);return v&&v.c?v.c['hl_'+s.k]:null})));
+  mk('c-hl',{type:'radar',data:{labels:HL_SKILLS.map(s=>s.name),datasets:[
+     {label:'ตั้งต้น',data:hlm(x=>x.base),borderColor:css('--s4b'),backgroundColor:css('--s4b')+'33',pointBackgroundColor:css('--s4b')},
+     {label:'ติดตามล่าสุด',data:hlm(x=>x.fu),borderColor:css('--s4a'),backgroundColor:css('--s4a')+'33',pointBackgroundColor:css('--s4a')}]},
+    options:{scales:{r:{min:0,max:16,ticks:{stepSize:4,backdropColor:'transparent'},grid:{color:css('--line')},angleLines:{color:css('--line')},pointLabels:{color:css('--ink'),font:{size:12}}}}}});
+  const hb=mean(P.map(x=>x.base&&x.base.c.hl_total)),hf=mean(P.map(x=>x.fu&&x.fu.c.hl_total));
+  $('#n-hl').textContent='คะแนนเฉลี่ยต่อทักษะ (เต็ม 16) · รวมเฉลี่ย ตั้งต้น '+fmt(hb)+' → ติดตาม '+fmt(hf)+' จาก 80';
+
+  // ethanol by month
+  const months=[...new Set(P.flatMap(x=>x.vs.map(v=>v.month)))].sort((a,b)=>a-b);
+  const em=months.map(m=>mean(P.flatMap(x=>x.vs.filter(v=>v.month===m).map(v=>v.c&&v.c.eth_wk))));
+  const hm=months.map(m=>mean(P.flatMap(x=>x.vs.filter(v=>v.month===m).map(v=>v.c&&v.c.heavy))));
+  mk('c-eth',{type:'line',data:{labels:months.map(m=>m===0?'ตั้งต้น':'เดือน '+m),datasets:[
+     {label:'กรัม/สัปดาห์',data:em,borderColor:css('--s3'),backgroundColor:css('--s3')+'2E',fill:true,tension:.3,pointRadius:4,yAxisID:'y'},
+     {label:'วันดื่มหนัก (≥60 ก.)',data:hm,borderColor:css('--s2'),borderDash:[5,4],pointRadius:3,yAxisID:'y2'}]},
+    options:{scales:{y:{beginAtZero:true,title:{display:true,text:'กรัม/สัปดาห์'}},y2:{position:'right',beginAtZero:true,grid:{display:false},title:{display:true,text:'วัน'}},x:{grid:{display:false}}}}});
+  $('#n-eth').textContent='ค่าเฉลี่ยของทุกคนในแต่ละรอบ คำนวณจาก มล. × จำนวน × %vol × 0.789 × 7/30';
+
+  // stage
+  const sc=STAGES.map(s=>P.filter(x=>(x.latest.a.stage||(x.latest.c.stage_suggest&&x.latest.c.stage_suggest.s))===s).length);
+  mk('c-stage',{type:'bar',data:{labels:['1','2','3','4','5','?'],datasets:[{label:'คน',data:sc,backgroundColor:[css('--s7'),css('--s3'),css('--s5'),css('--s4a'),css('--s6'),css('--muted')],borderRadius:6}]},
+    options:{plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>STAGES[c[0].dataIndex]}}},scales:{y:{beginAtZero:true,ticks:{precision:0}},x:{grid:{display:false}}}}});
+  $('#n-stage').textContent='รอบล่าสุดของแต่ละคน · 1 ก่อนพิจารณา 2 พิจารณา 3 เตรียมพร้อม 4 ลงมือ 5 คงพฤติกรรม';
+
+  // media
+  const mc={};P.forEach(x=>{const ch=x.latest.a.aware_ch||[];ch.forEach(c=>mc[c]=(mc[c]||0)+1)});const me=Object.entries(mc).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  mk('c-media',{type:'bar',data:{labels:me.map(e=>e[0]),datasets:[{label:'คน',data:me.map(e=>e[1]),backgroundColor:css('--s5'),borderRadius:5}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0}},y:{grid:{display:false}}}}});
+  const aw=P.filter(x=>x.latest.a.aware==='ทราบ').length;$('#n-media').textContent=P.length?'รู้จักสื่อรณรงค์ '+aw+' จาก '+P.length+' คน ('+fmt(aw/P.length*100,0)+'%)':'';
+
+  // follow-up status
+  const fc=FU_STATUS.map(s=>P.reduce((n,x)=>n+x.vs.filter(v=>v.a.fustat===s).length,0));
+  mk('c-fu',{type:'doughnut',data:{labels:FU_STATUS,datasets:[{data:fc,backgroundColor:[css('--s6'),css('--s5'),css('--s3'),css('--s7'),css('--muted')],borderColor:css('--surface'),borderWidth:2}]},options:{cutout:'62%',plugins:{legend:{position:'bottom'}}}});
+  $('#n-fu').textContent='นับทุกการบันทึกที่ระบุสถานะ ข้อ 6.3';
+
+  // province & org
+  const cnt=(f)=>{const m={};P.forEach(x=>{const v=x.p[f]||'ไม่ระบุ';m[v]=(m[v]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
+  const pv=cnt('province').slice(0,12);mk('c-prov',{type:'bar',data:{labels:pv.map(e=>e[0]),datasets:[{label:'คน',data:pv.map(e=>e[1]),backgroundColor:css('--s1'),borderRadius:5}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0}},y:{grid:{display:false}}}}});
+  const og=cnt('orgtype');const pal=['--s1','--s2','--s3','--s4a','--s4b','--s5','--s6','--s7','--muted'];
+  mk('c-org',{type:'doughnut',data:{labels:og.map(e=>e[0]),datasets:[{data:og.map(e=>e[1]),backgroundColor:og.map((e,i)=>css(pal[i%pal.length])),borderColor:css('--surface'),borderWidth:2}]},options:{cutout:'58%',plugins:{legend:{position:'right'}}}});
+
+  // people table
+  const dl=(b,f,k)=>{if(!b||!f||!isNum(b.a[k])||!isNum(f.a[k]))return'–';const d=f.a[k]-b.a[k];return `<span class="${d>0?'up':d<0?'down':''}">${d>0?'+':''}${fmt(d)}</span>`};
+  const ar=v=>{const r=v&&v.c&&auditRisk(v.c.audit);return r?`<span class="pill ${r.k}">${v.c.audit}</span>`:'–'};
+  $('#t-people').innerHTML=`<thead><tr><th>รหัส</th><th>จังหวัด</th><th>รอบล่าสุด</th><th>AUDIT ตั้งต้น</th><th>AUDIT ล่าสุด</th><th>ก./สัปดาห์ ล่าสุด</th><th>ΔALT</th><th>ΔAST</th><th>HLQ20 ตั้งต้น→ล่าสุด</th><th>ขั้น</th><th></th></tr></thead><tbody>${P.map(x=>{const L=x.latest;const st=L.a.stage||(L.c.stage_suggest&&L.c.stage_suggest.s)||'–';
+    return `<tr><td><b>${esc(x.p.pid)}</b> ${x.p.demo||L.demo?'<span class="pill demo">ตัวอย่าง</span>':''}</td><td>${esc(x.p.province||'–')}</td><td>${roundLabel(L.month)}</td><td>${ar(x.base)}</td><td>${x.fu?ar(x.fu):'–'}</td><td class="num">${fmt(L.c.eth_wk,0)}</td><td class="num">${dl(x.base,x.fu,'alt')}</td><td class="num">${dl(x.base,x.fu,'ast')}</td><td class="num">${fmt(x.base&&x.base.c.hl_total,0)} → ${fmt(x.fu&&x.fu.c.hl_total,0)}</td><td>${esc(st)}</td><td><button class="btn sm" data-edit="${esc(L.id)}">เปิด</button></td></tr>`}).join('')}</tbody>`;
+}
+
+/* ---------------- records ---------------- */
+let pendingDel=null;
+function renderRec(){const q=$('#recSearch').value.trim().toLowerCase();
+  const rows=[...DATA.visits.entries()].map(([id,v])=>({id,v,p:DATA.parts.get(safeId(v.pid))||{}})).filter(r=>!q||String(r.v.pid).toLowerCase().includes(q)||String(r.p.province||'').toLowerCase().includes(q)).sort((a,b)=>String(b.v.date).localeCompare(String(a.v.date)));
+  $('#t-rec').innerHTML=rows.length?`<thead><tr><th>วันที่</th><th>รหัส</th><th>รอบ</th><th>จังหวัด</th><th>ALT</th><th>AST</th><th>AUDIT</th><th>ก./สัปดาห์</th><th>HLQ20</th><th>สถานะติดตาม</th><th></th></tr></thead><tbody>${rows.map(({id,v,p})=>`<tr><td>${thDate(v.date)}</td><td><b>${esc(v.pid)}</b> ${v.demo?'<span class="pill demo">ตัวอย่าง</span>':''}</td><td>${roundLabel(v.month)}</td><td>${esc(p.province||'–')}</td><td class="num">${v.c.alt_high?'<span class="pill crit">'+v.a.alt+'</span>':fmt(v.a.alt)}</td><td class="num">${v.c.ast_high?'<span class="pill crit">'+v.a.ast+'</span>':fmt(v.a.ast)}</td><td class="num">${fmt(v.c.audit,0)}</td><td class="num">${fmt(v.c.eth_wk,0)}</td><td class="num">${fmt(v.c.hl_total,0)}</td><td>${esc(v.a.fustat||'–')}</td><td style="display:flex;gap:6px"><button class="btn sm" data-edit="${esc(id)}">แก้ไข</button><button class="btn sm danger" data-del="${esc(id)}">${pendingDel===id?'ยืนยันลบ':'ลบ'}</button></td></tr>`).join('')}</tbody>`:`<tbody><tr><td class="empty">ยังไม่มีบันทึก${q?' ที่ตรงกับคำค้น':''}</td></tr></tbody>`;
+}
+document.addEventListener('click',async e=>{
+  const ed=e.target.closest('[data-edit]');if(ed){editVisit(ed.dataset.edit);return}
+  const de=e.target.closest('[data-del]');if(de){const id=de.dataset.del;if(pendingDel!==id){pendingDel=id;renderRec();setTimeout(()=>{if(pendingDel===id){pendingDel=null;renderRec()}},4000);return}
+    pendingDel=null;try{await store.delVisit(id)}catch(err){}renderRec();return}
+  const go=e.target.closest('[data-go]');if(go){if(go.dataset.new)newForm();show(go.dataset.go);return}
+  const tb=e.target.closest('nav.tabs button');if(tb){show(tb.dataset.view)}
+});
+$('#recSearch').addEventListener('input',renderRec);
+['#fProv','#fOrg','#fSex','#fDemo'].forEach(s=>$(s).addEventListener('change',renderDash));
+let demoArm=false;
+$('#clearDemo').addEventListener('click',async e=>{const b=e.target;if(!demoArm){demoArm=true;b.textContent='กดอีกครั้งเพื่อยืนยันการลบ';setTimeout(()=>{demoArm=false;b.textContent='ลบข้อมูลตัวอย่างทั้งหมด'},4000);return}
+  demoArm=false;b.disabled=true;b.textContent='กำลังลบ…';
+  try{await write([...[...DATA.visits].filter(([,v])=>v.demo).map(([id])=>({op:'del',col:'visits',id})),...[...DATA.parts].filter(([,p])=>p.demo).map(([id])=>({op:'del',col:'participants',id}))])}catch(err){alert('ลบไม่สำเร็จ ลองอีกครั้ง')}
+  b.disabled=false;b.textContent='ลบข้อมูลตัวอย่างทั้งหมด'});
+
+/* ---------------- CSV ---------------- */
+function csvCell(v){if(v==null)return'';if(Array.isArray(v))v=v.map(x=>typeof x==='object'?Object.values(x).join(' / '):x).join('; ');else if(typeof v==='object')v=JSON.stringify(v);v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+$('#csvVisits').addEventListener('click',async()=>{
+  const rows=[...DATA.visits.values()].map(v=>{const p=DATA.parts.get(safeId(v.pid))||{};const r={pid:v.pid,round:v.month===0?'baseline':'followup',month:v.month,date:v.date};
+    S1_IDS.forEach(k=>{if(p[k]!==undefined)r['s1_'+k]=p[k]});Object.entries(v.a).forEach(([k,x])=>{if(k!=='_date')r[k]=x});
+    ['bmi','eth_30','eth_wk','heavy','audit','audit_risk','hl_acc','hl_und','hl_ask','hl_dec','hl_app','hl_total','b1','b2','alt_high','ast_high'].forEach(k=>r['calc_'+k]=v.c[k]);r.calc_stage_suggest=v.c.stage_suggest&&v.c.stage_suggest.s;r.demo=!!v.demo;return r});
+  const cols=[...new Set(rows.flatMap(r=>Object.keys(r)))];const csv='﻿'+[cols.join(','),...rows.map(r=>cols.map(c=>csvCell(r[c])).join(','))].join('\n');
+  const name='alcohol-survey-'+new Date().toISOString().slice(0,10)+'.csv';
+  saveFile(name,csv,'text/csv;charset=utf-8')
+});
+
+function saveFile(name,text,type){const u=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
+
+/* ---------------- settings ---------------- */
+function renderSet(){
+  $('#setUrl').value=cfg.url||'';$('#setKey').value=cfg.key||'';
+  $('#setMode').innerHTML=mode==='sheets'?'<span class="pill good">เชื่อม Google Sheets แล้ว</span> ทุกเครื่องที่ใส่ลิงก์เดียวกันจะเห็นข้อมูลชุดเดียวกัน':'<span class="pill warn">เก็บในเบราว์เซอร์นี้</span> ข้อมูลอยู่เฉพาะเครื่องและเบราว์เซอร์นี้ ควรเชื่อม Google Sheets หรือสำรองไฟล์เป็นระยะ';
+  $('#setDisconnect').hidden=mode!=='sheets';
+}
+$('#setSave').addEventListener('click',async()=>{
+  const url=$('#setUrl').value.trim(),key=$('#setKey').value.trim();const m=$('#setMsg');
+  if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec/.test(url)){m.textContent='ลิงก์ต้องเป็น Web app URL ที่ขึ้นต้นด้วย https://script.google.com/macros/s/ และลงท้ายด้วย /exec';m.className='msg err';return}
+  m.textContent='กำลังทดสอบการเชื่อมต่อ…';m.className='msg';
+  const old=cfg;cfg={url,key};
+  try{const j=await sheetsCall(null);
+    const local=[...DATA.visits.keys()].filter(k=>!j.visits.some(v=>v[0]===k));
+    try{localStorage.setItem(CFG,JSON.stringify(cfg))}catch(e){}
+    mode='sheets';$('#localBanner').hidden=true;
+    if(local.length&&$('#setPush').checked){m.textContent='เชื่อมได้แล้ว กำลังส่งข้อมูลในเครื่อง '+local.length+' รายการขึ้น Google Sheets…';
+      const ops=[];DATA.parts.forEach((d,id)=>ops.push({op:'set',col:'participants',id,doc:d}));local.forEach(id=>ops.push({op:'set',col:'visits',id,doc:DATA.visits.get(id)}));
+      for(let i=0;i<ops.length;i+=40)await sheetsCall({ops:ops.slice(i,i+40)})}
+    await refresh();m.textContent='เชื่อม Google Sheets สำเร็จ';m.className='msg ok';renderSet()}
+  catch(e){cfg=old;m.textContent='เชื่อมไม่ได้: ตรวจว่า Deploy เป็น Web app แบบ "Anyone" และรหัสลับตรงกับในสคริปต์ ('+(e.message||e)+')';m.className='msg err'}
+});
+$('#setDisconnect').addEventListener('click',()=>{cfg={url:'',key:''};try{localStorage.removeItem(CFG)}catch(e){}mode='local';$('#localBanner').hidden=false;setStatus('warn','เก็บในเบราว์เซอร์นี้');renderSet();$('#setMsg').textContent='ยกเลิกการเชื่อมแล้ว ข้อมูลล่าสุดยังจำไว้ในเครื่องนี้';$('#setMsg').className='msg'});
+$('#bkExport').addEventListener('click',()=>saveFile('alcohol-survey-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({participants:[...DATA.parts],visits:[...DATA.visits]}),'application/json'));
+$('#bkImport').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const m=$('#setMsg');
+  try{const j=JSON.parse(await f.text());const ops=[...(j.participants||[]).map(([id,doc])=>({op:'set',col:'participants',id,doc})),...(j.visits||[]).map(([id,doc])=>({op:'set',col:'visits',id,doc}))];
+    await write(ops);m.textContent='นำเข้า '+(j.visits||[]).length+' การบันทึกแล้ว';m.className='msg ok'}catch(err){m.textContent='ไฟล์ไม่ถูกต้องหรือส่งขึ้น Google Sheets ไม่สำเร็จ';m.className='msg err'}e.target.value=''});
+async function loadDemo(btn){btn.disabled=true;const t=btn.textContent;btn.textContent='กำลังโหลด…';
+  try{const d=await (await fetch('demo.json')).json();const ops=[];
+    d.parts.forEach(p=>ops.push({op:'set',col:'participants',id:safeId(p.pid),doc:{...p,updatedAt:new Date().toISOString()}}));
+    d.visits.forEach(v=>{const p=d.parts.find(x=>x.pid===v.pid);ops.push({op:'set',col:'visits',id:visitId(v.pid,v.month),doc:{pid:v.pid,month:v.month,date:v.a._date,a:v.a,c:compute(v.a,p),demo:true,updatedAt:new Date().toISOString()}})});
+    await write(ops)}catch(e){btn.textContent='โหลดไม่สำเร็จ';setTimeout(()=>{btn.textContent=t;btn.disabled=false},2500);return}
+  btn.textContent=t;btn.disabled=false;show('dash')}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-demo]');if(b)loadDemo(b)});
+
+/* ---------------- views ---------------- */
+let view='dash';
+function show(v){view=v;document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===v));
+  ['dash','form','rec','set'].forEach(k=>$('#view-'+k).hidden=k!==v);$('#saveBar').hidden=v!=='form'||!canWrite;
+  try{localStorage.setItem(LS+'-tab',v)}catch(e){}
+  if(v==='dash')renderDash();if(v==='rec')renderRec();if(v==='set')renderSet();if(v==='form'){renderHead();applyVis();renderSteps();refreshCalcs()}}
+let rT;function renderAll(){clearTimeout(rT);rT=setTimeout(()=>{if(view==='dash')renderDash();if(view==='rec')renderRec();if(view==='form'){refreshCalcs()}},60)}
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(view==='dash')renderDash()});
+new MutationObserver(()=>{if(view==='dash')renderDash()}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+newForm();
+let startTab='dash';try{startTab=localStorage.getItem(LS+'-tab')||'dash'}catch(e){}
+show(['dash','form','rec','set'].includes(startTab)?startTab:'dash');
+connect();
+</script>
+</body>
+</html>
