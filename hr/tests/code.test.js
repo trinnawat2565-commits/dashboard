@@ -79,6 +79,16 @@ t('only admin sets location', () => {
   const r = g.api('setGeo', { lat: 16.5, lng: 103.5, radius: 150 }, admin);
   assert.strictEqual(r.ok, true); assert.strictEqual(r.data.set, true);
 });
+t('GPS owner list limits who can set location', () => {
+  const st = g.book['ตั้งค่า'];
+  st.getRange(7, 2).setValue('B02');
+  assert.strictEqual(g.api('geo', {}, admin).data.canSet, false);
+  assert.strictEqual(g.api('setGeo', { lat: 1, lng: 1 }, admin).code, 'forbidden');
+  st.getRange(7, 2).setValue('A01');
+  assert.strictEqual(g.api('geo', {}, admin).data.canSet, true);
+  assert.strictEqual(g.api('setGeo', { lat: 16.5, lng: 103.5 }, admin).ok, true);
+  st.getRange(7, 2).setValue('');
+});
 t('punch outside radius is refused and logged', () => {
   const r = g.api('punch', { kind: 'in', lat: 16.51, lng: 103.5, acc: 10 }, staff).data;
   assert.strictEqual(r.ok, false); assert(/นอกพื้นที่/.test(r.reason));

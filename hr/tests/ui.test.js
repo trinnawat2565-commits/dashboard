@@ -47,7 +47,7 @@ const SHOTS = process.env.SHOTS || '';
   assert.strictEqual(await page.locator('.card').count(), 2, 'both staff auto-created');
   await page.goto('https://app.test/index.html#setup');
   await page.click('[data-act="setGeo"]');
-  await page.waitForFunction(() => /ตั้งพิกัดแล้ว/.test(document.body.textContent));
+  await page.waitForFunction(() => /ตั้งพิกัดแล้ว/.test(document.querySelector('#view').textContent));
   await shot(page, 'setup');
   await page.close();
 
