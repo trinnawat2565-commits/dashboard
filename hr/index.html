@@ -1046,7 +1046,7 @@ ${notes}
 function vSetup(){
   const st = S.settings, ro = !S.canWrite ? "disabled" : "";
   return `
-  ${S.isAdmin && !S.demo ? `<section class="panel" data-keep><h2>พิกัด รพ.สต. สำหรับลงเวลา</h2>
+  ${S.isAdmin && !S.demo && S.geo && S.geo.canSet ? `<section class="panel" data-keep><h2>พิกัด รพ.สต. สำหรับลงเวลา</h2>
     <p class="sub" style="margin:0">${S.geo ? (S.geo.set ? `ตั้งพิกัดแล้ว · รัศมี ${S.geo.radius} ม. · ${S.geo.on?"เปิดตรวจพิกัด":"ปิดตรวจพิกัดอยู่ (เปิดได้ในชีต ตั้งค่า)"}` : "ยังไม่ได้ตั้งพิกัด เจ้าหน้าที่จะลงเวลาไม่ได้จนกว่าจะตั้ง") : "กำลังตรวจสอบ…"}</p>
     <p class="sub" style="margin:0">ยืนอยู่หน้าอาคาร รพ.สต. เปิด GPS แล้วกดปุ่มด้านล่าง</p>
     <div class="form-row"><label class="f">รัศมีที่อนุญาต (เมตร)<input type="number" id="gRad" min="30" max="2000" value="${S.geo?S.geo.radius:150}" style="width:130px"></label>

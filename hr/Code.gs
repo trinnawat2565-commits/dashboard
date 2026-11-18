@@ -18,7 +18,8 @@ var SETTING_ROWS = [
   ['ลองจิจูด', '', ''],
   ['รัศมีที่อนุญาต (ม.)', 150, 'ระยะห่างสูงสุดจาก รพ.สต. ที่ลงเวลาได้'],
   ['ความแม่นยำขั้นต่ำ (ม.)', 100, 'ถ้า GPS คลาดเคลื่อนมากกว่านี้ ให้ลองใหม่'],
-  ['เปิดใช้ GPS', true, 'เอาติ๊กออกเพื่อปิดการตรวจพิกัดชั่วคราว']
+  ['เปิดใช้ GPS', true, 'เอาติ๊กออกเพื่อปิดการตรวจพิกัดชั่วคราว'],
+  ['ผู้ตั้งพิกัดได้ (รหัส)', '', 'รหัสในชีต ผู้ใช้ คั่นด้วยจุลภาค เช่น S02 ถ้าเว้นว่าง admin ทุกคนตั้งได้']
 ];
 var TZ = 'Asia/Bangkok';
 var SESSION_SEC = 6 * 3600;
@@ -32,6 +33,10 @@ function setup() {
   var ss = SpreadsheetApp.getActive();
   var st = ensure_(ss, SH.settings, ['รายการ', 'ค่า', 'คำอธิบาย']);
   if (st.getLastRow() < 2) st.getRange(2, 1, SETTING_ROWS.length, 3).setValues(SETTING_ROWS);
+  else if (st.getLastRow() < SETTING_ROWS.length + 1) {
+    var from = st.getLastRow() - 1;
+    st.getRange(from + 2, 1, SETTING_ROWS.length - from, 3).setValues(SETTING_ROWS.slice(from));
+  }
   st.getRange(6, 2).insertCheckboxes();
   if (st.getRange(6, 2).getValue() === '') st.getRange(6, 2).setValue(true);
   var us = ensure_(ss, SH.users, USER_HEADERS);
@@ -217,12 +222,15 @@ function delDoc(s, p) {
 /* ---------- GPS clock-in ---------- */
 function geo_() {
   var sh = SpreadsheetApp.getActive().getSheetByName(SH.settings);
-  var v = sh.getRange(2, 2, 5, 1).getValues().map(function (r) { return r[0]; });
+  var v = sh.getRange(2, 2, 6, 1).getValues().map(function (r) { return r[0]; });
   return { lat: v[0] === '' ? null : Number(v[0]), lng: v[1] === '' ? null : Number(v[1]),
-    radius: Number(v[2]) || 150, maxAcc: Number(v[3]) || 100, on: !(v[4] === false || String(v[4]).toUpperCase() === 'FALSE') };
+    radius: Number(v[2]) || 150, maxAcc: Number(v[3]) || 100, on: !(v[4] === false || String(v[4]).toUpperCase() === 'FALSE'),
+    owners: String(v[5] || '').split(/[\s,]+/).filter(String) };
 }
-function getGeo(s) { var g = geo_(); return { set: g.lat !== null && g.lng !== null, radius: g.radius, maxAcc: g.maxAcc, on: g.on }; }
+function canSetGeo_(s, g) { return s.role === 'admin' && (!g.owners.length || g.owners.indexOf(s.id) >= 0); }
+function getGeo(s) { var g = geo_(); return { set: g.lat !== null && g.lng !== null, radius: g.radius, maxAcc: g.maxAcc, on: g.on, canSet: canSetGeo_(s, g) }; }
 function setGeo(s, p) {
+  if (!canSetGeo_(s, geo_())) fail_('ผู้ดูแลกำหนดให้เฉพาะบางคนตั้งพิกัดได้', 'forbidden');
   var lat = Number(p.lat), lng = Number(p.lng);
   if (!isFinite(lat) || !isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) fail_('พิกัดไม่ถูกต้อง');
   var sh = SpreadsheetApp.getActive().getSheetByName(SH.settings);
