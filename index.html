@@ -835,7 +835,9 @@ function drawPpw(){
       E.indicators.forEach(i=>rows.push([i.name,i.target,...[...Array(qn)].flatMap((_,k)=>{const q=i.quarters[k];return q?[q.n,q.pct,q.need_pct,ST[q.status][1]]:['','','','']}),i.miss,
         [...i.reasons.map(r=>`${r.reason} ${r.n} คน`),`ไม่พบบริการเลย ${i.never} คน`].join('; '),i.fix,i.out_area]));
       const csv='\ufeff'+rows.map(r=>r.map(x=>`"${String(x??'').replace(/"/g,'""')}"`).join(',')).join('\r\n');
-      const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=`PP_workload_${FY}.csv`;a.click();};
+      const fn=`PP_workload_${FY}.csv`;(async()=>{const dl=window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null;
+        if(dl){try{await dl.save({filename:fn,data:csv})}catch(e){}return}
+        const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=fn;a.click();})();};
     $('#ppwPrint').onclick=()=>{document.body.classList.add('pr-ppw');window.print();setTimeout(()=>document.body.classList.remove('pr-ppw'),500)};
   }
   const ws=W.windows.slice(-4);
