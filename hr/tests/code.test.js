@@ -109,6 +109,34 @@ t('punch inside radius writes the log once', () => {
   const docs = g.api('pull', {}, staff).data.docs.filter((d) => d.path === r.path);
   assert.strictEqual(docs.length, 1);
 });
+t('backfill: validation and approval flow', () => {
+  g.book['ตั้งค่า'].getRange(9, 2).setValue(true);
+  const today = g.api('geo', {}, staff).data.today;
+  const back = (n) => { const d = new Date(today + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+  assert(/ล่วงหน้า/.test(g.api('backfill', { date: back(1), in: '08:00', reason: 'ลืมกด' }, staff).error));
+  assert(/7 วัน/.test(g.api('backfill', { date: back(-8), in: '08:00', reason: 'ลืมกด' }, staff).error));
+  assert(/หลังเวลาเข้า/.test(g.api('backfill', { date: back(-1), in: '16:00', out: '08:00', reason: 'ลืมกด' }, staff).error));
+  const r = g.api('backfill', { date: back(-1), in: '08:05', out: '16:40', reason: 'มือถือแบตหมด' }, staff).data;
+  assert.strictEqual(r.fix.status, 'pending'); assert(!r.log);
+  assert.strictEqual(g.api('set', { path: r.path, data: { status: 'approved' } }, staff).code, 'forbidden');
+  assert.strictEqual(g.api('decideFix', { id: r.path.split('/')[1], status: 'approved' }, staff).ok, false);
+  const d = g.api('decideFix', { id: r.path.split('/')[1], status: 'approved' }, admin).data;
+  assert.strictEqual(d.log.in, '08:05'); assert.strictEqual(d.log.via, 'backfill');
+  assert.strictEqual(g.api('decideFix', { id: r.path.split('/')[1], status: 'rejected' }, admin).ok, false, 'decided once');
+  const c = g.api('backfill', { date: back(-2), in: '08:10', reason: 'ลืมกด' }, staff).data;
+  assert.strictEqual(g.api('cancelFix', { id: c.path.split('/')[1] }, staff).ok, true);
+  g.book['ตั้งค่า'].getRange(9, 2).setValue(false);
+});
+t('backfill without approval writes the log at once; 0 days disables', () => {
+  const st = g.book['ตั้งค่า'];
+  assert.strictEqual(st.getRange(9, 2).getValue(), false, 'default: no approval');
+  const today = g.api('geo', {}, staff).data.today;
+  const r = g.api('backfill', { date: today, out: '16:35' }, staff).data;
+  assert.strictEqual(r.fix.status, 'auto'); assert.strictEqual(r.log.out, '16:35');
+  st.getRange(8, 2).setValue(0);
+  assert(/ปิด/.test(g.api('backfill', { date: today, in: '08:00', reason: 'ลืมกด' }, staff).error));
+  st.getRange(8, 2).setValue(7);
+});
 t('logout ends the session', () => {
   g.api('logout', {}, staff);
   assert.strictEqual(g.api('pull', {}, staff).code, 'auth');
