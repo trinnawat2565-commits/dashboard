@@ -81,7 +81,7 @@ tfoot td{font-weight:600;color:var(--purple);border-bottom:none}
 </style>
 </head>
 <body>
-<header class="hero"><div class="in"><span class="badge">เครื่องคำนวณสำหรับสมาชิก · พัฒนาโดย Krittrin Indy</span><h1>คำนวณ<span>ปันผล-เฉลี่ยคืน</span></h1><div class="pill">สอ.สธ.กาฬสินธุ์ · ฉบับคร่าว ๆ</div><p class="sub">สหกรณ์ออมทรัพย์สาธารณสุขกาฬสินธุ์ จำกัด · ใส่อัตราตามมติประชุมใหญ่ของปีนั้น ผลลัพธ์เป็นค่าประมาณ<br>เครื่องมือช่วยคำนวณส่วนบุคคล ไม่ใช่ระบบทางการของสหกรณ์ ยอดจริงให้ยึดตามประกาศของสหกรณ์</p></div></header>
+<header class="hero"><div class="in"><span class="badge">เครื่องคำนวณสำหรับสมาชิก · พัฒนาโดย Krittrin Indy</span><h1>คำนวณ<span>ปันผล-เฉลี่ยคืน</span></h1><div class="pill">สอ.สธ.กาฬสินธุ์ · ฉบับคร่าว ๆ</div><p class="sub">สหกรณ์ออมทรัพย์สาธารณสุขกาฬสินธุ์ จำกัด · ตั้งค่าไว้ที่ปันผล 5.5% เฉลี่ยคืน 20% ผลลัพธ์เป็นค่าประมาณ<br>เครื่องมือช่วยคำนวณส่วนบุคคล ไม่ใช่ระบบทางการของสหกรณ์ ยอดจริงให้ยึดตามประกาศของสหกรณ์</p></div></header>
 <div class="wrap">
 <div class="grid main">
 <aside class="panel">
@@ -91,7 +91,7 @@ tfoot td{font-weight:600;color:var(--purple);border-bottom:none}
 <div class="f"><label for="op">ทุนเรือนหุ้นยกมาต้นปีบัญชี</label><div class="ifield"><span class="pre">฿</span><input id="op" type="number" min="0" step="100" placeholder="300,000" inputmode="decimal"><span class="suf">บาท</span></div></div>
 <div class="f"><label for="mo">ส่งค่าหุ้นรายเดือน</label><div class="ifield"><span class="pre">฿</span><input id="mo" type="number" min="0" step="50" placeholder="2,000" inputmode="decimal"><span class="suf">บาท</span></div></div>
 <div class="f"><label for="nm">จำนวนเดือนที่ส่งหุ้นในปีนี้ <b id="nmv"></b></label><input class="rng" id="nm" type="range" min="0" max="12" step="1" value="12"><div class="scale"><span>0</span><span>12 เดือน</span></div></div>
-<div class="f"><label for="dr">อัตราปันผล <b id="drv"></b></label><input class="rng" id="dr" type="range" min="0" max="10" step="0.05" value="6"><div class="scale"><span>0%</span><span>10%</span></div></div>
+<div class="f"><label for="dr">อัตราปันผล <b id="drv"></b></label><input class="rng" id="dr" type="range" min="0" max="10" step="0.05" value="5.5"><div class="scale"><span>0%</span><span>10%</span></div></div>
 </section>
 <section class="grp c-green">
 <div class="gh"><span class="num">2</span><div><div class="gt">เงินกู้</div><div class="gs">ใช้คิดเงินเฉลี่ยคืน</div></div><span class="gi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20M6 15h4"/></svg></span></div>
@@ -103,7 +103,7 @@ tfoot td{font-weight:600;color:var(--purple);border-bottom:none}
 <div class="f"><label for="lr">อัตราดอกเบี้ยเงินกู้ <b id="lrv"></b></label><input class="rng" id="lr" type="range" min="0" max="10" step="0.05" value="5.75"><div class="scale"><span>0%</span><span>10%</span></div></div>
 <div class="estbox">ดอกเบี้ยโดยประมาณ <b id="itEst"></b> บาท</div>
 </div>
-<div class="f"><label for="rr">อัตราเฉลี่ยคืน <b id="rrv"></b></label><input class="rng" id="rr" type="range" min="0" max="30" step="0.25" value="10"><div class="scale"><span>0%</span><span>30%</span></div></div>
+<div class="f"><label for="rr">อัตราเฉลี่ยคืน <b id="rrv"></b></label><input class="rng" id="rr" type="range" min="0" max="30" step="0.25" value="20"><div class="scale"><span>0%</span><span>30%</span></div></div>
 </section>
 <button class="btn" id="reset" type="button">ล้างข้อมูลที่กรอก</button>
 </aside>
@@ -138,10 +138,10 @@ tfoot td{font-weight:600;color:var(--purple);border-bottom:none}
 <script>
 const $=id=>document.getElementById(id);
 const fmt=(n,d=2)=>n.toLocaleString('th-TH',{minimumFractionDigits:d,maximumFractionDigits:d});
-const DEF={op:'',mo:'',nm:12,dr:6,mode:'direct',it:'',lb:'',lr:5.75,rr:10};
+const DEF={op:'',mo:'',nm:12,dr:5.5,mode:'direct',it:'',lb:'',lr:5.75,rr:20};
 const ids=Object.keys(DEF);
-function load(){try{const s=JSON.parse(localStorage.getItem('ksnDiv2')||'null');if(s)ids.forEach(k=>{if(s[k]!==undefined)$(k).value=s[k]});}catch(e){}}
-function save(){try{const o={};ids.forEach(k=>o[k]=$(k).value);localStorage.setItem('ksnDiv2',JSON.stringify(o));}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem('ksnDiv3')||'null');if(s)ids.forEach(k=>{if(s[k]!==undefined)$(k).value=s[k]});}catch(e){}}
+function save(){try{const o={};ids.forEach(k=>o[k]=$(k).value);localStorage.setItem('ksnDiv3',JSON.stringify(o));}catch(e){}}
 function paint(){document.querySelectorAll('.rng').forEach(r=>{const p=(r.value-r.min)/(r.max-r.min)*100;r.style.background='linear-gradient(90deg,var(--c) '+p+'%,var(--line) '+p+'%)';});
 document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.m===$('mode').value));}
 document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{$('mode').value=b.dataset.m;calc();}));
