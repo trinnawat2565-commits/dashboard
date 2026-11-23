@@ -471,7 +471,7 @@ function fixPanel(){
   const pend = S.fixes.filter(f => f.status==="pending" && (S.isAdmin || f.staffId===S.me)).sort((a,b)=>String(a.createdAt).localeCompare(String(b.createdAt)));
   if(!pend.length) return "";
   const row = f => `<li><span class="pill p-warn">รออนุมัติ</span> <b>${esc(nameOf(f.staffId))}</b> · ${esc(thDate(parseKey(f.date),{weekday:"short",day:"numeric",month:"short"}))} · เข้า ${esc(f.in||"—")} ออก ${esc(f.out||"—")}
-    <div class="sub">เหตุผล: ${esc(f.reason)}</div>
+    ${f.reason?`<div class="sub">หมายเหตุ: ${esc(f.reason)}</div>`:""}
     <div class="acts">${S.isAdmin ? `<button class="primary" data-act="fixDecide" data-id="${f.id}" data-s="approved">อนุมัติ</button><button data-act="fixDecide" data-id="${f.id}" data-s="rejected">ไม่อนุมัติ</button>` : ""}
     ${f.staffId===S.me ? `<button class="ghost danger" data-act="fixCancel" data-id="${f.id}">ยกเลิก</button>` : ""}</div></li>`;
   return `<section class="panel fixes"><h2>คำขอลงเวลาเอง / ย้อนหลัง</h2><ul class="fixlist">${pend.map(row).join("")}</ul></section>`;
@@ -479,12 +479,12 @@ function fixPanel(){
 function backfillSheet(id){
   const s = S.staff.find(x=>x.id===id), days = S.demo ? 7 : S.geo.backDays, today = S.demo ? dkey(new Date()) : S.geo.today;
   const min = (() => { const d = parseKey(today); d.setDate(d.getDate()-days); return dkey(d); })();
-  const need = S.demo ? true : S.geo.backApprove;
+  const need = S.demo ? false : S.geo.backApprove;
   openSheet(`<h2>ลงเวลาเอง / ย้อนหลัง</h2><div class="muted">${esc(s.name)} · ย้อนหลังได้ ${days} วัน${need?" · ต้องให้ผู้ดูแลอนุมัติ":""}</div>
     <label class="f">วันที่<input type="date" id="bfDate" min="${min}" max="${today}" value="${today}"></label>
     <div class="form-row"><label class="f grow">เวลาเข้างาน<input type="time" id="bfIn"></label><label class="f grow">เวลาออกงาน<input type="time" id="bfOut"></label></div>
     <p class="sub" style="margin:0">ใส่เฉพาะช่องที่ต้องการ เช่น ลืมกดออกงาน ใส่แค่เวลาออก</p>
-    <label class="f">เหตุผล<textarea id="bfReason" style="min-height:70px" placeholder="เช่น มาถึง 08:00 แต่มือถือแบตหมด"></textarea></label>
+    <label class="f">หมายเหตุ (ไม่ใส่ก็ได้)<input id="bfReason" placeholder="เช่น มือถือแบตหมด"></label>
     <p class="login-msg" id="bfMsg" role="alert"></p>
     <div class="acts"><button data-act="cancel">ยกเลิก</button><button class="primary" data-act="bfSave" data-id="${id}" id="bfGo">${need?"ส่งขออนุมัติ":"บันทึก"}</button></div>`);
 }
@@ -1165,7 +1165,7 @@ document.addEventListener("click", async e => {
   if(a==="backfill") backfillSheet(id);
   if(a==="bfSave"){
     const m = $("#bfMsg"), body = {date:$("#bfDate").value, in:$("#bfIn").value, out:$("#bfOut").value, reason:$("#bfReason").value.trim()};
-    if(S.demo){ if(!body.in && !body.out){ m.textContent = "ใส่เวลาเข้าหรือเวลาออก"; return; } closeSheet(); await writeLog(body.date, id, {...(body.in?{in:body.in}:{}), ...(body.out?{out:body.out}:{}), note:"ลงย้อนหลัง: "+body.reason}); toast("บันทึกแล้ว (โหมดตัวอย่าง)"); return; }
+    if(S.demo){ if(!body.in && !body.out){ m.textContent = "ใส่เวลาเข้าหรือเวลาออก"; return; } closeSheet(); await writeLog(body.date, id, {...(body.in?{in:body.in}:{}), ...(body.out?{out:body.out}:{}), note:"ลงเวลาเอง"+(body.reason?": "+body.reason:"")}); toast("บันทึกแล้ว (โหมดตัวอย่าง)"); return; }
     el.disabled = true; m.textContent = "กำลังส่ง…";
     try { const r = await window.HR.call("backfill", body); window.HR.applyDoc(r.path, r.fix); if(r.log) window.HR.applyDoc(r.logPath, r.log);
       closeSheet(); toast(r.fix.status==="pending" ? "ส่งคำขอแล้ว รอผู้ดูแลอนุมัติ" : "บันทึกเวลาแล้ว"); }

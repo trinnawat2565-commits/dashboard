@@ -21,7 +21,7 @@ var SETTING_ROWS = [
   ['เปิดใช้ GPS', true, 'เอาติ๊กออกเพื่อปิดการตรวจพิกัดชั่วคราว'],
   ['ผู้ตั้งพิกัดได้ (รหัส)', '', 'รหัสในชีต ผู้ใช้ คั่นด้วยจุลภาค เช่น S02 ถ้าเว้นว่าง admin ทุกคนตั้งได้'],
   ['ลงเวลาย้อนหลังได้ (วัน)', 7, 'ใส่ 0 เพื่อปิดการลงเวลาย้อนหลัง'],
-  ['ย้อนหลังต้องให้ admin อนุมัติ', true, 'เอาติ๊กออก ถ้าให้ลงย้อนหลังได้ทันทีโดยไม่ต้องอนุมัติ']
+  ['ย้อนหลังต้องให้ admin อนุมัติ', false, 'ติ๊ก ถ้าต้องการให้ admin อนุมัติก่อนเวลาขึ้น']
 ];
 var TZ = 'Asia/Bangkok';
 var SESSION_SEC = 6 * 3600;
@@ -39,9 +39,9 @@ function setup() {
     var from = st.getLastRow() - 1;
     st.getRange(from + 2, 1, SETTING_ROWS.length - from, 3).setValues(SETTING_ROWS.slice(from));
   }
-  [6, 9].forEach(function (r) {
-    st.getRange(r, 2).insertCheckboxes();
-    if (st.getRange(r, 2).getValue() === '') st.getRange(r, 2).setValue(true);
+  [[6, true], [9, false]].forEach(function (x) {
+    st.getRange(x[0], 2).insertCheckboxes();
+    if (st.getRange(x[0], 2).getValue() === '') st.getRange(x[0], 2).setValue(x[1]);
   });
   var us = ensure_(ss, SH.users, USER_HEADERS);
   us.getRange('C:C').setNumberFormat('@');
@@ -234,7 +234,7 @@ function geo_() {
     radius: Number(v[2]) || 150, maxAcc: Number(v[3]) || 100, on: !(v[4] === false || String(v[4]).toUpperCase() === 'FALSE'),
     owners: String(v[5] || '').split(/[\s,]+/).filter(String),
     backDays: v[6] === '' ? 7 : Math.max(0, Math.min(60, Math.floor(Number(v[6]) || 0))),
-    backApprove: !(v[7] === false || String(v[7]).toUpperCase() === 'FALSE') };
+    backApprove: v[7] === true || String(v[7]).toUpperCase() === 'TRUE' };
 }
 function canSetGeo_(s, g) { return s.role === 'admin' && (!g.owners.length || g.owners.indexOf(s.id) >= 0); }
 function getGeo(s) {
@@ -308,7 +308,7 @@ function applyFix_(f, by) {
   body.date = f.date; body.staffId = f.staffId;
   if (f['in']) body['in'] = f['in'];
   if (f.out) body.out = f.out;
-  body.via = 'backfill'; body.note = 'ลงย้อนหลัง: ' + f.reason; body.updatedAt = now_().iso;
+  body.via = 'backfill'; body.note = 'ลงเวลาเอง' + (f.reason ? ': ' + f.reason : ''); body.updatedAt = now_().iso;
   write_(path, body, by);
   return body;
 }
@@ -323,7 +323,6 @@ function backfill(s, p) {
   if (tout && !TIME_RE.test(tout)) fail_('เวลาออกไม่ถูกต้อง');
   if (!tin && !tout) fail_('ใส่เวลาเข้าหรือเวลาออกอย่างน้อยหนึ่งอย่าง');
   if (tin && tout && tout <= tin) fail_('เวลาออกต้องหลังเวลาเข้า');
-  if (reason.length < 3) fail_('ใส่เหตุผลที่ลงย้อนหลัง');
   if (reason.length > 300) reason = reason.slice(0, 300);
   var id = date.replace(/-/g, '') + '_' + s.id + '_' + Utilities.getUuid().slice(0, 6);
   var f = { staffId: s.id, date: date, 'in': tin, out: tout, reason: reason, createdBy: s.id, createdAt: now_().iso,
