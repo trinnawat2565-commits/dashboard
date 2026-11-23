@@ -19,13 +19,15 @@ var SETTING_ROWS = [
   ['รัศมีที่อนุญาต (ม.)', 150, 'ระยะห่างสูงสุดจาก รพ.สต. ที่ลงเวลาได้'],
   ['ความแม่นยำขั้นต่ำ (ม.)', 100, 'ถ้า GPS คลาดเคลื่อนมากกว่านี้ ให้ลองใหม่'],
   ['เปิดใช้ GPS', true, 'เอาติ๊กออกเพื่อปิดการตรวจพิกัดชั่วคราว'],
-  ['ผู้ตั้งพิกัดได้ (รหัส)', '', 'รหัสในชีต ผู้ใช้ คั่นด้วยจุลภาค เช่น S02 ถ้าเว้นว่าง admin ทุกคนตั้งได้']
+  ['ผู้ตั้งพิกัดได้ (รหัส)', '', 'รหัสในชีต ผู้ใช้ คั่นด้วยจุลภาค เช่น S02 ถ้าเว้นว่าง admin ทุกคนตั้งได้'],
+  ['ลงเวลาย้อนหลังได้ (วัน)', 7, 'ใส่ 0 เพื่อปิดการลงเวลาย้อนหลัง'],
+  ['ย้อนหลังต้องให้ admin อนุมัติ', true, 'เอาติ๊กออก ถ้าให้ลงย้อนหลังได้ทันทีโดยไม่ต้องอนุมัติ']
 ];
 var TZ = 'Asia/Bangkok';
 var SESSION_SEC = 6 * 3600;
 var MAX_JSON = 48000;
 var PATH_RE = /^[a-z]+\/[A-Za-z0-9_\-]{1,80}$/;
-var ADMIN_WRITE = ['config', 'duty', 'logs', 'evals'];
+var ADMIN_WRITE = ['config', 'duty', 'logs', 'evals', 'fixes'];
 var ADMIN_READ = ['evals'];
 
 /* ---------- setup ---------- */
@@ -37,8 +39,10 @@ function setup() {
     var from = st.getLastRow() - 1;
     st.getRange(from + 2, 1, SETTING_ROWS.length - from, 3).setValues(SETTING_ROWS.slice(from));
   }
-  st.getRange(6, 2).insertCheckboxes();
-  if (st.getRange(6, 2).getValue() === '') st.getRange(6, 2).setValue(true);
+  [6, 9].forEach(function (r) {
+    st.getRange(r, 2).insertCheckboxes();
+    if (st.getRange(r, 2).getValue() === '') st.getRange(r, 2).setValue(true);
+  });
   var us = ensure_(ss, SH.users, USER_HEADERS);
   us.getRange('C:C').setNumberFormat('@');
   us.getRange(2, 5, Math.max(us.getMaxRows() - 1, 1), 1).insertCheckboxes();
@@ -71,7 +75,10 @@ var ACTIONS = {
   del: { fn: delDoc },
   punch: { fn: punch },
   geo: { fn: getGeo },
-  setGeo: { admin: true, fn: setGeo }
+  setGeo: { admin: true, fn: setGeo },
+  backfill: { fn: backfill },
+  cancelFix: { fn: cancelFix },
+  decideFix: { admin: true, fn: decideFix }
 };
 
 function doPost(e) {
@@ -222,13 +229,19 @@ function delDoc(s, p) {
 /* ---------- GPS clock-in ---------- */
 function geo_() {
   var sh = SpreadsheetApp.getActive().getSheetByName(SH.settings);
-  var v = sh.getRange(2, 2, 6, 1).getValues().map(function (r) { return r[0]; });
+  var v = sh.getRange(2, 2, 8, 1).getValues().map(function (r) { return r[0]; });
   return { lat: v[0] === '' ? null : Number(v[0]), lng: v[1] === '' ? null : Number(v[1]),
     radius: Number(v[2]) || 150, maxAcc: Number(v[3]) || 100, on: !(v[4] === false || String(v[4]).toUpperCase() === 'FALSE'),
-    owners: String(v[5] || '').split(/[\s,]+/).filter(String) };
+    owners: String(v[5] || '').split(/[\s,]+/).filter(String),
+    backDays: v[6] === '' ? 7 : Math.max(0, Math.min(60, Math.floor(Number(v[6]) || 0))),
+    backApprove: !(v[7] === false || String(v[7]).toUpperCase() === 'FALSE') };
 }
 function canSetGeo_(s, g) { return s.role === 'admin' && (!g.owners.length || g.owners.indexOf(s.id) >= 0); }
-function getGeo(s) { var g = geo_(); return { set: g.lat !== null && g.lng !== null, radius: g.radius, maxAcc: g.maxAcc, on: g.on, canSet: canSetGeo_(s, g) }; }
+function getGeo(s) {
+  var g = geo_();
+  return { set: g.lat !== null && g.lng !== null, radius: g.radius, maxAcc: g.maxAcc, on: g.on, canSet: canSetGeo_(s, g),
+    backDays: g.backDays, backApprove: g.backApprove, today: now_().date };
+}
 function setGeo(s, p) {
   if (!canSetGeo_(s, geo_())) fail_('ผู้ดูแลกำหนดให้เฉพาะบางคนตั้งพิกัดได้', 'forbidden');
   var lat = Number(p.lat), lng = Number(p.lng);
@@ -277,5 +290,78 @@ function punch(s, p) {
     if (meters !== '') body[kind + 'M'] = meters;
     write_(path, body, s.id);
     return { ok: true, time: n.time, date: n.date, meters: meters, log: body, path: path };
+  } finally { lock.releaseLock(); }
+}
+
+/* ---------- ลงเวลาย้อนหลัง ---------- */
+var TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+function addDays_(ymd, n) {
+  var p = ymd.split('-').map(Number), d = new Date(Date.UTC(p[0], p[1] - 1, p[2] + n));
+  return Utilities.formatDate(d, 'UTC', 'yyyy-MM-dd');
+}
+function gpsLog_(s, date, kind, status, note) {
+  SpreadsheetApp.getActive().getSheetByName(SH.gps).appendRow([new Date(), date, '', s.id, s.name, kind, '', '', '', '', status, note]);
+}
+function applyFix_(f, by) {
+  var path = 'logs/' + f.date + '_' + f.staffId, cur = readDoc_(path) || {}, body = {};
+  Object.keys(cur).forEach(function (k) { body[k] = cur[k]; });
+  body.date = f.date; body.staffId = f.staffId;
+  if (f['in']) body['in'] = f['in'];
+  if (f.out) body.out = f.out;
+  body.via = 'backfill'; body.note = 'ลงย้อนหลัง: ' + f.reason; body.updatedAt = now_().iso;
+  write_(path, body, by);
+  return body;
+}
+function backfill(s, p) {
+  var g = geo_(), today = now_().date;
+  var date = String(p.date || ''), tin = String(p['in'] || ''), tout = String(p.out || ''), reason = String(p.reason || '').trim();
+  if (!g.backDays) fail_('ผู้ดูแลปิดการลงเวลาย้อนหลังไว้');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) fail_('เลือกวันที่');
+  if (date > today) fail_('ลงเวลาล่วงหน้าไม่ได้');
+  if (date < addDays_(today, -g.backDays)) fail_('ลงย้อนหลังได้ไม่เกิน ' + g.backDays + ' วัน');
+  if (tin && !TIME_RE.test(tin)) fail_('เวลาเข้าไม่ถูกต้อง');
+  if (tout && !TIME_RE.test(tout)) fail_('เวลาออกไม่ถูกต้อง');
+  if (!tin && !tout) fail_('ใส่เวลาเข้าหรือเวลาออกอย่างน้อยหนึ่งอย่าง');
+  if (tin && tout && tout <= tin) fail_('เวลาออกต้องหลังเวลาเข้า');
+  if (reason.length < 3) fail_('ใส่เหตุผลที่ลงย้อนหลัง');
+  if (reason.length > 300) reason = reason.slice(0, 300);
+  var id = date.replace(/-/g, '') + '_' + s.id + '_' + Utilities.getUuid().slice(0, 6);
+  var f = { staffId: s.id, date: date, 'in': tin, out: tout, reason: reason, createdBy: s.id, createdAt: now_().iso,
+    status: g.backApprove ? 'pending' : 'auto' };
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var res = { fix: f, path: 'fixes/' + id };
+    if (!g.backApprove) { res.log = applyFix_(f, s.id); res.logPath = 'logs/' + date + '_' + s.id; }
+    write_('fixes/' + id, f, s.id);
+    gpsLog_(s, date, 'ย้อนหลัง ' + [tin, tout].filter(String).join('–'), g.backApprove ? 'รออนุมัติ' : 'ย้อนหลัง', reason);
+    return res;
+  } finally { lock.releaseLock(); }
+}
+function cancelFix(s, p) {
+  var path = 'fixes/' + String(p.id || '');
+  if (!PATH_RE.test(path)) fail_('ไม่พบคำขอ');
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var f = readDoc_(path);
+    if (!f) fail_('ไม่พบคำขอ');
+    if (f.staffId !== s.id && s.role !== 'admin') fail_('ยกเลิกได้เฉพาะคำขอของตัวเอง', 'forbidden');
+    if (f.status !== 'pending') fail_('คำขอนี้พิจารณาแล้ว');
+    write_(path, null, s.id);
+    return { path: path };
+  } finally { lock.releaseLock(); }
+}
+function decideFix(s, p) {
+  var path = 'fixes/' + String(p.id || ''), st = p.status === 'approved' ? 'approved' : 'rejected';
+  if (!PATH_RE.test(path)) fail_('ไม่พบคำขอ');
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var f = readDoc_(path);
+    if (!f) fail_('ไม่พบคำขอ');
+    if (f.status !== 'pending') fail_('คำขอนี้พิจารณาแล้ว');
+    f.status = st; f.decidedBy = s.id; f.decidedAt = now_().iso;
+    var res = { path: path, fix: f };
+    if (st === 'approved') { res.log = applyFix_(f, s.id); res.logPath = 'logs/' + f.date + '_' + f.staffId; }
+    write_(path, f, s.id);
+    return res;
   } finally { lock.releaseLock(); }
 }

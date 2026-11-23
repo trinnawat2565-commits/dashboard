@@ -194,6 +194,7 @@
       return r;
     },
     geo: function () { return call("geo"); },
+    applyDoc: function (path, data) { if (data == null) store.delete(path); else store.set(path, data); notify(); },
     setGeo: function (p) { return call("setGeo", p); }
   };
   window.claude = {

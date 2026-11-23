@@ -209,6 +209,8 @@ textarea{font:inherit;width:100%;min-height:120px;background:var(--sunk);color:v
 .login-head{display:flex;align-items:center;gap:12px}.login-head img{width:64px;height:64px;border-radius:50%;flex:none}.login-head h2{font-size:1.15rem}
 .login-msg{margin:0;min-height:1.4em;color:var(--bad)}
 .who-me{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:6px}.who-me .muted{color:rgb(255 255 255/.9)}.who-me button{color:#fff;background:rgb(255 255 255/.12);border-color:rgb(255 255 255/.55)}
+.card .acts{flex-wrap:wrap}.bfbtn{flex:1 1 100%!important;font-size:.85rem}
+.fixlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}.fixlist .acts{margin-top:4px;justify-content:flex-start}.fixlist .acts button{flex:0 0 auto;min-width:110px}
 .gpsbox{font-size:.9rem;text-align:center;color:var(--muted)}
 </style>
 </head>
@@ -265,7 +267,7 @@ const DEFAULTS = {unitName:"รพ.สต.บ้านดงสวนพัฒ�
 
 const S = {
   staff:[], settings:{...DEFAULTS}, today:{}, month:{}, demo:false, db:null, user:null,
-  canWrite:true, ready:false, loadFailed:false, requests:[], isAdmin:true, me:null, licenses:[], trainings:[], reports:[], reportEdit:null, sample:null, programs:[], duty:{}, dutyMonth:dkey(new Date()).slice(0,7), pSub:"profile", evalRound:null, evalLogs:{}, evalLogsKey:null, evals:{}, reqFilter:{leave:"all",trip:"all"},
+  canWrite:true, ready:false, loadFailed:false, requests:[], isAdmin:true, me:null, licenses:[], trainings:[], reports:[], reportEdit:null, sample:null, programs:[], fixes:[], duty:{}, dutyMonth:dkey(new Date()).slice(0,7), pSub:"profile", evalRound:null, evalLogs:{}, evalLogsKey:null, evals:{}, reqFilter:{leave:"all",trip:"all"},
   monthKey: dkey(new Date()).slice(0,7), dailyKey: dkey(new Date())
 };
 
@@ -353,6 +355,7 @@ function subscribeAll(){
   sub("reports", () => db.collection("reports").onSnapshot(s => { S.reports = s.docs.map(d=>({id:d.id, ...d.data()})); render(); }, console.warn));
   sub("trainings", () => db.collection("trainings").onSnapshot(s => { S.trainings = s.docs.map(d=>({id:d.id, ...d.data()})); render(); }, console.warn));
   sub("programs", () => db.doc("config/programs").onSnapshot(d => { S.programs = d.exists ? (d.data().items||[]) : []; render(); }, console.warn));
+  sub("fixes", () => db.collection("fixes").onSnapshot(s => { S.fixes = s.docs.map(d=>({id:d.id, ...d.data()})); render(); }, console.warn));
   subscribeDuty(); subscribeDutyToday();
 }
 function subscribeDuty(){ if(!S.db) return; const mk = S.dutyMonth; sub("duty", () => S.db.doc("duty/"+mk).onSnapshot(d => { S.duty[mk] = d.exists ? d.data() : {slots:{}}; render(); }, console.warn)); }
@@ -462,6 +465,30 @@ function enterDemo(){
 }
 function exitDemo(){ S.demo = false; S.staff=[]; S.staffAll=[]; S.requests=[]; S.licenses=[]; S.trainings=[]; S.reports=[]; S.programs=[]; S.duty={}; S.evals={}; S.evalLogsKey=null; S.today={}; S.month={}; S.daily={}; if(S.db){ S.ready=false; subscribeAll(); } else { render(); window.HR.login(); } }
 
+/* ---------- ลงเวลาเอง / ย้อนหลัง ---------- */
+const backOn = () => S.demo || (S.geo && S.geo.backDays > 0);
+function fixPanel(){
+  const pend = S.fixes.filter(f => f.status==="pending" && (S.isAdmin || f.staffId===S.me)).sort((a,b)=>String(a.createdAt).localeCompare(String(b.createdAt)));
+  if(!pend.length) return "";
+  const row = f => `<li><span class="pill p-warn">รออนุมัติ</span> <b>${esc(nameOf(f.staffId))}</b> · ${esc(thDate(parseKey(f.date),{weekday:"short",day:"numeric",month:"short"}))} · เข้า ${esc(f.in||"—")} ออก ${esc(f.out||"—")}
+    <div class="sub">เหตุผล: ${esc(f.reason)}</div>
+    <div class="acts">${S.isAdmin ? `<button class="primary" data-act="fixDecide" data-id="${f.id}" data-s="approved">อนุมัติ</button><button data-act="fixDecide" data-id="${f.id}" data-s="rejected">ไม่อนุมัติ</button>` : ""}
+    ${f.staffId===S.me ? `<button class="ghost danger" data-act="fixCancel" data-id="${f.id}">ยกเลิก</button>` : ""}</div></li>`;
+  return `<section class="panel fixes"><h2>คำขอลงเวลาเอง / ย้อนหลัง</h2><ul class="fixlist">${pend.map(row).join("")}</ul></section>`;
+}
+function backfillSheet(id){
+  const s = S.staff.find(x=>x.id===id), days = S.demo ? 7 : S.geo.backDays, today = S.demo ? dkey(new Date()) : S.geo.today;
+  const min = (() => { const d = parseKey(today); d.setDate(d.getDate()-days); return dkey(d); })();
+  const need = S.demo ? true : S.geo.backApprove;
+  openSheet(`<h2>ลงเวลาเอง / ย้อนหลัง</h2><div class="muted">${esc(s.name)} · ย้อนหลังได้ ${days} วัน${need?" · ต้องให้ผู้ดูแลอนุมัติ":""}</div>
+    <label class="f">วันที่<input type="date" id="bfDate" min="${min}" max="${today}" value="${today}"></label>
+    <div class="form-row"><label class="f grow">เวลาเข้างาน<input type="time" id="bfIn"></label><label class="f grow">เวลาออกงาน<input type="time" id="bfOut"></label></div>
+    <p class="sub" style="margin:0">ใส่เฉพาะช่องที่ต้องการ เช่น ลืมกดออกงาน ใส่แค่เวลาออก</p>
+    <label class="f">เหตุผล<textarea id="bfReason" style="min-height:70px" placeholder="เช่น มาถึง 08:00 แต่มือถือแบตหมด"></textarea></label>
+    <p class="login-msg" id="bfMsg" role="alert"></p>
+    <div class="acts"><button data-act="cancel">ยกเลิก</button><button class="primary" data-act="bfSave" data-id="${id}" id="bfGo">${need?"ส่งขออนุมัติ":"บันทึก"}</button></div>`);
+}
+
 /* ---------- GPS ---------- */
 function locate(){
   return new Promise((ok, bad) => {
@@ -504,6 +531,7 @@ function vToday(){
   </section>
   ${work?"":`<div class="banner">วันนี้เป็นวันหยุด ลงเวลาได้ตามปกติหากมาปฏิบัติงาน</div>`}
   ${todayAlerts()}
+  ${fixPanel()}
   <div class="bar"><h2>${S.demo?"กดชื่อตัวเองเพื่อลงเวลา":"ลงเวลาที่การ์ดของคุณ (ต้องอยู่ใน รพ.สต. และเปิด GPS)"}</h2><span class="muted">${esc(thDate(new Date()))}</span></div>
   <section class="grid">
   ${st.map(({s,log,x}) => `
@@ -515,7 +543,8 @@ function vToday(){
         ${(x.code==="leave"||x.code==="trip") ? `<button class="ghost" disabled>${esc(x.label)}</button>` :
         !canPunch(s.id) ? (log&&log.via==="gps" ? `<span class="sub">ลงเวลาด้วย GPS</span>` : "") :
         `<button class="primary" data-act="punch" data-kind="in" data-id="${s.id}" ${(log&&log.in)?"disabled":""}>ลงเวลาเข้า</button>
-         <button data-act="punch" data-kind="out" data-id="${s.id}" ${!(log&&log.in)?"disabled":""}>${log&&log.out?"ลงเวลาออกใหม่":"ลงเวลาออก"}</button>`}
+         <button data-act="punch" data-kind="out" data-id="${s.id}" ${!(log&&log.in)?"disabled":""}>${log&&log.out?"ลงเวลาออกใหม่":"ลงเวลาออก"}</button>
+         ${backOn() ? `<button class="ghost bfbtn" data-act="backfill" data-id="${s.id}">ลงเวลาเอง / ย้อนหลัง</button>` : ""}`}
       </div>
     </article>`).join("")}
   </section>`;
@@ -1133,6 +1162,22 @@ document.addEventListener("click", async e => {
   if(a==="goto"){ location.hash = el.dataset.to; }
   if(a==="demo") enterDemo();
   if(a==="logout") window.HR.logout();
+  if(a==="backfill") backfillSheet(id);
+  if(a==="bfSave"){
+    const m = $("#bfMsg"), body = {date:$("#bfDate").value, in:$("#bfIn").value, out:$("#bfOut").value, reason:$("#bfReason").value.trim()};
+    if(S.demo){ if(!body.in && !body.out){ m.textContent = "ใส่เวลาเข้าหรือเวลาออก"; return; } closeSheet(); await writeLog(body.date, id, {...(body.in?{in:body.in}:{}), ...(body.out?{out:body.out}:{}), note:"ลงย้อนหลัง: "+body.reason}); toast("บันทึกแล้ว (โหมดตัวอย่าง)"); return; }
+    el.disabled = true; m.textContent = "กำลังส่ง…";
+    try { const r = await window.HR.call("backfill", body); window.HR.applyDoc(r.path, r.fix); if(r.log) window.HR.applyDoc(r.logPath, r.log);
+      closeSheet(); toast(r.fix.status==="pending" ? "ส่งคำขอแล้ว รอผู้ดูแลอนุมัติ" : "บันทึกเวลาแล้ว"); }
+    catch(err){ m.textContent = err.message; el.disabled = false; }
+  }
+  if(a==="fixDecide" || a==="fixCancel"){
+    el.disabled = true;
+    try { const r = a==="fixCancel" ? await window.HR.call("cancelFix", {id}) : await window.HR.call("decideFix", {id, status:el.dataset.s});
+      if(a==="fixCancel") window.HR.applyDoc(r.path, null); else { window.HR.applyDoc(r.path, r.fix); if(r.log) window.HR.applyDoc(r.logPath, r.log); }
+      toast(a==="fixCancel" ? "ยกเลิกคำขอแล้ว" : el.dataset.s==="approved" ? "อนุมัติแล้ว เวลาถูกบันทึก" : "ไม่อนุมัติ"); }
+    catch(err){ toast(err.message); el.disabled = false; }
+  }
   if(a==="setGeo"){
     const m = $("#geoMsg"); el.disabled = true; m.textContent = "กำลังหาตำแหน่ง…";
     try { const p = await locate(); if(p.acc > 60){ m.textContent = `GPS คลาดเคลื่อน ${Math.round(p.acc)} ม. ลองใหม่ในที่โล่ง`; el.disabled = false; return; }
@@ -1417,7 +1462,7 @@ render();
     try { S.me = await user.id(); } catch(_){}
   }
   if(!S.demo) subscribeAll();
-  if(S.isAdmin) window.HR.geo().then(g => { S.geo = g; render(); }).catch(()=>{});
+  window.HR.geo().then(g => { S.geo = g; render(); }).catch(()=>{});
 })();
 })();
 </script>

@@ -85,8 +85,24 @@ const SHOTS = process.env.SHOTS || '';
   const over = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   assert(!over, 'no horizontal scroll on phone');
   await shot(page, 'phone');
+  // staff enters a time by hand (needs approval)
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.click('[data-act="backfill"]');
+  await page.fill('#bfIn', '07:55'); await page.fill('#bfReason', 'มาถึงแล้วแต่ลืมกด');
+  await page.click('#bfGo');
+  await page.waitForSelector('.fixes [data-act="fixCancel"]');
+  await shot(page, 'backfill-pending');
   await page.click('[data-act="logout"]');
   await page.waitForSelector('#hrLogin:not([hidden]) #hrId');
+  await page.close();
+  // admin approves it
+  page = await open();
+  await login(page, 'S01', '1234');
+  await page.waitForSelector('.fixes [data-act="fixDecide"][data-s="approved"]');
+  await page.click('.fixes [data-act="fixDecide"][data-s="approved"]');
+  await page.waitForSelector('.fixes', { state: 'detached' });
+  const logs = g.api('pull', {}, g.api('login', { id: 'S01', pin: '1234' }).data.token).data.docs.filter((d) => d.path.startsWith('logs/') && d.data.via === 'backfill');
+  assert.strictEqual(logs.length, 1); assert.strictEqual(logs[0].data.in, '07:55');
   await page.close();
   await browser.close();
   assert.deepStrictEqual(errors, []);

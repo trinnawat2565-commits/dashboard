@@ -55,7 +55,7 @@ function load() {
       DigestAlgorithm: { SHA_256: 'sha256' }, Charset: { UTF_8: 'utf8' },
       computeDigest: (_a, s) => Array.from(crypto.createHash('sha256').update(s, 'utf8').digest()).map((b) => (b > 127 ? b - 256 : b)),
       base64Encode: (b) => Buffer.from(b.map((x) => (x < 0 ? x + 256 : x))).toString('base64'),
-      formatDate: (d, _tz, f) => { const t = new Date(d.getTime() + 7 * 3600e3);
+      formatDate: (d, tz, f) => { const t = new Date(d.getTime() + (tz === 'UTC' ? 0 : 7 * 3600e3));
         return f === 'HH:mm' ? pad(t.getUTCHours()) + ':' + pad(t.getUTCMinutes()) : t.getUTCFullYear() + '-' + pad(t.getUTCMonth() + 1) + '-' + pad(t.getUTCDate()); }
     }
   };
